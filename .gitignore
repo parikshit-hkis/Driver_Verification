@@ -1,0 +1,63 @@
+# Python Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# PaddleOCR & ML Model Caches / Downloaded Weights
+.paddleocr/
+.cache/
+inference/
+*.pdmodel
+*.pdiparams
+*.pdiparams.info
+*.onnx
+
+# Environment variables & sensitive keys
+.env
+.env.*
+*.pem
+*.key
+*.crt
+
+# IDE & Code Editor Settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# Logs & Temporary Files
+*.log
+logs/
+*.tmp
+temp/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.nox/
+.tox/
+
+# Build & Distribution Artifacts
+build/
+dist/
+*.egg-info/
+*.egg
