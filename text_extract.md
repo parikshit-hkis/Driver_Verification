@@ -20,7 +20,7 @@ driver licence:(it should extract details from front and back both)
     all Class of Vehicle(like in how many types of vehicles that person is eligible to drive after getting license)
 
 RC:(it should extract details from front and back both)
-    registration number,
+    registration number,    
     owner_name,
     date_of_registration,
     registration_validity,

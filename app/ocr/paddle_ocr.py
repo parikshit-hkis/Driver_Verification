@@ -1,6 +1,6 @@
+# app/ocr/paddle_ocr.py:
 import numpy as np
 from paddleocr import PaddleOCR
-
 from app.models.ocr_models import (
     Point,
     BoundingBox,
@@ -25,6 +25,7 @@ class PaddleOCRService:
             use_angle_cls=True,   # ON — handles any residual per-region rotation
             lang="en",
             show_log=False,
+            use_gpu=True,
         )
 
     def extract(self, image_input) -> OCRResult:
@@ -38,9 +39,9 @@ class PaddleOCRService:
             OCRResult with text + bounding boxes, y-sorted top-to-bottom.
         """
         raw_result = self.ocr.ocr(image_input, cls=True)
-        # for i in raw_result:
-        #     print(i)
-        print(raw_result[0][1])
+        # print(raw_result)
+        for i in raw_result:
+            print(i)
         return self._convert_result(raw_result)
 
     # ── Internal ──────────────────────────────────────────────────────────────

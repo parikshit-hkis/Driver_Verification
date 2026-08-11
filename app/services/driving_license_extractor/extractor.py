@@ -2,42 +2,22 @@
 Driving Licence Extractor
 =========================
 Extracts and normalizes:
-  - Licence number (Gujarat GJ format)
-  - Full name + split
-  - Date of birth
-  - Issue date & expiry date
-  - Vehicle classes (MCWG, LMV, HMV, HPMV, TRANS, etc.)
-  - Blood group
-  - Issuing authority
+  - Licence number (All-India DL formats: GJ, UP, MH, RJ, KA, DL, etc.)
+  - Full name (Given Name + Surname)
+  - Date of birth (ISO YYYY-MM-DD)
+  - Issue date & expiry date / validity (ISO YYYY-MM-DD)
+  - Vehicle classes (MCWG, LMV, HMV, HPMV, TRANS, 3W-CAB, LMV-CAB, LMV-NT, etc.)
 
-Supports:
-  - Front side (name, DOB, DL no, issue/expiry)
-  - Back side (vehicle classes table, transport validity)
-  - Both sides merged (call extract() on combined OCR result)
-
-Gujarat DL Layout (front):
-  - Top: "TRANSPORT DEPARTMENT, GUJARAT STATE" / "DRIVING LICENCE"
-  - Licence No: GJ01 20210012345
-  - Name: Patel Jay Dhansukhbhai
-  - S/O: Father's name
-  - DOB: DD/MM/YYYY
-  - Date of Issue: DD/MM/YYYY
-  - Validity (NT): DD/MM/YYYY
-
-Gujarat DL Layout (back):
-  - Table with columns: Class of Vehicle | Date of Issue | Validity Upto
-  - Rows: MCWG, LMV, HMV etc.
-  - Blood Group: A+
-  - Issuing Authority: RTO AHMEDABAD
-
-OCR challenges handled:
-  - DL number split across boxes (GJ01 | 20210012345)
-  - Vehicle class table rows captured as separate text boxes
-  - Date in "Validity NT" vs "Validity TR" columns
+Features:
+  1. Side-isolated processing (extract_dl) preventing back-side OCR noise from overwriting front-side fields.
+  2. Multi-side merging: Union of unique vehicle classes across front and back sides.
+  3. Comprehensive Validity & Expiry parsing: Supports "Validity (NT)", "Validity", "Valid Till", "Valid Upto", "Valid To", "Expiry Date", "EXP", "VAL", and tabular headers.
+  4. Old DL support: Extracts vehicle classes from tables and upper-left back-side regions below licence numbers.
+  5. Bounding box spatial reasoning and rejection of side margin noise.
 """
 
 import re
-from typing import List, Optional, Set
+from typing import List, Optional, Set, Tuple
 
 from app.models.ocr_models import OCRResult, OCRText
 from app.services.base_extractor import BaseExtractor
@@ -45,486 +25,521 @@ from app.services.driving_license_extractor.models import DrivingLicenceData
 from app.utils.normalizer import normalize_dob, normalize_date, normalize_dl_number, normalize_name
 
 
-# ── Gujarat DL number pattern ─────────────────────────────────────────────────
-# Formats seen on real cards:
-#   GJ01 20210012345
-#   GJ-01-2021-0012345
-#   GJ0120210012345
+# ── All-India DL number pattern ──────────────────────────────────────────────
 _DL_REGEX = re.compile(
-    r"\b(GJ\s*[-]?\s*\d{2}\s*[-]?\s*\d{4}\s*[-]?\s*\d{7})\b",
+    r"\b([A-Z]{2}\s*[-]?\s*\d{2}[A-Z0-9]?\s*[-]?\s*\d{4}\s*[-]?\s*\d{7})\b",
     re.IGNORECASE,
 )
 
-# Known vehicle class codes on Indian DLs
+# Known vehicle class codes on Indian DLs (COV removed as it is a header, not a vehicle class)
 _VEHICLE_CLASSES: Set[str] = {
-    "MCWG", "MCWOG", "LMV", "LMV-NT", "LMV-TR",
+    "MCWG", "MCWOG", "LMV", "LMV-NT", "LMV-TR", "LMV-CAB", "LMVCAB",
     "HMV", "HPMV", "HGMV", "MGV", "HTV",
     "TRANS", "TRANSPORT",
-    "3W-NT", "3W-TR", "3WNT", "3WTR",
-    "FVG", "ADAPTED",
+    "3W-NT", "3W-TR", "3WNT", "3WTR", "3W-CAB", "3WCAB",
+    "FVG", "ADAPTED", "INVCR", "PSV-BUS", "PSVBUS", "TRACTOR", "LDRXCV",
 }
 
-_BLOOD_GROUPS = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"}
-
-
-_GUJARAT_SURNAMES = [
-    "CHHATRALA", "PANCHAL", "PARIKH", "PATEL", "SUTARIYA", "GORASIYA",
-    "LAKHANI", "SHAH", "DESAI", "JOSHI", "MEHTA", "BHATT", "SOLANKI",
-    "RATHOD", "TRIVEDI", "THAKKAR", "CHAUDHARI", "DAVE", "SONI", "VORA",
-    "MODI", "JAIN", "SHARMA", "VERMA", "GUPTA", "SINGH", "YADAV",
+_VC_PATTERNS = [
+    (re.compile(r"\bLMV\s*[\(\-]?\s*NT\b", re.IGNORECASE), "LMV-NT"),
+    (re.compile(r"\bLMV\s*[\(\-]?\s*TR\b", re.IGNORECASE), "LMV-TR"),
+    (re.compile(r"\bLMV\s*[\(\-]?\s*CAB\b", re.IGNORECASE), "LMV-CAB"),
+    (re.compile(r"\b3W\s*[\(\-]?\s*CAB\b", re.IGNORECASE), "3W-CAB"),
+    (re.compile(r"\b3W\s*[\(\-]?\s*NT\b", re.IGNORECASE), "3W-NT"),
+    (re.compile(r"\b3W\s*[\(\-]?\s*TR\b", re.IGNORECASE), "3W-TR"),
+    (re.compile(r"\bMCWG\b", re.IGNORECASE), "MCWG"),
+    (re.compile(r"\bMCWOG\b|\bMCOG\b|\bM/CYC(?:LE)?\b", re.IGNORECASE), "MCWOG"),
+    (re.compile(r"\bLMV\b", re.IGNORECASE), "LMV"),
+    (re.compile(r"\bHMV\b", re.IGNORECASE), "HMV"),
+    (re.compile(r"\bHPMV\b", re.IGNORECASE), "HPMV"),
+    (re.compile(r"\bHGMV\b", re.IGNORECASE), "HGMV"),
+    (re.compile(r"\bHTV\b", re.IGNORECASE), "HTV"),
+    (re.compile(r"\bTRANS(?:PORT)?\b", re.IGNORECASE), "TRANS"),
+    (re.compile(r"\bADAPTED\b|\bINVCR\b", re.IGNORECASE), "ADAPTED"),
+    (re.compile(r"\bPSV[\-\s]?BUS\b", re.IGNORECASE), "PSV-BUS"),
+    (re.compile(r"\bTRACTOR\b", re.IGNORECASE), "TRACTOR"),
 ]
 
+_EXPIRY_KEYWORDS = [
+    "VALIDITY(NT)", "VALIDITY (NT)", "VALIDITY NT", "VALIDITY-NT",
+    "VALIDITY(TR)", "VALIDITY (TR)", "VALIDITY TR", "VALIDITY-TR",
+    "VALIDITY", "VALID TILL", "VALID UPTO", "VALID TO", "VALID UNTIL",
+    "EXPIRY DATE", "EXPIRY", "EXP DATE", "EXPIRES ON", "EXPIRES", "EXP",
+    "VAL DATE", "VAL TILL", "VAL UPTO", "VAL", "VALID","NT","Valie",
+]
 
-def parse_dl_name(name_str: str) -> dict:
-    if not name_str:
-        return {"full_name": None, "first_name": None, "middle_name": None, "last_name": None}
-
-    cleaned = re.sub(r"[^A-Za-z\s'\.]", " ", name_str)
-    words = [w for w in cleaned.split() if len(w) > 0]
-    words = [w.title() if len(w) > 1 else w.upper() for w in words]
-
-    if not words:
-        return {"full_name": None, "first_name": None, "middle_name": None, "last_name": None}
-
-    # If OCR merged words together e.g. "RAIVCHHATRALA"
-    if len(words) == 1:
-        single = words[0].upper()
-        matched_surname = None
-        for s in _GUJARAT_SURNAMES:
-            if single.endswith(s) and len(single) > len(s):
-                matched_surname = s
-                break
-
-        if matched_surname:
-            prefix = single[:-len(matched_surname)]
-            surname = matched_surname.title()
-            # If prefix ends with initial e.g. "RAIV" -> "RAI" / "RAJ" + "V"
-            if len(prefix) > 1:
-                given = prefix[:-1].title()
-                initial = prefix[-1].upper()
-                if given.upper() in ["RAI", "RAIV"]:
-                    given = "Raj"
-                full_name = f"{given} {initial} {surname}"
-                return {
-                    "full_name": full_name,
-                    "first_name": surname,
-                    "middle_name": given,
-                    "last_name": initial,
-                }
-            else:
-                full_name = f"{prefix.title()} {surname}"
-                return {
-                    "full_name": full_name,
-                    "first_name": surname,
-                    "middle_name": prefix.title(),
-                    "last_name": None,
-                }
-        else:
-            return {"full_name": words[0].title(), "first_name": words[0].title(), "middle_name": None, "last_name": None}
-
-    full_name = " ".join(words)
-
-    if len(words) == 2:
-        return {"full_name": full_name, "first_name": words[1], "middle_name": words[0], "last_name": None}
-
-    if len(words) == 3:
-        w0, w1, w2 = words[0], words[1], words[2]
-        if len(w1) == 1: # e.g. "Parikshit K Panchal"
-            surname = w2
-            given = w0
-            initial = w1
-        elif len(w2) == 1: # e.g. "Chatrala Raj V"
-            surname = w0
-            given = w1
-            initial = w2
-        else: # e.g. "Panchal Parikshit Kamleshbhai"
-            surname = w0
-            given = w1
-            initial = w2
-
-        return {
-            "full_name": full_name,
-            "first_name": surname,      # Surname e.g. Panchal / Chatrala
-            "middle_name": given,       # Given Name e.g. Parikshit / Raj
-            "last_name": initial,       # Father/Initial e.g. K / V / Kamleshbhai
-        }
-
-    # 4+ words
-    return {
-        "full_name": full_name,
-        "first_name": words[-1],
-        "middle_name": words[0],
-        "last_name": " ".join(words[1:-1]),
-    }
+_NAME_BLACKLIST = {
+    "UNION", "INDIAN", "DRIVING", "LICENCE", "LICENSE", "GOVERNMENT", "GOVT",
+    "STATE", "TRANSPORT", "DEPARTMENT", "AUTHORITY", "REGISTERING", "ISSUING",
+    "DATE", "ISSUE", "VALIDITY", "EXPIRE", "EXPIRY", "BIRTH", "BLOOD", "GROUP",
+    "ORGAN", "DONOR", "ADDRESS", "FORM", "RULE", "CLASS", "VEHICLE", "CATEGORY",
+    "CODE", "BADGE", "NUMBER", "EMERGENCY", "CONTACT", "SIGNATURE", "HOLDER",
+    "MVSD", "UP66", "UTTAR", "PRADESH", "GUJARAT", "MAHARASHTRA", "RAJASTHAN",
+    "HOLDER'S SIGNATURE", "HOLDER SIGNATURE", "'S SIGNATURE",
+}
 
 
 class DrivingLicenceExtractor(BaseExtractor):
     """Extracts structured data from Driving Licence OCR output."""
 
+    def extract_dl(self, ocr_front: Optional[OCRResult], ocr_back: Optional[OCRResult]) -> DrivingLicenceData:
+        """Process front and back sides independently to avoid cross-side contamination."""
+        data_front = self._extract_side(ocr_front, side="front") if ocr_front else None
+        data_back = self._extract_side(ocr_back, side="back") if ocr_back else None
+
+        if data_front is None and data_back is None:
+            return DrivingLicenceData()
+        if data_front is None:
+            return data_back
+        if data_back is None:
+            return data_front
+
+        merged = DrivingLicenceData()
+        merged.licence_number = data_front.licence_number or data_back.licence_number
+        merged.full_name = data_front.full_name or data_back.full_name
+        merged.date_of_birth = data_front.date_of_birth or data_back.date_of_birth
+        merged.issue_date = data_front.issue_date or data_back.issue_date
+        merged.expiry_date = data_front.expiry_date or data_back.expiry_date
+        merged.vehicle_classes = self._combine_vehicle_classes(
+            data_front.vehicle_classes, data_back.vehicle_classes
+        )
+
+        # Merge diagnostics from both sides — only keep diagnostics for fields still missing
+        for key, reason in data_front.field_diagnostics.items():
+            if getattr(merged, key, None) is None or (isinstance(getattr(merged, key, None), list) and not getattr(merged, key)):
+                merged.field_diagnostics[key] = reason
+        for key, reason in data_back.field_diagnostics.items():
+            if getattr(merged, key, None) is None or (isinstance(getattr(merged, key, None), list) and not getattr(merged, key)):
+                if key not in merged.field_diagnostics:
+                    merged.field_diagnostics[key] = reason
+
+        return merged
+
     def extract(self, ocr_result: OCRResult) -> DrivingLicenceData:
-        texts = ocr_result.texts
+        """Single OCR result entry point for backward compatibility."""
+        return self._extract_side(ocr_result, side="unknown")
+
+    def _extract_side(self, ocr_result: Optional[OCRResult], side: str = "unknown") -> DrivingLicenceData:
+        if not ocr_result or not ocr_result.texts:
+            return DrivingLicenceData()
+
+        # Filter out vertical side margin text boxes (x > 2550)
+        filtered_texts = [t for t in ocr_result.texts if t.bounding_box.min_x <= 2550]
+        texts = filtered_texts if filtered_texts else ocr_result.texts
         data = DrivingLicenceData()
 
         data.licence_number = self.extract_licence_number(texts)
-        data.dob = self.extract_dob(texts)
+        data.date_of_birth = self.extract_dob(texts)
 
         name_raw = self.extract_name_raw(texts)
         if name_raw:
-            parsed = parse_dl_name(name_raw)
+            parsed = normalize_name(name_raw)
             data.full_name = parsed["full_name"]
-            data.first_name = parsed["first_name"]
-            data.middle_name = parsed["middle_name"]
-            data.last_name = parsed["last_name"]
 
-        data.issue_date = self.extract_issue_date(texts)
-        data.expiry_date = self.extract_expiry_date(texts)
-        data.vehicle_classes = self.extract_vehicle_classes(texts)
-        data.blood_group = self.extract_blood_group(texts)
-        data.issuing_authority = self.extract_issuing_authority(texts)
+        # Parse tabular issue & expiry/validity dates
+        issue_dt, expiry_dt = self._extract_tabular_dates(texts, data.date_of_birth)
+        data.issue_date = issue_dt or self.extract_issue_date(texts)
+        data.expiry_date = expiry_dt or self.extract_expiry_date(texts)
+
+        # Standalone date-pair fallback: find all dates and pick issue/expiry by chronological order
+        if not data.issue_date or not data.expiry_date:
+            self._fallback_date_pair(texts, data)
+
+        data.vehicle_classes = self.extract_vehicle_classes(texts, side=side)
+
+        # Generate diagnostics for missing fields
+        self._generate_diagnostics(data, texts)
 
         return data
+
+    def _fallback_date_pair(self, texts: List[OCRText], data: DrivingLicenceData) -> None:
+        """Find all date-like text on the DL and assign issue/expiry by chronological order."""
+        date_pat = r"(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4})"
+        all_dates = []
+        for item in texts:
+            for m in re.finditer(date_pat, item.text):
+                parsed = normalize_date(m.group(1))
+                if parsed and parsed != "0000-00-00" and parsed != data.date_of_birth:
+                    all_dates.append((parsed, item.bounding_box.min_y))
+
+        # Deduplicate and sort chronologically
+        unique_dates = sorted(set(d[0] for d in all_dates))
+        if len(unique_dates) >= 2 and not data.issue_date and not data.expiry_date:
+            # Earliest = issue, Latest = expiry
+            data.issue_date = unique_dates[0]
+            data.expiry_date = unique_dates[-1]
+        elif len(unique_dates) == 1:
+            if not data.expiry_date:
+                data.expiry_date = unique_dates[0]
+
+    def _generate_diagnostics(self, data: DrivingLicenceData, texts: List[OCRText]) -> None:
+        """For every missing field, explain why OCR failed to extract it."""
+        if not texts:
+            for field in ["licence_number", "full_name", "date_of_birth", "issue_date", "expiry_date", "vehicle_classes"]:
+                data.field_diagnostics[field] = "OCR returned no text from image"
+            return
+
+        avg_conf = sum(t.confidence for t in texts) / len(texts)
+        low_quality_msg = ""
+        if avg_conf < 0.5:
+            low_quality_msg = f"Low OCR confidence ({avg_conf:.0%}); image may be blurry or low quality"
+
+        if not data.licence_number:
+            data.field_diagnostics["licence_number"] = low_quality_msg or "No DL number pattern (SS-RR-YYYY-NNNNNNN) found in OCR text"
+
+        if not data.full_name:
+            data.field_diagnostics["full_name"] = low_quality_msg or "No plausible name text found near 'Name' label"
+
+        if not data.date_of_birth:
+            data.field_diagnostics["date_of_birth"] = low_quality_msg or "No date found near DOB/Birth label"
+
+        if not data.issue_date:
+            data.field_diagnostics["issue_date"] = low_quality_msg or "No issue date found; tabular header or 'Date of Issue' label not detected"
+
+        if not data.expiry_date:
+            data.field_diagnostics["expiry_date"] = low_quality_msg or "No expiry/validity date found; validity label not detected in OCR text"
+
+        if not data.vehicle_classes:
+            data.field_diagnostics["vehicle_classes"] = low_quality_msg or "No vehicle class codes (MCWG, LMV, etc.) found in OCR text"
 
     # ── Licence Number ────────────────────────────────────────────────────────
 
     def extract_licence_number(self, texts: List[OCRText]) -> Optional[str]:
-        """
-        Extract Gujarat DL number.
-
-        Handles:
-          - Single box: "GJ0120210012345"
-          - Split boxes: "GJ01" + "20210012345" (common on some card types)
-          - With separators: "GJ-01-2021-0012345"
-          - Label nearby: "Licence No" / "DL No" / "D/L No"
-        """
-        # 1. Label-proximity
         label_keywords = [
             "Licence No", "License No", "DL No", "D/L No",
             "DL Number", "Licence Number", "License Number",
-            "Driving Licence No",
+            "Driving Licence No", "DLNO", "DL NO", "DLNo",
         ]
-        raw = self.find_value_near_label(texts, label_keywords, max_distance=400.0)
+        raw = self.find_value_near_label(texts, label_keywords, max_distance=600.0, same_row_tolerance=40.0)
         if raw:
-            normalized = normalize_dl_number(re.sub(r"\s+", "", raw.upper()))
-            if normalized:
-                return normalized
+            norm = normalize_dl_number(raw)
+            if norm:
+                return norm
 
-        # 2. Regex scan across all text boxes
         for item in texts:
             m = _DL_REGEX.search(item.text)
             if m:
-                return normalize_dl_number(m.group(1))
+                norm = normalize_dl_number(m.group(1))
+                if norm:
+                    return norm
 
-        # 3. Scan joined text (handles split boxes)
-        full = "".join(t.text.upper() for t in texts)
+        full = " ".join(t.text for t in texts)
         m = _DL_REGEX.search(full)
         if m:
-            return normalize_dl_number(m.group(1))
-
-        # 4. Looser GJ pattern
-        for item in texts:
-            cleaned = re.sub(r"[\s\-]", "", item.text.upper())
-            if re.match(r"GJ\d{10,13}$", cleaned):
-                return normalize_dl_number(cleaned)
+            norm = normalize_dl_number(m.group(1))
+            if norm:
+                return norm
 
         return None
 
     # ── Date of Birth ─────────────────────────────────────────────────────────
 
     def extract_dob(self, texts: List[OCRText]) -> Optional[str]:
-        label_keywords = [
-            "DOB", "Date of Birth", "D.O.B", "Date of Birth",
-            "Birth Date", "जन्म तिथि",
-        ]
+        date_pat = r"(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4})"
 
-        raw = self.find_value_near_label(texts, label_keywords)
+        # 1. Inline check e.g. "Date of Birth:01-12-2000"
+        for item in texts:
+            up = item.text.upper()
+            if any(kw in up for kw in ["DOB", "BIRTH", "BIRT", "BRTH"]):
+                m = re.search(date_pat, item.text)
+                if m:
+                    parsed = normalize_dob(m.group(1))
+                    if parsed:
+                        return parsed
+
+        # 2. Label proximity search with tight horizontal row matching
+        dob_label = None
+        for t in texts:
+            clean = t.text.upper().strip().rstrip(":").strip()
+            if clean in ["DATE OF BIRTH", "DOB", "D.O.B", "BIRTH DATE", "DATE OF BIRT"]:
+                dob_label = t
+                break
+
+        if dob_label:
+            l_cy = dob_label.bounding_box.center_y
+            l_x2 = dob_label.bounding_box.max_x
+            cands = []
+            for t in texts:
+                if t is dob_label or t.bounding_box.min_x > 2500:
+                    continue
+                icy = t.bounding_box.center_y
+                ix1 = t.bounding_box.min_x
+                if abs(icy - l_cy) <= 45.0 and ix1 >= l_x2 - 20:
+                    dt = normalize_dob(t.text)
+                    if dt:
+                        cands.append((max(0.0, ix1 - l_x2), dt))
+            if cands:
+                cands.sort(key=lambda c: c[0])
+                return cands[0][1]
+
+        # 3. Standard label proximity fallback
+        label_keywords = [
+            "DOB", "Date of Birth", "D.O.B", "Date Of Birth",
+            "Birth Date", "Date Of Birt", "जन्म तिथि",
+        ]
+        raw = self.find_value_near_label(texts, label_keywords, direction="auto", max_distance=600.0, same_row_tolerance=50.0)
         if raw:
             parsed = normalize_dob(raw)
             if parsed:
                 return parsed
-
-        # Regex fallback — date in a box that also has "DOB" or "BIRTH"
-        date_pat = r"\b(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4})\b"
-        for item in texts:
-            if any(kw in item.text.upper() for kw in ["DOB", "BIRTH"]):
-                m = re.search(date_pat, item.text)
-                if m:
-                    return normalize_dob(m.group(1))
 
         return None
 
     # ── Name ─────────────────────────────────────────────────────────────────
 
     def extract_name_raw(self, texts: List[OCRText]) -> Optional[str]:
-        """
-        Extract holder's name.
-
-        Handles:
-          1. Single OCR box containing label + value e.g. "Name:RAIVCHHATRALA" or "NamePARIKSHIT K PANCHAL"
-          2. Label-proximity (label in one box, name in adjacent/below box)
-          3. Name printed above S/O, D/O, W/O label
-        """
-        # 1. Check for single OCR box with inline label e.g. "Name:RAIVCHHATRALA"
+        # 1. Inline label check e.g. "Name:RAJAN KUMAR SAROJ"
         for item in texts:
             up = item.text.upper().strip()
-            m = re.match(r"^(?:NAME|HOLDER|APPLICANT)[\s:\-/]*([A-Z\.\s']{3,})", up)
+            m = re.match(r"^(?:NAME|HOLDER|APPLICANT|MAME)[\s:\-/]*([A-Z\.\s']{3,})", up)
             if m:
                 val = m.group(1).strip()
                 val_clean = self._strip_name_prefix(val)
                 if self._is_plausible_name(val_clean):
                     return val_clean
 
-        # 2. Label-proximity
-        label_keywords = [
-            "Name", "NAME", "Holder", "Applicant",
-            "Applicant Name", "Holder Name",
-        ]
-        candidate = self.find_value_near_label(
-            texts, label_keywords, direction="auto", max_distance=500.0
-        )
-        if candidate:
-            candidate = self._strip_name_prefix(candidate)
-            if self._is_plausible_name(candidate):
-                return candidate
+        # 2. Strict label matching near "Name:", "MAME", "Holder"
+        name_label = None
+        for t in texts:
+            clean = t.text.upper().strip().rstrip(":").strip()
+            if clean in ["NAME", "MAME", "APPLICANT NAME", "HOLDER NAME"]:
+                name_label = t
+                break
 
-        # 3. Look for text immediately ABOVE "S/O" / "D/O" / "W/O" label
-        rel_label = self._find_label_box(texts, ["S/O", "D/O", "W/O", "S/W/D", "Son/Daughter"])
+        if name_label:
+            l_cy = name_label.bounding_box.center_y
+            l_x2 = name_label.bounding_box.max_x
+            cands = []
+            for t in texts:
+                if t is name_label or t.bounding_box.min_x > 2500:
+                    continue
+                icy = t.bounding_box.center_y
+                ix1 = t.bounding_box.min_x
+                if abs(icy - l_cy) <= 45.0 and ix1 >= l_x2 - 20:
+                    cleaned = self._strip_name_prefix(t.text)
+                    if self._is_plausible_name(cleaned):
+                        cands.append((max(0.0, ix1 - l_x2), cleaned))
+            if cands:
+                cands.sort(key=lambda c: c[0])
+                return cands[0][1]
+
+        # 3. Look for text box immediately ABOVE "S/O" / "D/O" / "W/O" label
+        rel_label = self._find_label_box(texts, ["S/O", "D/O", "W/O", "S/W/D", "Son/Daughter", "Sor/Daughter", "Son/Daughter/Wife of", "SonDavghter"])
         if rel_label:
             rel_y = rel_label.bounding_box.min_y
             above_candidates = [
                 t for t in texts
-                if t.bounding_box.max_y < rel_y + 5
-                and t.bounding_box.max_y > rel_y - 60
+                if t.bounding_box.max_y < rel_y + 10
+                and t.bounding_box.max_y > rel_y - 80
             ]
             for t in above_candidates:
                 cleaned = self._strip_name_prefix(t.text)
                 if self._is_plausible_name(cleaned):
                     return cleaned
 
-        # 4. High-confidence heuristic
+        # 4. Fallback search across sorted text items requiring multi-word or long name strings
         sorted_texts = sorted(texts, key=lambda t: t.confidence, reverse=True)
         for item in sorted_texts:
             cleaned = self._strip_name_prefix(item.text)
-            if self._is_plausible_name(cleaned) and item.confidence >= 0.80:
-                return cleaned
+            if self._is_plausible_name(cleaned) and item.confidence >= 0.85:
+                words = cleaned.split()
+                if len(words) >= 2 and len(cleaned) >= 6:
+                    return cleaned
 
         return None
 
     @staticmethod
     def _strip_name_prefix(text: str) -> str:
-        """
-        Strip common label prefixes OCR merges into the name value.
-        e.g. "NameParikshit K Panchal"  → "Parikshit K Panchal"
-             "Name: Panchal Keval"      → "Panchal Keval"
-        """
         stripped = re.sub(
-            r'^(?:name|holder|applicant)[\s:\-/]*',
+            r'^(?:name|holder|applicant|mame)[\s:\-/]*',
             '',
             text,
             flags=re.IGNORECASE,
         ).strip()
         return stripped if stripped else text
 
-    # ── Date of Birth ─────────────────────────────────────────────────────────
+    # ── Tabular Issue & Expiry Dates ──────────────────────────────────────────
 
-    def extract_dob(self, texts: List[OCRText]) -> Optional[str]:
-        # 1. Inline check for merged string e.g. "Date Of Birta8-02-2006" or "DOB: 18-02-2006"
-        for item in texts:
-            up = item.text.upper()
-            if any(kw in up for kw in ["DOB", "BIRTH", "BIRT"]):
-                cleaned_text = re.sub(r"BIRTA(\d)", r"BIRTH 1\1", item.text, flags=re.I)
-                m = re.search(r"(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4})", cleaned_text)
-                if m:
-                    parsed = normalize_dob(m.group(1))
-                    if parsed:
-                        return parsed
+    def _extract_tabular_dates(self, texts: List[OCRText], dob_val: Optional[str] = None) -> Tuple[Optional[str], Optional[str]]:
+        issue_date = None
+        expiry_date = None
 
-        # 2. Label proximity search
-        label_keywords = [
-            "DOB", "Date of Birth", "D.O.B", "Date Of Birth",
-            "Birth Date", "Date Of Birt", "जन्म तिथि",
-        ]
-        raw = self.find_value_near_label(texts, label_keywords)
-        if raw:
-            parsed = normalize_dob(raw)
-            if parsed:
-                return parsed
+        header_box = None
+        for t in texts:
+            up = t.text.upper()
+            if ("ISSUE" in up or "DOI" in up) and ("VALIDITY" in up or "VALID" in up or "EXPIRY" in up) and "GOVERNMENT" not in up:
+                header_box = t
+                break
 
-        return None
+        # Fallback: check if header box is just VALIDITY / EXPIRY / VALID TILL without ISSUE in same box
+        if not header_box:
+            for t in texts:
+                up = t.text.upper()
+                if any(kw in up for kw in ["VALIDITY", "VALID TILL", "VALID UPTO", "EXPIRY DATE"]) and "GOVERNMENT" not in up:
+                    header_box = t
+                    break
 
-    # ── Issue Date ────────────────────────────────────────────────────────────
+        if header_box:
+            ly2 = header_box.bounding_box.max_y
+            row_dates = []
+            for t in texts:
+                if t is header_box or t.bounding_box.min_x > 2500:
+                    continue
+                dt = normalize_date(t.text)
+                if dt and dt != "0000-00-00" and dt != dob_val:
+                    iy1 = t.bounding_box.min_y
+                    if 0 <= iy1 - ly2 <= 200:
+                        row_dates.append((t.bounding_box.min_x, dt))
+            row_dates.sort(key=lambda d: d[0])
+            if len(row_dates) >= 2:
+                issue_date = row_dates[0][1]
+                expiry_date = row_dates[1][1]
+            elif len(row_dates) == 1:
+                expiry_date = row_dates[0][1]
+
+        return issue_date, expiry_date
+
+    # ── Issue Date Fallback ───────────────────────────────────────────────────
 
     def extract_issue_date(self, texts: List[OCRText]) -> Optional[str]:
-        # Look for dates directly below "Issue Date" label box
-        issue_label = self._find_label_box(texts, ["Issue Date", "Date of Issue", "Date Of First Issue", "DOI"])
-        if issue_label:
-            lx = issue_label.bounding_box.center_x
-            ly2 = issue_label.bounding_box.max_y
-            for item in texts:
-                if item is issue_label:
-                    continue
-                if abs(item.bounding_box.center_x - lx) < 60 and 0 < item.bounding_box.min_y - ly2 < 50:
-                    m = re.search(r"(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4})", item.text)
-                    if m:
-                        parsed = normalize_date(m.group(1))
-                        if parsed:
-                            return parsed
+        date_pat = r"(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4}|\d{4}[/\-\.]\d{1,2}[/\-\.]\d{1,2})"
 
-        # Fallback inline or regex search
         for item in texts:
             up = item.text.upper()
-            if "ISSUE" in up or "FIRST ISSUE" in up:
-                m = re.search(r"(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4})", item.text)
+            if any(kw in up for kw in ["DOI", "ISSUE DATE", "DATE OF ISSUE"]) and "GOVERNMENT" not in up and "FIRST" not in up:
+                m = re.search(date_pat, item.text)
                 if m:
                     parsed = normalize_date(m.group(1))
                     if parsed:
                         return parsed
 
+        label_keywords = ["Issue Date", "Date of Issue", "DOI", "Date of 1st Issue"]
+        raw = self.find_value_near_label(texts, label_keywords, direction="auto", max_distance=500.0, same_row_tolerance=40.0)
+        if raw:
+            parsed = normalize_date(raw)
+            if parsed:
+                return parsed
+
         return None
 
-    # ── Expiry Date ───────────────────────────────────────────────────────────
+    # ── Expiry / Validity Date Fallback ───────────────────────────────────────
 
     def extract_expiry_date(self, texts: List[OCRText]) -> Optional[str]:
-        """
-        Extract NT (Non-Transport) validity / Expiry date.
-        """
-        # Look for dates directly below "ValidityNT" or "Validity" or "Validity TR"
-        val_label = self._find_label_box(texts, ["ValidityNT", "Validity NT", "Validity", "Valid Till", "Expiry Date", "Valid Upto"])
-        if val_label:
-            lx = val_label.bounding_box.center_x
-            ly2 = val_label.bounding_box.max_y
-            for item in texts:
-                if item is val_label:
-                    continue
-                if abs(item.bounding_box.center_x - lx) < 80 and 0 < item.bounding_box.min_y - ly2 < 50:
-                    m = re.search(r"(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4})", item.text)
-                    if m:
-                        parsed = normalize_date(m.group(1))
-                        if parsed:
-                            return parsed
+        date_pat = r"(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4}|\d{4}[/\-\.]\d{1,2}[/\-\.]\d{1,2})"
 
-        # Fallback: scan all dates on card and pick the one with largest year (expiry is future)
-        dates = []
+        # 1. Inline pattern check: OCR text box contains both validity/expiry label and a date
         for item in texts:
-            m = re.search(r"(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4})", item.text)
-            if m:
-                parsed = normalize_date(m.group(1))
-                if parsed:
-                    dates.append(parsed)
+            up = item.text.upper()
+            if "GOVERNMENT" in up or "AUTHORITY" in up:
+                continue
+            if any(kw in up for kw in _EXPIRY_KEYWORDS):
+                m = re.search(date_pat, item.text)
+                if m:
+                    parsed = normalize_date(m.group(1))
+                    if parsed and parsed != "0000-00-00":
+                        return parsed
 
-        if dates:
-            dates.sort(reverse=True)
-            return dates[0]
+        # 2. Label proximity search with comprehensive validity & expiry keywords
+        raw = self.find_value_near_label(texts, _EXPIRY_KEYWORDS, direction="auto", max_distance=500.0, same_row_tolerance=40.0)
+        if raw:
+            parsed = normalize_date(raw)
+            if parsed and parsed != "0000-00-00":
+                return parsed
+
+        # 3. Spatial scan near label box matching any expiry/validity keyword
+        exp_label = self._find_label_box(texts, _EXPIRY_KEYWORDS)
+        if exp_label:
+            l_y2 = exp_label.bounding_box.max_y
+            l_cy = exp_label.bounding_box.center_y
+            cands = []
+            for item in texts:
+                if item is exp_label or item.bounding_box.min_x > 2500:
+                    continue
+                parsed = normalize_date(item.text)
+                if parsed and parsed != "0000-00-00":
+                    dy = abs(item.bounding_box.center_y - l_cy)
+                    dx = max(0.0, item.bounding_box.min_x - exp_label.bounding_box.max_x)
+                    if dy <= 45.0 or (item.bounding_box.min_y >= l_y2 - 5 and item.bounding_box.min_y - l_y2 <= 150):
+                        cands.append((dy + dx * 0.1, parsed))
+            if cands:
+                cands.sort(key=lambda c: c[0])
+                return cands[0][1]
 
         return None
 
     # ── Vehicle Classes ───────────────────────────────────────────────────────
 
-    def extract_vehicle_classes(self, texts: List[OCRText]) -> List[str]:
-        found: List[str] = []
+    def extract_vehicle_classes(self, texts: List[OCRText], side: str = "unknown") -> List[str]:
+        found: Set[str] = set()
 
+        # 1. Regex pattern search over all text items (handles compound strings like "LMV-NT", "3W-CAB", "COV: MCWG LMV")
         for item in texts:
-            text_clean = item.text.upper().strip()
-
-            if text_clean in _VEHICLE_CLASSES:
-                found.append(text_clean)
+            raw_up = item.text.upper().strip()
+            if "GOVERNMENT" in raw_up or "AUTHORITY" in raw_up:
                 continue
 
-            tokens = re.split(r"[,\s/]+", text_clean)
+            for pattern, vc_code in _VC_PATTERNS:
+                if pattern.search(raw_up):
+                    found.add(vc_code)
+
+            # Direct token match against known classes (ignoring COV)
+            tokens = re.split(r"[\s,;/\\\-\.]+", raw_up)
             for token in tokens:
-                token = token.strip()
-                if token in _VEHICLE_CLASSES:
-                    found.append(token)
+                token_clean = token.strip()
+                if token_clean in _VEHICLE_CLASSES and token_clean != "COV":
+                    found.add(self._canonical_vc(token_clean))
 
-        seen = set()
-        result = []
-        for vc in found:
-            if vc not in seen:
-                seen.add(vc)
-                result.append(vc)
-
-        return result
-
-    # ── Blood Group ───────────────────────────────────────────────────────────
-
-    def extract_blood_group(self, texts: List[OCRText]) -> Optional[str]:
-        # 1. Inline check for combined label+value e.g. "Blood Group:O+"
+        # 2. Table and upper-left region check (especially for old DL back side under licence number)
+        is_back = (side == "back")
         for item in texts:
-            up = item.text.upper().strip()
-            if "BLOOD" in up or "B.G" in up:
-                for bg in _BLOOD_GROUPS:
-                    if bg in up:
-                        return bg
+            raw_up = item.text.upper().strip()
+            # If item is in upper-left quadrant on back side (or anywhere in table rows)
+            in_upper_left = is_back and item.bounding_box.min_x < 1600 and item.bounding_box.min_y < 1600
+            if in_upper_left:
+                for pattern, vc_code in _VC_PATTERNS:
+                    if pattern.search(raw_up):
+                        found.add(vc_code)
 
-        # 2. Label proximity
-        raw = self.find_value_near_label(
-            texts, ["Blood Group", "B.G", "Blood Grp", "BG"]
+        return self._sort_vehicle_classes(list(found))
+
+    @staticmethod
+    def _canonical_vc(code: str) -> str:
+        mapping = {
+            "LMVNT": "LMV-NT",
+            "LMVTR": "LMV-TR",
+            "LMVCAB": "LMV-CAB",
+            "3WNT": "3W-NT",
+            "3WTR": "3W-TR",
+            "3WCAB": "3W-CAB",
+            "TRANSPORT": "TRANS",
+            "PSVBUS": "PSV-BUS",
+        }
+        return mapping.get(code, code)
+
+    @staticmethod
+    def _sort_vehicle_classes(classes: List[str]) -> List[str]:
+        order = ["MCWG", "MCWOG", "LMV", "LMV-NT", "LMV-TR", "LMV-CAB", "HMV", "HPMV", "HTV", "TRANS", "3W-NT", "3W-TR", "3W-CAB"]
+        return sorted(
+            list(set(classes)),
+            key=lambda c: order.index(c) if c in order else 99
         )
-        if raw:
-            raw_up = raw.upper().strip()
-            for bg in _BLOOD_GROUPS:
-                if bg in raw_up:
-                    return bg
 
-        # 3. Standalone regex scan
-        bg_pattern = r"\b(A|B|AB|O)[+\-]\b"
-        for item in texts:
-            m = re.search(bg_pattern, item.text.upper())
-            if m:
-                return m.group(0)
+    def _combine_vehicle_classes(self, vc_front: Optional[List[str]], vc_back: Optional[List[str]]) -> List[str]:
+        combined = set(vc_front or []) | set(vc_back or [])
+        return self._sort_vehicle_classes(list(combined))
 
-        return None
-
-    # ── Issuing Authority ────────────────────────────────────────────────────
-
-    def extract_issuing_authority(self, texts: List[OCRText]) -> Optional[str]:
-        """Extract issuing authority (e.g. 'ARTO BOTAD', 'RTO AHMEDABAD')."""
-        # 1. Direct scan for ARTO or RTO followed by place name
-        for item in texts:
-            up = item.text.upper().strip()
-            if re.search(r"\b(A?RTO\s+[A-Z]+)\b", up):
-                m = re.search(r"\b(A?RTO\s+[A-Z]+)\b", up)
-                return m.group(1)
-
-        # 2. Search below or near 'Licencing Authority' / 'Licensing Authority' / 'Issuing Authority'
-        label_keywords = [
-            "Licencing Authority", "Licensing Authority", "Issuing Authority",
-            "Issued By", "RTO",
-        ]
-        raw = self.find_value_near_label(texts, label_keywords, direction="below", max_distance=100.0)
-        if raw:
-            return raw.strip().upper()
-
-        raw_auto = self.find_value_near_label(texts, label_keywords, direction="auto", max_distance=200.0)
-        if raw_auto:
-            return raw_auto.strip().upper()
-
-        return None
-
-    # ── Helper ────────────────────────────────────────────────────────────────
-
-    _DL_NAME_BLACKLIST = {
-        "transport", "department", "gujarat", "state", "driving", "licence",
-        "license", "motor", "vehicle", "authority", "government", "india",
-        "non", "validity", "blood", "group", "class", "issue", "date",
-        # Common OCR false-positives
-        "emergency", "contact", "number", "badge", "address", "signature",
-        "holder", "applicant", "office", "rto", "regional", "district",
-        "renewal", "endorsement", "hazardous", "goods", "service",
-        "gj", "dl", "no", "co", "cov", "catg", "sr", "sign",
-    }
+    # ── Plausibility Helper ───────────────────────────────────────────────────
 
     def _is_plausible_name(self, text: str) -> bool:
-        text = text.strip()
-        if not text or any(c.isdigit() for c in text):
+        if not text:
             return False
-        words = text.split()
+        clean = text.upper().strip()
+        if clean in _NAME_BLACKLIST or any(w in clean for w in ["LICENCE", "UNION", "INDIAN", "UTTAR", "PRADESH", "GUJARAT", "GOVERNMENT", "SIGNATURE", "HOLDER"]):
+            return False
+        words = clean.split()
         if len(words) < 1 or len(words) > 5:
             return False
         for w in words:
-            if not w.replace(".", "").replace("'", "").replace(":", "").isalpha():
-                return False
-        lower = text.lower()
-        for bl in self._DL_NAME_BLACKLIST:
-            if bl in lower:
+            if not w.replace(".", "").replace("'", "").replace("-", "").isalpha():
                 return False
         return True

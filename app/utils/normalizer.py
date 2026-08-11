@@ -191,28 +191,36 @@ def normalize_pan_number(text: str) -> Optional[str]:
     return None
 
 
+# List of all Indian State and Union Territory 2-letter codes
+_ALL_INDIA_STATE_CODES = (
+    "AP|AR|AS|BR|CG|CT|GA|GJ|HR|HP|JH|KA|KL|MP|MH|MN|ML|MZ|NL|"
+    "OD|OR|PB|RJ|SK|TN|TS|TG|TR|UP|UK|UA|WB|AN|CH|DN|DD|DH|DL|JK|LA|LD|PY"
+)
+
+
 def normalize_dl_number(text: str) -> Optional[str]:
     """
-    Normalize Gujarat DL number.
-    Various input formats → ``GJ-RR-YYYY-NNNNNNN``
+    Normalize Indian Driving Licence (DL) number for ALL States & UTs.
+    Standard Sarathi format → ``SS-RR-YYYY-NNNNNNN``
 
     Examples:
+        MH0220180012345  →  MH-02-2018-0012345
+        DL-04-2020-0098765 → DL-04-2020-0098765
+        RJ14 2015 0043210 →  RJ-14-2015-0043210
         GJ0120210012345  →  GJ-01-2021-0012345
-        GJ-01-2021-0012345  →  GJ-01-2021-0012345
-        GJ01 2021 0012345   →  GJ-01-2021-0012345
     """
     if not text:
         return None
-    # Strip everything except alphanumeric
+
     cleaned = re.sub(r"[^A-Z0-9]", "", text.upper())
 
-    # GJ + 2-digit RTO + 4-digit year + 7-digit serial
-    m = re.fullmatch(r"(GJ)(\d{2})(\d{4})(\d{7})", cleaned)
+    # Standard Sarathi DL: 2-letter State code + 2-digit RTO + 4-digit Year + 7-digit Serial
+    m = re.fullmatch(r"([A-Z]{2})(\d{2})(\d{4})(\d{7})", cleaned)
     if m:
         return f"{m.group(1)}-{m.group(2)}-{m.group(3)}-{m.group(4)}"
 
-    # Accept as-is if starts with GJ (partial / non-standard)
-    if cleaned.startswith("GJ") and len(cleaned) >= 10:
+    # Accept any 2-letter state prefix followed by numbers/alphanumeric (minimum 10 chars)
+    if len(cleaned) >= 10 and re.match(r"^[A-Z]{2}\d", cleaned):
         return cleaned
 
     return None
@@ -220,22 +228,31 @@ def normalize_dl_number(text: str) -> Optional[str]:
 
 def normalize_rc_number(text: str) -> Optional[str]:
     """
-    Normalize Gujarat RC/registration number.
-    Format: ``GJ-RR-XX-NNNN``  (e.g. GJ-01-AB-1234)
+    Normalize Indian Vehicle Registration (RC) number for ALL States & UTs.
+    Formats:
+        State Series: ``SS-RR-XX-NNNN``  (e.g. MH-02-CD-1234, DL-03-AB-5678)
+        BH Series:    ``YY-BH-NNNN-XX``  (e.g. 22-BH-1234-AB)
 
     Accepts with or without separators.
     """
     if not text:
         return None
+
     cleaned = re.sub(r"[^A-Z0-9]", "", text.upper())
 
-    # GJ + 2-digit RTO + 1-2 letters + 4 digits
-    m = re.fullmatch(r"(GJ)(\d{2})([A-Z]{1,3})(\d{4})", cleaned)
-    if m:
-        return f"{m.group(1)}-{m.group(2)}-{m.group(3)}-{m.group(4)}"
+    # 1. BH Series (Bharat Series): YY + BH + 4 digits + 1-2 letters
+    m_bh = re.fullmatch(r"(\d{2})(BH)(\d{4})([A-Z]{1,2})", cleaned)
+    if m_bh:
+        return f"{m_bh.group(1)}-{m_bh.group(2)}-{m_bh.group(3)}-{m_bh.group(4)}"
 
-    # Looser match — starts with GJ
-    if cleaned.startswith("GJ") and len(cleaned) >= 8:
+    # 2. Standard State Series: 2-letter State code + 1-2 digit RTO + 1-3 letters + 4 digits
+    m_state = re.fullmatch(r"([A-Z]{2})(\d{1,2})([A-Z]{1,3})(\d{4})", cleaned)
+    if m_state:
+        rto = f"{int(m_state.group(2)):02d}"
+        return f"{m_state.group(1)}-{rto}-{m_state.group(3)}-{m_state.group(4)}"
+
+    # Looser match — 2-letter state code followed by digits/letters
+    if len(cleaned) >= 8 and re.match(r"^[A-Z]{2}\d", cleaned):
         return cleaned
 
     return None

@@ -1,31 +1,31 @@
-from typing import Optional
-from pydantic import BaseModel
+from typing import Optional, Dict
+from pydantic import BaseModel, Field
 
 
 class PanData(BaseModel):
-    # PAN number
-    pan_number: Optional[str] = None   # AAAAA9999A format
-
-    # Name
+    pan_number: Optional[str] = None
     full_name: Optional[str] = None
-    first_name: Optional[str] = None
-    middle_name: Optional[str] = None
-    last_name: Optional[str] = None
-
-    # Father's / Parent's name
     father_name: Optional[str] = None
+    date_of_birth: Optional[str] = None
 
-    # Date of birth
-    dob: Optional[str] = None          # ISO YYYY-MM-DD
+    # Per-field failure diagnostics: field_name -> reason string
+    field_diagnostics: Dict[str, str] = Field(default_factory=dict)
 
     def display(self) -> str:
-        lines = [
-            f"  {'PAN Number':<20}: {self.pan_number or '—'}",
-            f"  {'Full Name':<20}: {self.full_name or '—'}",
-            f"  {'First Name':<20}: {self.first_name or '—'}",
-            f"  {'Middle Name':<20}: {self.middle_name or '—'}",
-            f"  {'Last Name':<20}: {self.last_name or '—'}",
-            f"  {'Father Name':<20}: {self.father_name or '—'}",
-            f"  {'Date of Birth':<20}: {self.dob or '—'}",
+        fields = [
+            ("PAN Number", "pan_number", self.pan_number),
+            ("Full Name", "full_name", self.full_name),
+            ("Father Name", "father_name", self.father_name),
+            ("Date of Birth", "date_of_birth", self.date_of_birth),
         ]
+        lines = []
+        for label, key, value in fields:
+            if value:
+                lines.append(f"  {label:<20}: {value}")
+            else:
+                reason = self.field_diagnostics.get(key, "")
+                if reason:
+                    lines.append(f"  {label:<20}: —  [!] {reason}")
+                else:
+                    lines.append(f"  {label:<20}: —")
         return "\n".join(lines)

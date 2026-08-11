@@ -1,4 +1,5 @@
 """
+app/ocr/preprocessor.py:
 Image Preprocessor
 ==================
 Handles every real-world condition a user might upload:
@@ -299,7 +300,8 @@ class ImagePreprocessor:
         for deg in candidates:
             rotated = cv2.rotate(img, rotate_codes[deg])
             score = self._projection_variance(rotated)
-            if score > best_score * 1.15:  # must be meaningfully better (15%)
+            threshold = 1.50 if deg == 180 else 1.25
+            if score > best_score * threshold:
                 best_score = score
                 best_img = rotated
                 best_rotation = deg

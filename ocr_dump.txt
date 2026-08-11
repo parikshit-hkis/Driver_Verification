@@ -1,0 +1,1812 @@
+Inspecting 18 drivers...
+
+======================================================================
+DRIVER: 6355528465
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\6355528465\2026-08-04T18-21-15.400Z-adhaar_card-Aadhaar_Karan Gohil\doc_1785867523110724.jpg]
+    Quality: blur=62.5 (is_blurry=True), bright=96.0, rot=90
+    OCR Text items (9):
+      00: 'VID912084651783 9094' (conf=0.97, y=[622.0-953.0], x=[169.0-201.0])
+      01: '663939256763' (conf=1.00, y=[618.0-958.0], x=[198.0-243.0])
+      02: 'Mobile No:9737624699' (conf=0.96, y=[615.0-960.0], x=[275.0-312.0])
+      03: 'y/MALE' (conf=0.90, y=[615.0-782.0], x=[318.0-360.0])
+      04: '/DOB24/06/1999' (conf=0.89, y=[615.0-974.0], x=[353.0-398.0])
+      05: 'Gohil Karan Vallabhbhai' (conf=0.96, y=[620.0-917.0], x=[394.0-430.0])
+      06: 'l' (conf=0.63, y=[620.0-885.0], x=[428.0-472.0])
+      07: 'GOVERNMENT OFINDIA' (conf=0.97, y=[638.0-917.0], x=[492.0-518.0])
+      08: 'HRAR' (conf=0.54, y=[680.0-877.0], x=[523.0-558.0])
+  [Back Image: sample_documents\6355528465\2026-08-04T18-21-15.400Z-adhaar_card-Aadhaar_Karan Gohil\doc_1785867530708307.jpg]
+    Quality: blur=455.7 (is_blurry=False), bright=129.5, rot=0
+    OCR Text items (17):
+      00: 'UNIQUE IDFNTIFICATION AUTH SMET OF INDIA' (conf=0.82, y=[192.0-246.0], x=[515.0-1162.0])
+      01: '3TAR' (conf=0.70, y=[231.0-250.0], x=[357.0-428.0])
+      02: '406.' (conf=0.95, y=[268.0-313.0], x=[333.0-899.0])
+      03: '-394107' (conf=0.97, y=[302.0-347.0], x=[336.0-536.0])
+      04: 'Address:' (conf=0.99, y=[411.0-441.0], x=[343.0-478.0])
+      05: '406.OM Palace,Yogikrupa Soc' (conf=0.94, y=[428.0-474.0], x=[340.0-770.0])
+      06: 'Chhaprabhatha,Amroli, Surat, Gujarat' (conf=0.93, y=[459.0-510.0], x=[336.0-879.0])
+      07: '394107' (conf=1.00, y=[507.0-546.0], x=[335.0-445.0])
+      08: '663939256763' (conf=1.00, y=[552.0-599.0], x=[600.0-937.0])
+      09: 'www' (conf=0.91, y=[607.0-648.0], x=[816.0-906.0])
+      10: 'X' (conf=0.54, y=[613.0-656.0], x=[595.0-655.0])
+      11: 'F..Box No.1947' (conf=0.76, y=[631.0-670.0], x=[1024.0-1181.0])
+      12: 'www.uldal.gov.in' (conf=0.95, y=[649.0-677.0], x=[791.0-939.0])
+      13: '1947' (conf=0.95, y=[666.0-685.0], x=[397.0-437.0])
+      14: 'help@uldal.gov.in' (conf=0.94, y=[654.0-685.0], x=[548.0-704.0])
+      15: 'Bengaluru-560 Q01' (conf=0.88, y=[655.0-689.0], x=[1025.0-1182.0])
+      16: '18003001947' (conf=0.98, y=[681.0-711.0], x=[356.0-479.0])
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\6355528465\2026-08-04T18-21-15.404Z-driving_license-Dl_Karan Gohil\doc_1785867574042471.jpg]
+    Quality: blur=622.4 (is_blurry=False), bright=135.8, rot=0
+    OCR Text items (19):
+      00: 'Indian Union Driving Licence' (conf=0.97, y=[29.0-68.0], x=[440.0-815.0])
+      01: 'Issued by Government of Gujarat' (conf=0.97, y=[66.0-103.0], x=[440.0-867.0])
+      02: 'Pein ' (conf=0.57, y=[153.0-169.0], x=[303.0-380.0])
+      03: 'GJ3020260005165' (conf=1.00, y=[159.0-190.0], x=[475.0-803.0])
+      04: '13-07-2026' (conf=0.98, y=[183.0-339.0], x=[1280.0-1303.0])
+      05: 'Issue Date' (conf=0.95, y=[210.0-238.0], x=[478.0-617.0])
+      06: 'ValidityNTValidity TR' (conf=0.97, y=[217.0-239.0], x=[653.0-1020.0])
+      07: '13-07-2026' (conf=0.99, y=[256.0-278.0], x=[473.0-620.0])
+      08: '23-06-2039' (conf=0.99, y=[259.0-281.0], x=[657.0-802.0])
+      09: 'Date Of First!ssue' (conf=0.92, y=[334.0-572.0], x=[1265.0-1302.0])
+      10: 'Hokder's Signature' (conf=0.94, y=[386.0-407.0], x=[1072.0-1225.0])
+      11: 'Name:GOHIL KARAN VALLABHBHAI' (conf=0.93, y=[415.0-440.0], x=[298.0-745.0])
+      12: 'Organ Donor' (conf=0.94, y=[456.0-489.0], x=[940.0-1147.0])
+      13: 'Date 0t Brth24-06-1999Blood Group' (conf=0.91, y=[461.0-484.0], x=[298.0-773.0])
+      14: 'Son/Daughter/Wife ofVALLABHBHAI' (conf=0.88, y=[492.0-524.0], x=[295.0-745.0])
+      15: 'Adoress' (conf=0.94, y=[537.0-554.0], x=[300.0-388.0])
+      16: '406.OM PALACE,' (conf=0.94, y=[558.0-582.0], x=[298.0-505.0])
+      17: 'YOGIKRUPA SOC CHHAPRABHATHA AMROLI,' (conf=0.96, y=[579.0-608.0], x=[297.0-852.0])
+      18: 'AMROLI SURAT CITY SURAT GUJARAT,394107' (conf=0.91, y=[606.0-632.0], x=[300.0-853.0])
+  [Back Image: sample_documents\6355528465\2026-08-04T18-21-15.404Z-driving_license-Dl_Karan Gohil\doc_1785867582456611.jpg]
+    Quality: blur=975.2 (is_blurry=False), bright=118.9, rot=0
+    OCR Text items (30):
+      00: 'DLN0.GJ3020260005165' (conf=0.95, y=[11.0-42.0], x=[252.0-643.0])
+      01: 'ADPVEH No.(Regn.Numbers):' (conf=0.92, y=[95.0-127.0], x=[253.0-648.0])
+      02: 'Hazardous validity' (conf=0.97, y=[143.0-172.0], x=[253.0-495.0])
+      03: '.' (conf=0.77, y=[156.0-167.0], x=[640.0-648.0])
+      04: 'Hill Validity' (conf=0.94, y=[185.0-216.0], x=[253.0-407.0])
+      05: 'Classoi' (conf=0.87, y=[273.0-296.0], x=[248.0-342.0])
+      06: 'Vehicle' (conf=0.98, y=[275.0-301.0], x=[770.0-855.0])
+      07: 'Badge' (conf=0.99, y=[273.0-303.0], x=[886.0-966.0])
+      08: 'Badge' (conf=1.00, y=[273.0-299.0], x=[1018.0-1092.0])
+      09: 'Badge' (conf=0.92, y=[275.0-297.0], x=[1148.0-1218.0])
+      10: 'Coae' (conf=0.98, y=[288.0-312.0], x=[407.0-470.0])
+      11: 'Issued by' (conf=0.94, y=[284.0-315.0], x=[515.0-624.0])
+      12: 'Date ot' (conf=0.96, y=[278.0-302.0], x=[657.0-738.0])
+      13: 'Venicle' (conf=0.98, y=[299.0-321.0], x=[255.0-343.0])
+      14: 'Issue' (conf=0.99, y=[300.0-328.0], x=[663.0-729.0])
+      15: 'Category' (conf=1.00, y=[304.0-326.0], x=[765.0-860.0])
+      16: 'Number' (conf=1.00, y=[302.0-325.0], x=[882.0-972.0])
+      17: 'issued' (conf=0.99, y=[301.0-323.0], x=[1018.0-1093.0])
+      18: 'Issued By' (conf=0.93, y=[297.0-323.0], x=[1133.0-1235.0])
+      19: 'MCWG' (conf=0.99, y=[345.0-373.0], x=[396.0-470.0])
+      20: 'GJ30' (conf=0.99, y=[349.0-373.0], x=[545.0-598.0])
+      21: '13-07-2026' (conf=0.99, y=[349.0-371.0], x=[647.0-758.0])
+      22: 'NT' (conf=1.00, y=[350.0-371.0], x=[800.0-830.0])
+      23: 'GJ30' (conf=0.99, y=[395.0-422.0], x=[544.0-599.0])
+      24: 'NT' (conf=1.00, y=[397.0-416.0], x=[800.0-830.0])
+      25: 'LMV' (conf=1.00, y=[400.0-421.0], x=[413.0-460.0])
+      26: '13-07-2026' (conf=0.99, y=[399.0-416.0], x=[647.0-757.0])
+      27: 'mergency Contact Number' (conf=0.97, y=[535.0-563.0], x=[255.0-567.0])
+      28: 'IkenmAuth' (conf=0.68, y=[567.0-592.0], x=[965.0-1097.0])
+      29: 'ASST-RTO.AAHWA' (conf=0.97, y=[595.0-616.0], x=[965.0-1100.0])
+
+--- Document: PAN ---
+  [Front Image: sample_documents\6355528465\2026-08-04T18-21-15.408Z-pan_card-Pan_Karan Gohil\doc_1785867551662592.jpg]
+    Quality: blur=286.3 (is_blurry=False), bright=95.0, rot=90
+    OCR Text items (16):
+      00: 'VALLABHBHAI MOHANBHAI GOHIL' (conf=0.96, y=[408.0-765.0], x=[236.0-269.0])
+      01: 'GOHIL KARANVALLABHEHAI' (conf=0.94, y=[408.0-707.0], x=[299.0-332.0])
+      02: 'INCOME TAX DEPARTMENT' (conf=0.96, y=[407.0-715.0], x=[515.0-551.0])
+      03: '24/06/1999' (conf=0.96, y=[413.0-522.0], x=[150.0-174.0])
+      04: 'Dats of.Binth' (conf=0.82, y=[417.0-535.0], x=[184.0-203.0])
+      05: 'Taaarde' (conf=0.52, y=[418.0-552.0], x=[193.0-222.0])
+      06: 'fl Father's Nane' (conf=0.88, y=[413.0-692.0], x=[263.0-287.0])
+      07: 'OWIENWE' (conf=0.54, y=[415.0-523.0], x=[329.0-346.0])
+      08: 'fa' (conf=0.56, y=[413.0-718.0], x=[558.0-606.0])
+      09: '-Permanent Account Number Carc' (conf=0.95, y=[563.0-887.0], x=[444.0-475.0])
+      10: 'CJZPG1395J' (conf=0.99, y=[622.0-813.0], x=[401.0-435.0])
+      11: ' ' (conf=0.55, y=[623.0-830.0], x=[465.0-496.0])
+      12: '/Signatu' (conf=0.96, y=[713.0-852.0], x=[145.0-169.0])
+      13: 'Vrohi' (conf=0.66, y=[717.0-828.0], x=[181.0-217.0])
+      14: 'GOVT.OF INDIA' (conf=0.93, y=[885.0-1122.0], x=[515.0-551.0])
+      15: 'HR RR' (conf=0.74, y=[878.0-1128.0], x=[556.0-597.0])
+
+--- Document: RC ---
+  [Front Image: sample_documents\6355528465\2026-08-04T18-22-28.326Z-rc_book-Rc_Karan Gohil\doc_1785867688704660.jpg]
+    Quality: blur=393.8 (is_blurry=False), bright=218.8, rot=0
+    OCR Text items (26):
+      00: 'Government of Gujarat' (conf=0.96, y=[19.0-93.0], x=[465.0-1259.0])
+      01: 'Certifcate of Registration' (conf=0.96, y=[92.0-146.0], x=[466.0-1145.0])
+      02: 'Date of Reg' (conf=0.97, y=[186.0-235.0], x=[840.0-1042.0])
+      03: 'Reg.No.' (conf=0.98, y=[189.0-230.0], x=[467.0-608.0])
+      04: 'Reg.Validity' (conf=0.99, y=[192.0-237.0], x=[1145.0-1350.0])
+      05: 'GJ05MC5568' (conf=1.00, y=[240.0-285.0], x=[440.0-767.0])
+      06: '23.03.2015' (conf=1.00, y=[242.0-278.0], x=[818.0-1020.0])
+      07: '22.03.2030' (conf=1.00, y=[242.0-282.0], x=[1118.0-1319.0])
+      08: 'Owner01' (conf=0.99, y=[288.0-390.0], x=[1138.0-1334.0])
+      09: 'Chassis No.' (conf=0.92, y=[307.0-341.0], x=[470.0-658.0])
+      10: 'ME1RG0721F0051678' (conf=0.99, y=[348.0-386.0], x=[438.0-913.0])
+      11: 'Sr.No.' (conf=0.92, y=[355.0-393.0], x=[1152.0-1257.0])
+      12: 'Engine No.' (conf=0.97, y=[393.0-438.0], x=[466.0-655.0])
+      13: 'Ownership Tr.Date' (conf=0.98, y=[415.0-456.0], x=[1153.0-1467.0])
+      14: 'G3C8E0087976' (conf=0.99, y=[439.0-475.0], x=[442.0-768.0])
+      15: 'Owner Name' (conf=0.95, y=[489.0-528.0], x=[470.0-699.0])
+      16: 'MANUBHAI' (conf=0.99, y=[533.0-569.0], x=[443.0-688.0])
+      17: 'Vehicle Class' (conf=0.96, y=[578.0-618.0], x=[128.0-352.0])
+      18: 'MOTOR CYCLE' (conf=0.94, y=[640.0-676.0], x=[38.0-340.0])
+      19: 'Son/Daughter/Wife of' (conf=0.98, y=[645.0-683.0], x=[475.0-847.0])
+      20: 'RATNABHAI KHIMSURIYA' (conf=0.97, y=[703.0-738.0], x=[447.0-1013.0])
+      21: 'Fuel Used' (conf=0.91, y=[806.0-842.0], x=[132.0-305.0])
+      22: 'Address' (conf=1.00, y=[804.0-840.0], x=[478.0-613.0])
+      23: '713,PRAGATI NAGAR SOC,CHHAPARA BHA17' (conf=0.94, y=[859.0-902.0], x=[440.0-1350.0])
+      24: 'PETROL' (conf=1.00, y=[863.0-904.0], x=[107.0-278.0])
+      25: 'SURAT,NR.AMROLIPOLICESTATIONSURAT 394107' (conf=0.96, y=[909.0-947.0], x=[445.0-1480.0])
+  [Back Image: sample_documents\6355528465\2026-08-04T18-22-28.326Z-rc_book-Rc_Karan Gohil\doc_1785867695288990.jpg]
+    Quality: blur=221.3 (is_blurry=False), bright=239.4, rot=0
+    OCR Text items (25):
+      00: 'Reg.No.' (conf=0.92, y=[32.0-79.0], x=[426.0-570.0])
+      01: 'GJ05MC5568' (conf=0.99, y=[89.0-141.0], x=[478.0-810.0])
+      02: 'Seating Capacity' (conf=0.98, y=[156.0-203.0], x=[10.0-304.0])
+      03: 'Maker's Name' (conf=0.96, y=[162.0-206.0], x=[431.0-674.0])
+      04: '2' (conf=1.00, y=[204.0-247.0], x=[47.0-85.0])
+      05: 'YAMAHA MOT.IND.PVT LTD' (conf=0.93, y=[207.0-249.0], x=[475.0-1008.0])
+      06: 'Wheel Base' (conf=0.94, y=[260.0-302.0], x=[13.0-215.0])
+      07: 'N5503400' (conf=0.92, y=[288.0-324.0], x=[1233.0-1445.0])
+      08: 'Model Name' (conf=0.95, y=[336.0-377.0], x=[435.0-655.0])
+      09: 'Form23A' (conf=0.96, y=[331.0-458.0], x=[1527.0-1557.0])
+      10: 'Cubic Capacity' (conf=0.98, y=[363.0-410.0], x=[13.0-279.0])
+      11: 'FZF1' (conf=0.99, y=[382.0-431.0], x=[473.0-587.0])
+      12: '149' (conf=1.00, y=[413.0-459.0], x=[55.0-143.0])
+      13: 'Cylinder No' (conf=0.96, y=[470.0-511.0], x=[20.0-227.0])
+      14: 'Colour' (conf=1.00, y=[514.0-552.0], x=[438.0-557.0])
+      15: 'Cylinder Validity' (conf=0.97, y=[570.0-617.0], x=[23.0-305.0])
+      16: 'BLACK BLU' (conf=0.94, y=[576.0-612.0], x=[485.0-715.0])
+      17: 'Financer Name' (conf=0.97, y=[569.0-607.0], x=[1197.0-1452.0])
+      18: 'Body Type' (conf=0.97, y=[639.0-684.0], x=[440.0-620.0])
+      19: 'Month &Yr.of Mfg' (conf=0.93, y=[675.0-722.0], x=[25.0-352.0])
+      20: 'SOLO+PILL.RIDER' (conf=0.99, y=[699.0-733.0], x=[487.0-857.0])
+      21: 'FEBRUARY 2015' (conf=0.95, y=[732.0-768.0], x=[67.0-445.0])
+      22: 'Registration Authority' (conf=0.98, y=[857.0-895.0], x=[1138.0-1550.0])
+      23: 'Owner's Sign' (conf=0.95, y=[906.0-953.0], x=[56.0-284.0])
+      24: 'SURAT' (conf=1.00, y=[908.0-949.0], x=[1277.0-1418.0])
+
+======================================================================
+DRIVER: 6375965072
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\6375965072\2026-08-04T20-37-46.633Z-adhaar_card-Aadhaar_Yogesh Meena\doc_1785875744971447.jpg]
+    Quality: blur=91.0 (is_blurry=False), bright=150.3, rot=90
+    OCR Text items (7):
+      00: 'HRT' (conf=0.69, y=[70.0-111.0], x=[769.0-877.0])
+      01: '618136653442' (conf=0.99, y=[129.0-171.0], x=[385.0-745.0])
+      02: '9B4/MALE' (conf=0.70, y=[456.0-496.0], x=[534.0-731.0])
+      03: '/D0B:25/08/2006' (conf=0.91, y=[503.0-537.0], x=[276.0-731.0])
+      04: 'Yogesh Kumar Meena' (conf=0.95, y=[539.0-576.0], x=[335.0-729.0])
+      05: 'Government of India' (conf=0.94, y=[668.0-701.0], x=[499.0-815.0])
+      06: ' P' (conf=0.64, y=[710.0-742.0], x=[562.0-752.0])
+  [Back Image: sample_documents\6375965072\2026-08-04T20-37-46.633Z-adhaar_card-Aadhaar_Yogesh Meena\doc_1785875764729821.jpg]
+    Quality: blur=71.6 (is_blurry=True), bright=52.0, rot=0
+    OCR Text items (12):
+      00: ' faf  ' (conf=0.53, y=[968.0-1012.0], x=[311.0-722.0])
+      01: 'Unique Identification Authority of India' (conf=0.97, y=[1004.0-1056.0], x=[306.0-849.0])
+      02: 'qdl:' (conf=0.65, y=[1052.0-1088.0], x=[129.0-186.0])
+      03: '-322254' (conf=0.88, y=[1101.0-1146.0], x=[109.0-343.0])
+      04: 'NAddress:' (conf=0.90, y=[1158.0-1186.0], x=[114.0-247.0])
+      05: 'C/O:Soma.Shyampur Moondri,PO' (conf=0.89, y=[1184.0-1217.0], x=[112.0-566.0])
+      06: 'Ghonsla,DiST:Karauli,' (conf=0.87, y=[1210.0-1243.0], x=[127.0-423.0])
+      07: 'Rajasthan-322254' (conf=0.99, y=[1238.0-1274.0], x=[114.0-379.0])
+      08: '618136653442' (conf=1.00, y=[1434.0-1492.0], x=[428.0-746.0])
+      09: 'VID9154 095976890702' (conf=0.97, y=[1483.0-1530.0], x=[423.0-772.0])
+      10: ' help @uidai.gov.in  www.uidai.gov.in' (conf=0.85, y=[1509.0-1574.0], x=[384.0-1008.0])
+      11: '1947' (conf=0.98, y=[1544.0-1584.0], x=[165.0-299.0])
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\6375965072\2026-08-04T20-37-46.630Z-driving_license-Dl_Yogesh Meena\doc_1785875811336892.jpg]
+    Quality: blur=1049.1 (is_blurry=False), bright=204.3, rot=0
+    OCR Text items (17):
+      00: 'Indian Union Driving Licence' (conf=0.96, y=[26.0-59.0], x=[253.0-802.0])
+      01: 'RJ' (conf=1.00, y=[36.0-55.0], x=[994.0-1022.0])
+      02: 'Issued by GOVERNMENT OF RAJASTHAN' (conf=0.94, y=[84.0-111.0], x=[254.0-887.0])
+      03: 'RJ34A20260005323' (conf=1.00, y=[147.0-173.0], x=[243.0-532.0])
+      04: '01-06-2026' (conf=0.99, y=[164.0-304.0], x=[1036.0-1062.0])
+      05: 'ValidityNT)Validity TR)' (conf=0.93, y=[202.0-232.0], x=[429.0-804.0])
+      06: 'Issue Date' (conf=0.96, y=[204.0-228.0], x=[246.0-382.0])
+      07: '01-06-2026' (conf=0.99, y=[249.0-273.0], x=[248.0-386.0])
+      08: '24-08-2046' (conf=0.99, y=[249.0-273.0], x=[438.0-575.0])
+      09: 'Date Of First Issue' (conf=0.94, y=[318.0-564.0], x=[1033.0-1062.0])
+      10: 'Name:YOGESH KUMAR MEENA' (conf=0.95, y=[353.0-376.0], x=[20.0-447.0])
+      11: 'Holder's Signature' (conf=0.97, y=[380.0-403.0], x=[813.0-1014.0])
+      12: 'Date Of Birth:25-08-2006 Blood Group:Unknown Organ Donor:No' (conf=0.93, y=[418.0-441.0], x=[20.0-915.0])
+      13: 'Son/Daughter/Wife of:SOMA' (conf=0.96, y=[456.0-481.0], x=[19.0-389.0])
+      14: 'Address:' (conf=0.99, y=[509.0-535.0], x=[18.0-136.0])
+      15: 'GHONSLA,' (conf=0.99, y=[536.0-559.0], x=[39.0-179.0])
+      16: 'SHYAMPUR MOONDRI HINDAUN KARAULI RAJASTHAN,322254' (conf=0.96, y=[566.0-589.0], x=[19.0-838.0])
+  [Back Image: sample_documents\6375965072\2026-08-04T20-37-46.630Z-driving_license-Dl_Yogesh Meena\doc_1785875823787921.jpg]
+    Quality: blur=3855.0 (is_blurry=False), bright=214.4, rot=0
+    OCR Text items (30):
+      00: 'DLNo:RJ34A20260005323' (conf=0.97, y=[22.0-36.0], x=[22.0-280.0])
+      01: 'ADPVEH No.(Regn.Numbers)' (conf=0.94, y=[75.0-92.0], x=[174.0-419.0])
+      02: 'Hazardous validity' (conf=0.99, y=[127.0-146.0], x=[172.0-331.0])
+      03: 'Hill Validity' (conf=0.96, y=[124.0-148.0], x=[376.0-476.0])
+      04: 'Class of' (conf=0.97, y=[190.0-206.0], x=[13.0-75.0])
+      05: 'Code' (conf=1.00, y=[200.0-214.0], x=[118.0-158.0])
+      06: 'Issued by' (conf=0.97, y=[199.0-215.0], x=[191.0-261.0])
+      07: 'Date of' (conf=0.97, y=[193.0-209.0], x=[285.0-341.0])
+      08: 'Vehicle' (conf=1.00, y=[191.0-207.0], x=[361.0-415.0])
+      09: 'Badge' (conf=1.00, y=[190.0-210.0], x=[432.0-483.0])
+      10: 'Badge' (conf=1.00, y=[190.0-207.0], x=[522.0-570.0])
+      11: 'Badge' (conf=1.00, y=[189.0-209.0], x=[607.0-657.0])
+      12: 'Vehicle' (conf=1.00, y=[207.0-224.0], x=[13.0-70.0])
+      13: 'Issue' (conf=1.00, y=[212.0-227.0], x=[292.0-334.0])
+      14: 'Category' (conf=1.00, y=[208.0-227.0], x=[361.0-426.0])
+      15: 'Number' (conf=1.00, y=[208.0-225.0], x=[433.0-495.0])
+      16: 'issued date' (conf=0.95, y=[209.0-223.0], x=[523.0-607.0])
+      17: 'Issued By' (conf=0.96, y=[206.0-225.0], x=[608.0-684.0])
+      18: 'MCWG' (conf=0.99, y=[242.0-257.0], x=[110.0-162.0])
+      19: 'RJ34A' (conf=1.00, y=[241.0-258.0], x=[202.0-252.0])
+      20: '01-06-2026' (conf=0.98, y=[241.0-257.0], x=[270.0-347.0])
+      21: 'NT' (conf=1.00, y=[241.0-257.0], x=[383.0-407.0])
+      22: 'LMV' (conf=1.00, y=[272.0-286.0], x=[118.0-154.0])
+      23: 'RJ34A' (conf=1.00, y=[275.0-289.0], x=[203.0-251.0])
+      24: '01-06-2026' (conf=0.94, y=[272.0-291.0], x=[268.0-347.0])
+      25: 'NT' (conf=1.00, y=[274.0-290.0], x=[383.0-408.0])
+      26: 'Emergency Contact Number' (conf=0.98, y=[391.0-409.0], x=[11.0-201.0])
+      27: 'Licencing Authority' (conf=0.99, y=[397.0-414.0], x=[533.0-660.0])
+      28: '91-' (conf=0.99, y=[413.0-427.0], x=[12.0-37.0])
+      29: 'SUB OFFICE,HINDON' (conf=0.95, y=[414.0-427.0], x=[432.0-589.0])
+
+--- Document: PAN ---
+  [Front Image: sample_documents\6375965072\2026-08-04T20-37-46.636Z-pan_card-Pan_Yogesh Meena\doc_1785875794501268.jpg]
+    Quality: blur=557.8 (is_blurry=False), bright=114.4, rot=0
+    OCR Text items (17):
+      00: 'fARHpT' (conf=0.62, y=[257.0-314.0], x=[357.0-505.0])
+      01: 'aphlle' (conf=0.57, y=[266.0-306.0], x=[149.0-327.0])
+      02: 'HRd' (conf=0.73, y=[270.0-318.0], x=[697.0-822.0])
+      03: 'HRCOR' (conf=0.71, y=[276.0-316.0], x=[846.0-996.0])
+      04: 'INCOME TAXDEPARTMENT' (conf=0.96, y=[321.0-357.0], x=[135.0-500.0])
+      05: 'GOVTOFINDIA' (conf=1.00, y=[327.0-364.0], x=[707.0-997.0])
+      06: 'Permanent Account Number Card' (conf=0.98, y=[423.0-451.0], x=[325.0-717.0])
+      07: 'HFRPM1721K' (conf=1.00, y=[472.0-500.0], x=[408.0-644.0])
+      08: '79/Name' (conf=0.83, y=[556.0-583.0], x=[122.0-235.0])
+      09: 'YOGESH KUMAR MEENA' (conf=0.96, y=[581.0-605.0], x=[121.0-417.0])
+      10: 'fT/Father's Name' (conf=0.87, y=[635.0-665.0], x=[117.0-408.0])
+      11: 'SOMA MEENA' (conf=0.97, y=[663.0-687.0], x=[117.0-289.0])
+      12: '18012026' (conf=1.00, y=[675.0-699.0], x=[940.0-1025.0])
+      13: '2312' (conf=0.57, y=[722.0-787.0], x=[423.0-673.0])
+      14: 'Date of Birth' (conf=0.98, y=[746.0-774.0], x=[112.0-239.0])
+      15: '25/08/2006' (conf=1.00, y=[776.0-799.0], x=[111.0-239.0])
+      16: '/Signature' (conf=0.96, y=[785.0-818.0], x=[416.0-623.0])
+
+--- Document: RC ---
+  [Front Image: sample_documents\6375965072\2026-08-04T20-38-46.005Z-rc_book-Rc_Yogesh Meena\doc_1785875904642189.jpg]
+    Quality: blur=1115.3 (is_blurry=False), bright=219.7, rot=0
+    OCR Text items (29):
+      00: 'Indian Union Vehicle Registration Certificate' (conf=0.97, y=[32.0-57.0], x=[198.0-746.0])
+      01: 'Issued by GOVERNMENT OF RAJASTHAN' (conf=0.93, y=[66.0-90.0], x=[197.0-716.0])
+      02: 'NT' (conf=1.00, y=[57.0-81.0], x=[900.0-936.0])
+      03: 'RJ' (conf=1.00, y=[57.0-80.0], x=[965.0-997.0])
+      04: 'Regn No' (conf=0.96, y=[149.0-175.0], x=[212.0-308.0])
+      05: 'Date of Regn.' (conf=0.96, y=[147.0-175.0], x=[410.0-557.0])
+      06: 'Regn.Validity' (conf=1.00, y=[149.0-175.0], x=[609.0-761.0])
+      07: 'Owner' (conf=1.00, y=[149.0-175.0], x=[806.0-881.0])
+      08: 'RJ29KS8578' (conf=0.98, y=[181.0-203.0], x=[213.0-356.0])
+      09: '16-Jan-2026' (conf=0.99, y=[180.0-201.0], x=[412.0-555.0])
+      10: '15-Jan-2041' (conf=0.98, y=[181.0-203.0], x=[610.0-751.0])
+      11: 'Serial' (conf=1.00, y=[178.0-202.0], x=[806.0-873.0])
+      12: 'Chassis No' (conf=0.97, y=[213.0-235.0], x=[211.0-334.0])
+      13: 'MBLHAW473T9A50937' (conf=1.00, y=[245.0-263.0], x=[212.0-464.0])
+      14: 'Engine/Motor No' (conf=0.98, y=[274.0-297.0], x=[211.0-396.0])
+      15: 'Card Issue Date 12-Feb-2026)' (conf=0.93, y=[266.0-592.0], x=[1006.0-1032.0])
+      16: 'HA11F7T9A02377' (conf=0.99, y=[303.0-325.0], x=[211.0-409.0])
+      17: 'Owner Name' (conf=0.96, y=[333.0-358.0], x=[210.0-351.0])
+      18: 'VIJAY KUMAR MEENA' (conf=0.95, y=[364.0-386.0], x=[211.0-451.0])
+      19: 'Son/Wife/Daughter of (In case of Individual Owner)' (conf=0.96, y=[392.0-420.0], x=[209.0-763.0])
+      20: 'MULCHAND MEENA' (conf=0.97, y=[426.0-447.0], x=[211.0-431.0])
+      21: 'Ownership' (conf=1.00, y=[452.0-482.0], x=[209.0-329.0])
+      22: 'INDIVIDUAL' (conf=1.00, y=[485.0-507.0], x=[210.0-339.0])
+      23: 'Address' (conf=1.00, y=[516.0-539.0], x=[210.0-302.0])
+      24: 'Fuel' (conf=0.99, y=[546.0-572.0], x=[0.0-45.0])
+      25: 'SIKRAI,SIKRAI,,DAUSA-RAJASTHAN-303508' (conf=0.96, y=[546.0-568.0], x=[211.0-649.0])
+      26: 'PETROL' (conf=0.99, y=[577.0-601.0], x=[0.0-83.0])
+      27: 'Emission Norms' (conf=0.98, y=[608.0-630.0], x=[2.0-174.0])
+      28: 'BHARAT STAGE VI' (conf=0.93, y=[639.0-660.0], x=[1.0-195.0])
+  [Back Image: sample_documents\6375965072\2026-08-04T20-38-46.005Z-rc_book-Rc_Yogesh Meena\doc_1785875914698085.jpg]
+    Quality: blur=1097.6 (is_blurry=False), bright=209.6, rot=0
+    OCR Text items (27):
+      00: 'Regn.Number' (conf=0.99, y=[8.0-33.0], x=[23.0-181.0])
+      01: 'Maker's Name:' (conf=0.94, y=[9.0-31.0], x=[332.0-492.0])
+      02: 'RJ29KS8578' (conf=0.99, y=[39.0-61.0], x=[26.0-168.0])
+      03: 'HERO MOTOCORPLTD' (conf=0.96, y=[40.0-58.0], x=[333.0-574.0])
+      04: 'Model Name:' (conf=0.95, y=[71.0-97.0], x=[331.0-476.0])
+      05: 'SPLENDOR+I3SDRS)' (conf=0.95, y=[105.0-127.0], x=[332.0-573.0])
+      06: 'Colour:' (conf=0.99, y=[132.0-158.0], x=[330.0-412.0])
+      07: '/Body Type:' (conf=0.94, y=[132.0-161.0], x=[640.0-779.0])
+      08: 'BLACK REDPURPLE' (conf=0.96, y=[164.0-186.0], x=[332.0-551.0])
+      09: '/SOLOWITHPILLION' (conf=0.99, y=[164.0-186.0], x=[642.0-878.0])
+      10: 'Seating(in all) Capacity' (conf=0.97, y=[193.0-220.0], x=[329.0-600.0])
+      11: '2' (conf=0.99, y=[227.0-245.0], x=[331.0-345.0])
+      12: 'Form23A' (conf=1.00, y=[226.0-336.0], x=[1032.0-1059.0])
+      13: 'Unladen /Laden Weight (Kg)' (conf=0.93, y=[251.0-281.0], x=[329.0-654.0])
+      14: '113' (conf=1.00, y=[285.0-306.0], x=[332.0-374.0])
+      15: '/243' (conf=0.97, y=[283.0-307.0], x=[423.0-488.0])
+      16: 'Cubic Cap./Horse Power (BHP/Kw)/Wheel Base(mm)' (conf=0.96, y=[314.0-342.0], x=[331.0-935.0])
+      17: '97.20' (conf=1.00, y=[345.0-369.0], x=[331.0-395.0])
+      18: '/8.17' (conf=0.98, y=[346.0-370.0], x=[457.0-526.0])
+      19: '/1235' (conf=0.99, y=[341.0-372.0], x=[728.0-808.0])
+      20: 'Month-Year of Mfg' (conf=0.97, y=[364.0-387.0], x=[26.0-234.0])
+      21: 'Financier:' (conf=0.99, y=[376.0-399.0], x=[331.0-439.0])
+      22: '01-2026' (conf=0.99, y=[393.0-416.0], x=[25.0-114.0])
+      23: 'BAJAJFINANCELTD' (conf=0.98, y=[408.0-426.0], x=[332.0-557.0])
+      24: 'No.of Cylinders 1' (conf=0.95, y=[424.0-447.0], x=[25.0-223.0])
+      25: 'Registration Authority' (conf=0.99, y=[434.0-458.0], x=[841.0-1070.0])
+      26: 'NIRANKAR MOTORS' (conf=0.97, y=[467.0-486.0], x=[853.0-1072.0])
+
+======================================================================
+DRIVER: 7007388876
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\7007388876\2026-08-05T06-09-45.955Z-adhaar_card-Aadhaar_Rajan Kumar Saroj\769579581970985.jpg]
+    Quality: blur=178.9 (is_blurry=False), bright=247.9, rot=0
+    OCR Text items (11):
+      00: 'HH' (conf=0.60, y=[148.0-265.0], x=[972.0-1558.0])
+      01: 'Government of India' (conf=0.97, y=[277.0-411.0], x=[783.0-1747.0])
+      02: '3ITER' (conf=0.72, y=[382.0-456.0], x=[2596.0-2833.0])
+      03: 'R3 aHR H3' (conf=0.53, y=[529.0-632.0], x=[958.0-1677.0])
+      04: 'Rajan Kumar Saroj' (conf=1.00, y=[657.0-776.0], x=[964.0-1750.0])
+      05: 'H faf / DOB : 01/12/2000' (conf=0.95, y=[783.0-911.0], x=[967.0-2193.0])
+      06: '954 / Male' (conf=0.76, y=[930.0-1021.0], x=[974.0-1415.0])
+      07: '3230 6095 3376' (conf=0.99, y=[1769.0-1901.0], x=[916.0-2126.0])
+      08: 'ART' (conf=0.68, y=[1959.0-2163.0], x=[605.0-935.0])
+      09: 'Ute' (conf=0.51, y=[1958.0-2131.0], x=[1586.0-1873.0])
+      10: '3TETR' (conf=0.64, y=[1999.0-2135.0], x=[1000.0-1473.0])
+  [Back Image: sample_documents\7007388876\2026-08-05T06-09-45.955Z-adhaar_card-Aadhaar_Rajan Kumar Saroj\769596693860140.jpg]
+    ERROR processing image: could not create a primitive
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\7007388876\2026-08-05T06-09-45.959Z-driving_license-Dl_Rajan Kumar Saroj\769373661052819.jpg]
+    ERROR processing image: Unable to allocate 40.6 MiB for an array with shape (1859, 2861) and data type float64
+  [Back Image: sample_documents\7007388876\2026-08-05T06-09-45.959Z-driving_license-Dl_Rajan Kumar Saroj\769388414444204.jpg]
+    ERROR processing image: bad allocation
+
+--- Document: PAN ---
+  [Front Image: sample_documents\7007388876\2026-08-05T06-09-45.963Z-pan_card-Pan_Rajan Kumar Saroj\doc_1785909970385957.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 12582912 bytes in function 'cv::OutOfMemoryError'
+
+
+--- Document: RC ---
+  [Front Image: sample_documents\7007388876\2026-08-05T06-13-17.974Z-rc_book-Rc_Rajan Kumar Saroj\769905916035004.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 24150750 bytes in function 'cv::OutOfMemoryError'
+
+  [Back Image: sample_documents\7007388876\2026-08-05T06-13-17.974Z-rc_book-Rc_Rajan Kumar Saroj\769919667080774.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 21573816 bytes in function 'cv::OutOfMemoryError'
+
+
+======================================================================
+DRIVER: 7567569144
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\7567569144\2026-08-10T10-02-33.005Z-adhaar_card-Aadhaar_Patel Vineshbhai Vijaybhai\doc_1786356025476642.jpg]
+    ERROR processing image: could not create a primitive
+  [Back Image: sample_documents\7567569144\2026-08-10T10-02-33.005Z-adhaar_card-Aadhaar_Patel Vineshbhai Vijaybhai\doc_1786356029025365.jpg]
+    Quality: blur=4595.4 (is_blurry=False), bright=237.4, rot=0
+    OCR Text items (16):
+      00: '3:29' (conf=0.93, y=[18.0-43.0], x=[43.0-121.0])
+      01: 'E40' (conf=0.83, y=[10.0-49.0], x=[567.0-677.0])
+      02: 'eAadhaar 178635591...' (conf=0.95, y=[97.0-125.0], x=[112.0-464.0])
+      03: '...' (conf=0.88, y=[97.0-125.0], x=[672.0-685.0])
+      04: 'Hedaesa' (conf=0.50, y=[387.0-398.0], x=[177.0-259.0])
+      05: '/INFORMATION' (conf=0.92, y=[385.0-402.0], x=[452.0-562.0])
+      06: 'Government of India' (conf=0.98, y=[400.0-417.0], x=[145.0-291.0])
+      07: 'asnaa' (conf=0.56, y=[452.0-468.0], x=[117.0-318.0])
+      08: '4s10-95' (conf=0.51, y=[567.0-578.0], x=[530.0-582.0])
+      09: '/Your Aadhaar No.' (conf=0.88, y=[738.0-755.0], x=[92.0-325.0])
+      10: 'XXXXXXXX1634' (conf=0.96, y=[755.0-772.0], x=[154.0-281.0])
+      11: 'm' (conf=0.54, y=[772.0-793.0], x=[132.0-297.0])
+      12: 'XXXXXxXX1634' (conf=0.73, y=[953.0-970.0], x=[170.0-272.0])
+      13: 'XXXXXXXX1634' (conf=0.77, y=[953.0-970.0], x=[452.0-556.0])
+      14: 'm' (conf=0.55, y=[973.0-990.0], x=[122.0-317.0])
+      15: 'III' (conf=0.57, y=[1540.0-1575.0], x=[141.0-180.0])
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\7567569144\2026-08-10T10-02-33.015Z-driving_license-Dl_Patel Vineshbhai Vijaybhai\507201960961711.jpg]
+    ERROR processing image: could not create a primitive
+  [Back Image: sample_documents\7567569144\2026-08-10T10-02-33.015Z-driving_license-Dl_Patel Vineshbhai Vijaybhai\507212940281635.jpg]
+    Quality: blur=36.0 (is_blurry=True), bright=167.7, rot=0
+    OCR Text items (15):
+      00: 'GJ07DL0005853091' (conf=0.98, y=[26.0-62.0], x=[1373.0-1689.0])
+      01: 'GJ06 19890896114' (conf=0.98, y=[47.0-104.0], x=[51.0-485.0])
+      02: 'Aadhaar No' (conf=0.97, y=[40.0-78.0], x=[911.0-1131.0])
+      03: 'LMV' (conf=1.00, y=[248.0-288.0], x=[43.0-135.0])
+      04: 'MCWG' (conf=0.99, y=[248.0-286.0], x=[325.0-455.0])
+      05: '09-09-1998' (conf=0.99, y=[286.0-329.0], x=[45.0-258.0])
+      06: '29-12-1989' (conf=0.99, y=[288.0-326.0], x=[327.0-532.0])
+      07: 'HJT23NH5O7SE' (conf=0.87, y=[316.0-341.0], x=[1353.0-1615.0])
+      08: 'Form 7 Rule 16(2)' (conf=0.91, y=[374.0-670.0], x=[1683.0-1729.0])
+      09: 'GJ' (conf=1.00, y=[394.0-463.0], x=[1436.0-1519.0])
+      10: 'VADODARA 391740GJ' (conf=0.93, y=[706.0-742.0], x=[69.0-574.0])
+      11: 'Emergency Contact No' (conf=0.96, y=[969.0-1007.0], x=[561.0-981.0])
+      12: 'Licencing Authority' (conf=0.99, y=[970.0-1016.0], x=[1295.0-1709.0])
+      13: 'Holder's Signature' (conf=0.95, y=[1012.0-1065.0], x=[50.0-442.0])
+      14: 'VADODARARTO' (conf=1.00, y=[1025.0-1062.0], x=[1308.0-1645.0])
+
+--- Document: PAN ---
+  [Front Image: sample_documents\7567569144\2026-08-10T10-02-33.009Z-pan_card-Pan_Patel Vineshbhai Vijaybhai\doc_1786356067833559.jpg]
+    Quality: blur=21.3 (is_blurry=True), bright=152.6, rot=0
+    OCR Text items (10):
+      00: 'Bd' (conf=0.77, y=[213.0-782.0], x=[1514.0-1742.0])
+      01: 'AMJPP7464Q' (conf=1.00, y=[243.0-722.0], x=[1764.0-1916.0])
+      02: 'Permanent Account Number' (conf=0.97, y=[266.0-959.0], x=[1829.0-1992.0])
+      03: '04/06/1970' (conf=1.00, y=[271.0-646.0], x=[1952.0-2073.0])
+      04: 'VIJAYBHAI KOLABHAI PATEL' (conf=0.95, y=[296.0-1243.0], x=[2036.0-2248.0])
+      05: 'VINESHBHAI VIJAYBHAI PATEL' (conf=0.96, y=[313.0-1312.0], x=[2181.0-2396.0])
+      06: 'INCOME TAX DEPARTMENT' (conf=0.97, y=[308.0-1130.0], x=[2350.0-2549.0])
+      07: 'GOVT.OF INDIA' (conf=0.92, y=[1512.0-2200.0], x=[2223.0-2405.0])
+      08: 'HR RC' (conf=0.67, y=[1513.0-2238.0], x=[2360.0-2541.0])
+      09: '28052005' (conf=1.00, y=[1996.0-2107.0], x=[1263.0-1529.0])
+
+--- Document: RC ---
+  [Front Image: sample_documents\7567569144\2026-08-10T10-03-16.162Z-rc_book-Rc_Patel Vineshbhai Vijaybhai\507246056494252.jpg]
+    Quality: blur=31.5 (is_blurry=True), bright=182.0, rot=0
+    OCR Text items (29):
+      00: 'Government of Gujarat' (conf=0.94, y=[17.0-116.0], x=[693.0-1863.0])
+      01: 'GJ' (conf=1.00, y=[77.0-148.0], x=[1984.0-2081.0])
+      02: 'NT' (conf=1.00, y=[86.0-148.0], x=[2165.0-2257.0])
+      03: 'Certificate of Registration' (conf=0.95, y=[126.0-203.0], x=[693.0-1696.0])
+      04: 'Reg.No' (conf=0.98, y=[276.0-338.0], x=[695.0-899.0])
+      05: 'Date of Reg.' (conf=0.94, y=[271.0-341.0], x=[1251.0-1548.0])
+      06: 'Reg.Validity' (conf=0.99, y=[279.0-338.0], x=[1701.0-1997.0])
+      07: '10.02.2014' (conf=1.00, y=[380.0-432.0], x=[1281.0-1569.0])
+      08: '09.02.2029' (conf=1.00, y=[378.0-430.0], x=[1718.0-2009.0])
+      09: 'GJ06HG4463' (conf=1.00, y=[385.0-444.0], x=[718.0-1187.0])
+      10: 'Owner' (conf=1.00, y=[449.0-517.0], x=[1703.0-1878.0])
+      11: 'Chassis No' (conf=0.97, y=[464.0-514.0], x=[703.0-976.0])
+      12: '01' (conf=1.00, y=[506.0-578.0], x=[1927.0-2024.0])
+      13: 'Sr.No.' (conf=0.90, y=[523.0-585.0], x=[1706.0-1875.0])
+      14: 'MD2A57AZ5DRJ52704' (conf=1.00, y=[545.0-610.0], x=[715.0-1431.0])
+      15: 'Engine No.' (conf=0.96, y=[607.0-664.0], x=[707.0-976.0])
+      16: 'Ownership Tr.Date' (conf=0.97, y=[625.0-676.0], x=[1714.0-2165.0])
+      17: 'PAZRDJ03972' (conf=1.00, y=[688.0-756.0], x=[720.0-1182.0])
+      18: 'Owner Name' (conf=0.95, y=[753.0-802.0], x=[713.0-1043.0])
+      19: 'VINESH' (conf=1.00, y=[837.0-899.0], x=[723.0-983.0])
+      20: 'Vehicle Class' (conf=0.91, y=[896.0-948.0], x=[211.0-529.0])
+      21: 'Son/Daughter/Wife of' (conf=0.99, y=[982.0-1052.0], x=[712.0-1262.0])
+      22: 'MOTOR CYCLE' (conf=0.96, y=[1004.0-1069.0], x=[131.0-579.0])
+      23: 'VIJAYBHAI PATEL' (conf=0.97, y=[1091.0-1163.0], x=[735.0-1327.0])
+      24: 'Fuel Used' (conf=0.95, y=[1234.0-1301.0], x=[213.0-467.0])
+      25: 'Address' (conf=1.00, y=[1234.0-1294.0], x=[720.0-924.0])
+      26: '16 ADHUNIK SOC B H GOVERNMENT HOSPITAL' (conf=0.93, y=[1325.0-1405.0], x=[740.0-2081.0])
+      27: 'PETROL' (conf=1.00, y=[1352.0-1420.0], x=[243.0-485.0])
+      28: 'CHHANI BARODA 391740' (conf=0.95, y=[1412.0-1477.0], x=[742.0-1468.0])
+  [Back Image: sample_documents\7567569144\2026-08-10T10-03-16.162Z-rc_book-Rc_Patel Vineshbhai Vijaybhai\507255771592099.jpg]
+    Quality: blur=40.2 (is_blurry=True), bright=186.6, rot=0
+    OCR Text items (27):
+      00: 'Reg.No.' (conf=0.96, y=[29.0-91.0], x=[667.0-859.0])
+      01: 'GJ' (conf=0.99, y=[62.0-124.0], x=[130.0-216.0])
+      02: 'NT' (conf=1.00, y=[69.0-131.0], x=[311.0-411.0])
+      03: 'GJ06HG4463' (conf=1.00, y=[138.0-198.0], x=[674.0-1102.0])
+      04: 'Seating Capacity' (conf=0.98, y=[209.0-271.0], x=[92.0-495.0])
+      05: 'Maker's Name' (conf=0.95, y=[216.0-262.0], x=[674.0-992.0])
+      06: '2' (conf=1.00, y=[296.0-362.0], x=[80.0-135.0])
+      07: 'BAJAJ AUTO LTD' (conf=0.93, y=[298.0-351.0], x=[671.0-1122.0])
+      08: 'Wheel Base' (conf=0.95, y=[362.0-416.0], x=[93.0-375.0])
+      09: 'N2431631' (conf=0.99, y=[431.0-487.0], x=[1720.0-1968.0])
+      10: 'Form23A' (conf=0.99, y=[431.0-602.0], x=[2054.0-2094.0])
+      11: 'ModelName' (conf=0.99, y=[462.0-509.0], x=[674.0-963.0])
+      12: 'Cubic Capacity' (conf=0.98, y=[511.0-564.0], x=[102.0-455.0])
+      13: 'DISCOVER 100 M DRUM' (conf=0.91, y=[546.0-605.0], x=[678.0-1288.0])
+      14: '100' (conf=1.00, y=[601.0-674.0], x=[90.0-215.0])
+      15: 'Cylinder No' (conf=0.96, y=[655.0-718.0], x=[101.0-385.0])
+      16: 'Colour' (conf=1.00, y=[707.0-762.0], x=[671.0-830.0])
+      17: 'Financer Name' (conf=0.97, y=[755.0-802.0], x=[1654.0-1959.0])
+      18: 'CylinderValidity' (conf=1.00, y=[802.0-867.0], x=[106.0-488.0])
+      19: 'BLKCERUB' (conf=0.99, y=[810.0-874.0], x=[677.0-1014.0])
+      20: 'Body Type' (conf=0.96, y=[884.0-951.0], x=[669.0-910.0])
+      21: 'Month &Yr.ofMfg' (conf=0.96, y=[951.0-1014.0], x=[108.0-548.0])
+      22: 'SOLO+PILL.RIDER' (conf=0.99, y=[977.0-1049.0], x=[684.0-1176.0])
+      23: 'FEBRUARY 2014' (conf=0.96, y=[1046.0-1116.0], x=[112.0-630.0])
+      24: 'Registration Authority' (conf=0.98, y=[1146.0-1225.0], x=[1534.0-2039.0])
+      25: 'VADODARA' (conf=1.00, y=[1219.0-1290.0], x=[1649.0-1931.0])
+      26: 'Owner's Sign' (conf=0.96, y=[1282.0-1343.0], x=[145.0-458.0])
+
+======================================================================
+DRIVER: 8109305123
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\8109305123\2026-08-10T10-58-50.879Z-adhaar_card-Aadhaar_Sunil\doc_1786359351783327.jpg]
+    Quality: blur=228.4 (is_blurry=False), bright=165.3, rot=0
+    OCR Text items (14):
+      00: 'HRARR' (conf=0.73, y=[46.0-83.0], x=[419.0-653.0])
+      01: 'Government of india' (conf=0.94, y=[97.0-132.0], x=[342.0-730.0])
+      02: 'RAC' (conf=0.53, y=[99.0-124.0], x=[1149.0-1258.0])
+      03: 'Aadhaar no.issued:09/c7i2015' (conf=0.90, y=[182.0-592.0], x=[80.0-131.0])
+      04: 'Sunil' (conf=0.99, y=[237.0-271.0], x=[447.0-532.0])
+      05: '/DB:01/01/1998' (conf=0.91, y=[278.0-312.0], x=[449.0-857.0])
+      06: 'MALE' (conf=0.99, y=[317.0-360.0], x=[447.0-626.0])
+      07: '3' (conf=0.58, y=[435.0-466.0], x=[475.0-1240.0])
+      08: 'Aadhaar is proof of identity,not of citizenship' (conf=0.96, y=[525.0-552.0], x=[477.0-1119.0])
+      09: 'or date of birth.It should be used with verification (onlin' (conf=0.95, y=[563.0-590.0], x=[477.0-1265.0])
+      10: 'authentication,or scanning of QR code/offline XML)' (conf=0.96, y=[601.0-628.0], x=[477.0-1210.0])
+      11: '511860601004' (conf=1.00, y=[717.0-762.0], x=[446.0-867.0])
+      12: 'ART' (conf=0.74, y=[779.0-828.0], x=[291.0-416.0])
+      13: '3T' (conf=0.68, y=[781.0-822.0], x=[446.0-798.0])
+  [Back Image: sample_documents\8109305123\2026-08-10T10-58-50.879Z-adhaar_card-Aadhaar_Sunil\doc_1786359359349806.jpg]
+    Quality: blur=272.2 (is_blurry=False), bright=167.8, rot=0
+    OCR Text items (15):
+      00: 'Unique Identification Authority of India' (conf=0.97, y=[103.0-146.0], x=[404.0-1163.0])
+      01: 'AADI' (conf=0.93, y=[128.0-148.0], x=[1258.0-1328.0])
+      02: '9-476221' (conf=0.91, y=[245.0-274.0], x=[140.0-442.0])
+      03: '1202' (conf=0.99, y=[264.0-319.0], x=[140.0-161.0])
+      04: 'Address:' (conf=0.99, y=[305.0-342.0], x=[167.0-313.0])
+      05: 'S/O:Pancham Vaghel, imaliya,Imaliya,PO' (conf=0.91, y=[337.0-380.0], x=[166.0-876.0])
+      06: 'Imliva,DiST:Morena,' (conf=0.87, y=[382.0-413.0], x=[171.0-520.0])
+      07: 'MadhyaPradesh-476221' (conf=0.99, y=[412.0-453.0], x=[145.0-600.0])
+      08: 'Detalis as' (conf=0.96, y=[446.0-579.0], x=[145.0-171.0])
+      09: '511860601004' (conf=1.00, y=[692.0-740.0], x=[570.0-1000.0])
+      10: 'VID:9157235821429700' (conf=0.96, y=[754.0-789.0], x=[567.0-1032.0])
+      11: '-' (conf=0.78, y=[814.0-848.0], x=[434.0-456.0])
+      12: 'helpuidsl.gov.in' (conf=0.78, y=[806.0-847.0], x=[514.0-987.0])
+      13: ' www.uidai.go' (conf=0.82, y=[804.0-837.0], x=[1005.0-1324.0])
+      14: '1847' (conf=0.88, y=[818.0-848.0], x=[295.0-385.0])
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\8109305123\2026-08-10T10-58-50.882Z-driving_license-Dl_Sunil\2279557961950879.jpg]
+    Quality: blur=1402.5 (is_blurry=False), bright=228.6, rot=0
+    OCR Text items (18):
+      00: 'Indian Union Driving Licence' (conf=0.97, y=[80.0-134.0], x=[459.0-1346.0])
+      01: 'MP' (conf=0.93, y=[97.0-125.0], x=[1637.0-1692.0])
+      02: 'Issued by MADHYA PRADESH' (conf=0.90, y=[171.0-220.0], x=[467.0-1197.0])
+      03: 'MP06 20250010848' (conf=0.97, y=[268.0-314.0], x=[444.0-910.0])
+      04: '20-08-2025' (conf=0.96, y=[284.0-504.0], x=[1705.0-1745.0])
+      05: 'Validity (NT)Validity (TR)' (conf=0.93, y=[351.0-398.0], x=[758.0-1352.0])
+      06: 'Issue Date' (conf=0.93, y=[361.0-400.0], x=[459.0-684.0])
+      07: '20-08-2025' (conf=0.98, y=[427.0-473.0], x=[459.0-690.0])
+      08: '31-12-2037' (conf=0.99, y=[420.0-471.0], x=[769.0-995.0])
+      09: 'Date Of First Issue' (conf=0.92, y=[515.0-883.0], x=[1702.0-1741.0])
+      10: 'Name:SUNIL' (conf=0.93, y=[593.0-644.0], x=[75.0-382.0])
+      11: 'Holder's Signature' (conf=0.98, y=[608.0-649.0], x=[1367.0-1671.0])
+      12: 'Organ Donor:No' (conf=0.97, y=[662.0-712.0], x=[1187.0-1522.0])
+      13: 'Date Of Birth01-01-1998 Blood Group:-' (conf=0.90, y=[671.0-750.0], x=[77.0-980.0])
+      14: 'Son/DaughterWife of:PANCHAM VAGHEL' (conf=0.92, y=[734.0-811.0], x=[77.0-989.0])
+      15: 'Address:' (conf=0.93, y=[851.0-897.0], x=[92.0-278.0])
+      16: 'MALIYAIMLIYA' (conf=0.94, y=[881.0-936.0], x=[85.0-468.0])
+      17: 'MALIYA JOURA MORENA MADHYA PRADESH,476221' (conf=0.94, y=[896.0-992.0], x=[86.0-1220.0])
+  [Back Image: sample_documents\8109305123\2026-08-10T10-58-50.882Z-driving_license-Dl_Sunil\2279578458539419.jpg]
+    Quality: blur=927.8 (is_blurry=False), bright=233.9, rot=0
+    OCR Text items (33):
+      00: 'DLNo:MP0620250010848' (conf=0.98, y=[123.0-202.0], x=[84.0-753.0])
+      01: 'ADPVEH No.(Regn.Numbers)' (conf=0.98, y=[273.0-344.0], x=[484.0-1103.0])
+      02: 'Hazardous validity' (conf=0.99, y=[402.0-460.0], x=[478.0-883.0])
+      03: 'Mill Validity' (conf=0.95, y=[417.0-472.0], x=[994.0-1229.0])
+      04: 'Fom7Rnle16(2)' (conf=0.87, y=[467.0-751.0], x=[1730.0-1767.0])
+      05: 'Class of' (conf=0.90, y=[543.0-591.0], x=[55.0-220.0])
+      06: 'Date of' (conf=0.97, y=[562.0-611.0], x=[769.0-908.0])
+      07: 'Code' (conf=1.00, y=[569.0-616.0], x=[330.0-439.0])
+      08: 'Issued by' (conf=0.95, y=[571.0-626.0], x=[522.0-708.0])
+      09: 'Vehicle' (conf=0.98, y=[564.0-610.0], x=[951.0-1085.0])
+      10: 'Badge' (conf=0.96, y=[567.0-618.0], x=[1126.0-1247.0])
+      11: 'Badge' (conf=1.00, y=[565.0-618.0], x=[1331.0-1445.0])
+      12: 'Badge' (conf=0.98, y=[573.0-620.0], x=[1528.0-1641.0])
+      13: 'Venicie' (conf=0.92, y=[587.0-627.0], x=[55.0-201.0])
+      14: 'Category' (conf=0.99, y=[604.0-652.0], x=[953.0-1112.0])
+      15: 'Issue' (conf=0.98, y=[608.0-648.0], x=[782.0-889.0])
+      16: 'Number' (conf=0.99, y=[612.0-646.0], x=[1129.0-1265.0])
+      17: 'issued date' (conf=0.98, y=[610.0-650.0], x=[1330.0-1527.0])
+      18: 'issued By' (conf=0.86, y=[609.0-658.0], x=[1534.0-1699.0])
+      19: 'MCWG' (conf=0.98, y=[676.0-716.0], x=[310.0-442.0])
+      20: 'MP06' (conf=0.97, y=[680.0-722.0], x=[561.0-669.0])
+      21: '20-08-2025' (conf=0.96, y=[684.0-724.0], x=[725.0-917.0])
+      22: 'NT' (conf=0.71, y=[684.0-724.0], x=[1006.0-1065.0])
+      23: 'LMV' (conf=0.96, y=[747.0-788.0], x=[331.0-425.0])
+      24: 'MP06' (conf=0.97, y=[758.0-798.0], x=[556.0-667.0])
+      25: '20-08-2025' (conf=0.94, y=[762.0-798.0], x=[725.0-915.0])
+      26: 'NT' (conf=1.00, y=[760.0-800.0], x=[1004.0-1061.0])
+      27: 'AGRTLR' (conf=0.95, y=[830.0-870.0], x=[292.0-462.0])
+      28: 'MP06' (conf=0.89, y=[830.0-870.0], x=[558.0-667.0])
+      29: '20-08-2025' (conf=0.94, y=[830.0-870.0], x=[719.0-913.0])
+      30: 'NT' (conf=1.00, y=[830.0-870.0], x=[1004.0-1061.0])
+      31: 'Errerpency Contact Number' (conf=0.88, y=[1045.0-1089.0], x=[38.0-537.0])
+      32: 'Lioencing Authority' (conf=0.92, y=[1043.0-1087.0], x=[1352.0-1644.0])
+
+--- Document: PAN ---
+  [Front Image: sample_documents\8109305123\2026-08-10T10-58-50.885Z-pan_card-Pan_Sunil\2279467996245951.jpg]
+    Quality: blur=1247.8 (is_blurry=False), bright=183.6, rot=0
+    OCR Text items (15):
+      00: 'INCOME TAXDEPARTMENT' (conf=0.98, y=[71.0-253.0], x=[121.0-868.0])
+      01: 'HRRCOR' (conf=0.69, y=[140.0-305.0], x=[1278.0-1873.0])
+      02: 'PI Ik b hlh' (conf=0.54, y=[260.0-415.0], x=[570.0-1140.0])
+      03: 'GOVT.OF INDIA' (conf=0.97, y=[249.0-396.0], x=[1272.0-1844.0])
+      04: 'Permanent Account Number Card' (conf=0.98, y=[342.0-504.0], x=[489.0-1240.0])
+      05: 'MHIPS3871E' (conf=0.99, y=[460.0-578.0], x=[646.0-1058.0])
+      06: '/Name' (conf=0.99, y=[512.0-601.0], x=[40.0-297.0])
+      07: 'SUNIL' (conf=1.00, y=[571.0-642.0], x=[36.0-190.0])
+      08: '/Father's Name' (conf=0.92, y=[669.0-812.0], x=[27.0-608.0])
+      09: 'PANCHAM VAGHEL' (conf=0.98, y=[736.0-844.0], x=[17.0-493.0])
+      10: 'Date of Birth' (conf=0.95, y=[902.0-984.0], x=[0.0-257.0])
+      11: 'Hota aTe' (conf=0.53, y=[948.0-1070.0], x=[805.0-1139.0])
+      12: '01/01/1998' (conf=1.00, y=[955.0-1034.0], x=[0.0-233.0])
+      13: '02102019' (conf=1.00, y=[1016.0-1089.0], x=[1548.0-1738.0])
+      14: '&R/Signature' (conf=0.97, y=[1039.0-1144.0], x=[698.0-1100.0])
+
+--- Document: RC ---
+  [Front Image: sample_documents\8109305123\2026-08-10T11-01-51.929Z-rc_book-Rc_Sunil\doc_1786359683646384.jpg]
+    Quality: blur=148.8 (is_blurry=False), bright=138.3, rot=0
+    OCR Text items (29):
+      00: 'Indian Union Vehicle Registration Certificate' (conf=0.97, y=[19.0-40.0], x=[181.0-638.0])
+      01: 'Issued by Gujarat Motor Vehicle Department' (conf=0.95, y=[44.0-67.0], x=[180.0-640.0])
+      02: 'Regn No' (conf=0.96, y=[108.0-132.0], x=[195.0-278.0])
+      03: 'Date of Regn.' (conf=0.94, y=[110.0-130.0], x=[354.0-477.0])
+      04: 'Regn.Validity' (conf=0.99, y=[108.0-129.0], x=[510.0-634.0])
+      05: 'Owner' (conf=0.99, y=[106.0-127.0], x=[672.0-730.0])
+      06: 'GJ05CX5342' (conf=0.99, y=[134.0-154.0], x=[196.0-314.0])
+      07: '04-07-2024' (conf=0.99, y=[133.0-153.0], x=[354.0-455.0])
+      08: 'As per Fitness' (conf=0.96, y=[133.0-153.0], x=[510.0-640.0])
+      09: 'Serial' (conf=1.00, y=[128.0-152.0], x=[671.0-727.0])
+      10: 'Chassis No' (conf=0.97, y=[162.0-183.0], x=[195.0-301.0])
+      11: 'MD2B47AX4RWC36983' (conf=0.99, y=[185.0-208.0], x=[195.0-405.0])
+      12: 'Engine/Motor No' (conf=0.98, y=[214.0-237.0], x=[194.0-350.0])
+      13: 'Card Issue Date (09-07-2024)' (conf=0.92, y=[226.0-484.0], x=[813.0-844.0])
+      14: 'AZXWRC17848' (conf=0.96, y=[236.0-260.0], x=[193.0-334.0])
+      15: 'Owner Name' (conf=0.96, y=[267.0-286.0], x=[194.0-314.0])
+      16: 'MUNNA VERMA' (conf=0.98, y=[289.0-313.0], x=[193.0-340.0])
+      17: 'Son/Wife/Daughter of ( case of Individual Owner)' (conf=0.95, y=[312.0-339.0], x=[193.0-655.0])
+      18: 'NARAYAN MAHTO' (conf=0.96, y=[341.0-365.0], x=[193.0-362.0])
+      19: 'Ownership' (conf=1.00, y=[373.0-394.0], x=[194.0-296.0])
+      20: 'Fuel' (conf=0.90, y=[397.0-419.0], x=[14.0-59.0])
+      21: 'INDIMIDUAL' (conf=0.94, y=[394.0-418.0], x=[191.0-303.0])
+      22: 'CNGCNILY' (conf=0.83, y=[415.0-444.0], x=[10.0-117.0])
+      23: 'Address' (conf=1.00, y=[424.0-448.0], x=[192.0-274.0])
+      24: '64.SANTOSH NAGAR,PARVAT GAMPARVAT,PO:PARVAT.SURAT.' (conf=0.92, y=[437.0-473.0], x=[191.0-804.0])
+      25: 'ctoige' (conf=0.64, y=[453.0-471.0], x=[21.0-73.0])
+      26: 'n Norms' (conf=0.92, y=[451.0-469.0], x=[85.0-171.0])
+      27: 'STAGE' (conf=0.99, y=[472.0-496.0], x=[72.0-167.0])
+      28: 'SURAT-GUJARAT-395010' (conf=0.99, y=[470.0-495.0], x=[192.0-426.0])
+  [Back Image: sample_documents\8109305123\2026-08-10T11-01-51.929Z-rc_book-Rc_Sunil\doc_1786359700343134.jpg]
+    Quality: blur=49.3 (is_blurry=True), bright=74.2, rot=0
+    OCR Text items (29):
+      00: 'Vehide Class:THREE WHEELER (PASSENGER) (3WT)' (conf=0.92, y=[68.0-95.0], x=[325.0-919.0])
+      01: 'GJ04208875' (conf=0.99, y=[99.0-284.0], x=[972.0-1020.0])
+      02: 'Regn. Number' (conf=0.92, y=[139.0-162.0], x=[22.0-185.0])
+      03: 'Maker's Name:' (conf=0.96, y=[140.0-165.0], x=[326.0-488.0])
+      04: 'GJ05CX5342' (conf=0.99, y=[168.0-194.0], x=[22.0-169.0])
+      05: 'BAJAJAUTO LTD' (conf=0.92, y=[172.0-194.0], x=[327.0-512.0])
+      06: 'Model Name:' (conf=0.94, y=[201.0-227.0], x=[325.0-470.0])
+      07: 'BAJAJRE CNG4SFI' (conf=0.96, y=[233.0-255.0], x=[327.0-554.0])
+      08: 'Colour:' (conf=1.00, y=[267.0-290.0], x=[328.0-411.0])
+      09: '/Body Type:' (conf=0.92, y=[264.0-292.0], x=[618.0-757.0])
+      10: '/BOLTEDON FRAME' (conf=0.94, y=[292.0-316.0], x=[619.0-848.0])
+      11: 'ECOGREEN' (conf=0.99, y=[293.0-315.0], x=[327.0-466.0])
+      12: 'Seating(in all) Capacity' (conf=0.97, y=[328.0-351.0], x=[328.0-586.0])
+      13: 'Form 23A' (conf=0.91, y=[348.0-449.0], x=[969.0-1008.0])
+      14: '4' (conf=0.99, y=[359.0-375.0], x=[327.0-341.0])
+      15: 'Unladen/ Laden Weight (Kg)' (conf=0.94, y=[386.0-411.0], x=[326.0-637.0])
+      16: '407' (conf=1.00, y=[417.0-438.0], x=[326.0-367.0])
+      17: '1717' (conf=0.92, y=[413.0-440.0], x=[369.0-473.0])
+      18: 'Cubic Cap./Horse Power (BHP/Kw) Wheel Sase(mm)' (conf=0.91, y=[447.0-472.0], x=[326.0-892.0])
+      19: '2000' (conf=1.00, y=[472.0-498.0], x=[712.0-767.0])
+      20: 'Nomt-Year of Mfg' (conf=0.85, y=[482.0-505.0], x=[31.0-237.0])
+      21: '236.20' (conf=1.00, y=[476.0-499.0], x=[326.0-400.0])
+      22: '/9.78' (conf=0.96, y=[475.0-498.0], x=[439.0-507.0])
+      23: '06-2024' (conf=0.98, y=[508.0-530.0], x=[32.0-120.0])
+      24: 'Financier:' (conf=0.99, y=[509.0-532.0], x=[327.0-437.0])
+      25: 'No.of Cylinders' (conf=0.92, y=[541.0-564.0], x=[37.0-211.0])
+      26: 'DURGAMOTORS' (conf=1.00, y=[535.0-560.0], x=[326.0-513.0])
+      27: 'Registration Authonty' (conf=0.97, y=[560.0-589.0], x=[784.0-986.0])
+      28: 'SURAT' (conf=1.00, y=[585.0-612.0], x=[913.0-989.0])
+
+======================================================================
+DRIVER: 8128034279
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\8128034279\2026-08-10T09-03-39.211Z-adhaar_card-Aadhaar_Chandresh Kansagra\doc_1786352273429232.jpg]
+    Quality: blur=154.8 (is_blurry=False), bright=165.3, rot=0
+    OCR Text items (5):
+      00: 'Government of India' (conf=0.96, y=[314.0-402.0], x=[782.0-1455.0])
+      01: 'Kansagara Chandresh Punabhai' (conf=0.98, y=[487.0-575.0], x=[746.0-1661.0])
+      02: 'DOB09/11/1996' (conf=0.92, y=[836.0-891.0], x=[746.0-1399.0])
+      03: 'y/Male' (conf=0.90, y=[914.0-991.0], x=[738.0-1035.0])
+      04: '756129591965' (conf=1.00, y=[1127.0-1199.0], x=[780.0-1452.0])
+  [Back Image: sample_documents\8128034279\2026-08-10T09-03-39.211Z-adhaar_card-Aadhaar_Chandresh Kansagra\doc_1786352287291674.jpg]
+    Quality: blur=263.1 (is_blurry=False), bright=177.2, rot=0
+    OCR Text items (14):
+      00: 'euede aeongrylaseg' (conf=0.55, y=[219.0-300.0], x=[660.0-1819.0])
+      01: 'Unique IdentificationAuthority of India' (conf=0.97, y=[328.0-399.0], x=[653.0-1949.0])
+      02: 'Address:S/O:Punabhai,' (conf=0.96, y=[451.0-505.0], x=[1236.0-1894.0])
+      03: 'y yyous' (conf=0.72, y=[458.0-514.0], x=[221.0-881.0])
+      04: 'Morba, Morba,Bhavnagar,' (conf=0.95, y=[521.0-580.0], x=[1231.0-1951.0])
+      05: '364505' (conf=0.98, y=[538.0-602.0], x=[218.0-910.0])
+      06: 'Gariadhar, Gujarat, 364505' (conf=0.95, y=[597.0-651.0], x=[1236.0-1968.0])
+      07: '7561.29591965' (conf=0.96, y=[1134.0-1218.0], x=[763.0-1431.0])
+      08: 'X' (conf=0.62, y=[1313.0-1407.0], x=[1026.0-1151.0])
+      09: 'www' (conf=0.86, y=[1344.0-1414.0], x=[1792.0-1969.0])
+      10: '1947' (conf=1.00, y=[1370.0-1413.0], x=[276.0-370.0])
+      11: '18003001947' (conf=0.99, y=[1415.0-1455.0], x=[185.0-461.0])
+      12: 'help@uidai.gov.in' (conf=0.99, y=[1408.0-1472.0], x=[907.0-1270.0])
+      13: 'www.uidai.gov.in' (conf=0.98, y=[1431.0-1494.0], x=[1703.0-2055.0])
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\8128034279\2026-08-10T09-03-39.222Z-driving_license-Dl_Chandresh Kansagra\184867084655946.jpg]
+    Quality: blur=3071.4 (is_blurry=False), bright=220.4, rot=0
+    OCR Text items (15):
+      00: 'GNT' (conf=0.96, y=[45.0-250.0], x=[2251.0-2723.0])
+      01: 'UNioN oF InDiADriving Licence' (conf=0.78, y=[77.0-322.0], x=[573.0-2192.0])
+      02: 'GUJARAT STATE' (conf=0.96, y=[285.0-409.0], x=[602.0-1243.0])
+      03: 'GJ04-20200001225' (conf=0.97, y=[410.0-549.0], x=[635.0-1385.0])
+      04: 'Valie' (conf=0.76, y=[606.0-661.0], x=[1531.0-1667.0])
+      05: 'Date of First Issue' (conf=0.94, y=[611.0-713.0], x=[740.0-1337.0])
+      06: '08-11-2036' (conf=0.98, y=[672.0-778.0], x=[1467.0-1955.0])
+      07: '16-01-2020' (conf=0.99, y=[708.0-824.0], x=[755.0-1211.0])
+      08: 'CDOI:16/01/2020' (conf=0.92, y=[839.0-942.0], x=[786.0-1421.0])
+      09: 'Blood Group' (conf=0.95, y=[879.0-966.0], x=[1543.0-1942.0])
+      10: 'Date of Birth' (conf=0.91, y=[924.0-1018.0], x=[813.0-1219.0])
+      11: '09-11-1996' (conf=0.99, y=[1019.0-1122.0], x=[831.0-1228.0])
+      12: 'CHANDRESH P KANSAGARA' (conf=0.96, y=[1289.0-1466.0], x=[209.0-1349.0])
+      13: 'Sor/Daughter/wife of' (conf=0.92, y=[1509.0-1636.0], x=[179.0-978.0])
+      14: 'PUNABHAIC KANSAGARA' (conf=0.97, y=[1645.0-1816.0], x=[230.0-1289.0])
+  [Back Image: sample_documents\8128034279\2026-08-10T09-03-39.222Z-driving_license-Dl_Chandresh Kansagra\184894865801794.jpg]
+    Quality: blur=2164.2 (is_blurry=False), bright=234.9, rot=0
+    OCR Text items (13):
+      00: 'GJ0701000523575' (conf=0.84, y=[69.0-132.0], x=[2097.0-2657.0])
+      01: 'Aadhaar No' (conf=0.95, y=[117.0-178.0], x=[1414.0-1750.0])
+      02: 'GJ0420200001225' (conf=0.97, y=[194.0-310.0], x=[36.0-746.0])
+      03: 'Form7.Rule 16(2)' (conf=0.87, y=[624.0-1086.0], x=[2594.0-2679.0])
+      04: '3' (conf=0.73, y=[644.0-785.0], x=[2208.0-2368.0])
+      05: 'Permanent Address' (conf=0.96, y=[1016.0-1080.0], x=[45.0-613.0])
+      06: 'MORA MORBA' (conf=0.93, y=[1105.0-1154.0], x=[48.0-542.0])
+      07: 'GARIADHAR.BHAVNAGAR,GJ364505' (conf=0.92, y=[1160.0-1234.0], x=[34.0-1293.0])
+      08: 'GJ' (conf=0.96, y=[1240.0-1303.0], x=[62.0-189.0])
+      09: 'Mes' (conf=0.96, y=[1352.0-1541.0], x=[1900.0-2304.0])
+      10: 'Emergency'ContactNo' (conf=0.96, y=[1526.0-1610.0], x=[835.0-1505.0])
+      11: 'Licencing Authority' (conf=0.95, y=[1546.0-1615.0], x=[1970.0-2634.0])
+      12: 'BHAVNAGAR RTO' (conf=0.96, y=[1641.0-1701.0], x=[1939.0-2510.0])
+
+--- Document: PAN ---
+  [Front Image: sample_documents\8128034279\2026-08-10T09-03-39.200Z-pan_card-Pan_Chandresh Kansagra\184820073847328.jpg]
+    Quality: blur=3684.2 (is_blurry=False), bright=157.3, rot=0
+    OCR Text items (13):
+      00: 'HRRCR' (conf=0.75, y=[33.0-207.0], x=[1704.0-2574.0])
+      01: 'GOVT.OF INDIA' (conf=0.99, y=[179.0-353.0], x=[1730.0-2588.0])
+      02: 'INCOME TAX DEPARTMENT' (conf=0.98, y=[302.0-479.0], x=[90.0-1146.0])
+      03: 'Permanent Account Number Card' (conf=0.97, y=[524.0-692.0], x=[686.0-1804.0])
+      04: 'KUGPK7278Q' (conf=1.00, y=[673.0-821.0], x=[925.0-1620.0])
+      05: 'KANSAGARA CHANDRESH PUNABHAI' (conf=0.96, y=[1006.0-1192.0], x=[143.0-1446.0])
+      06: '/Name' (conf=0.97, y=[1034.0-1115.0], x=[143.0-466.0])
+      07: '05072021' (conf=1.00, y=[1165.0-1255.0], x=[2483.0-2740.0])
+      08: 'fr antar/Father's Name' (conf=0.79, y=[1217.0-1346.0], x=[157.0-981.0])
+      09: 'PUNABHAI CHHAGANBHAI KANSAGARA' (conf=0.95, y=[1228.0-1422.0], x=[160.0-1542.0])
+      10: 'Date of Birth' (conf=0.97, y=[1562.0-1665.0], x=[171.0-533.0])
+      11: 'ater/Signature' (conf=0.83, y=[1582.0-1700.0], x=[1038.0-1579.0])
+      12: '09/11/1996' (conf=1.00, y=[1640.0-1747.0], x=[171.0-548.0])
+
+--- Document: RC ---
+  [Front Image: sample_documents\8128034279\2026-08-10T09-04-58.948Z-rc_book-Rc_Chandresh Kansagra\184981288579338.jpg]
+    Quality: blur=976.0 (is_blurry=False), bright=194.8, rot=0
+    OCR Text items (29):
+      00: 'Government of Gujarat' (conf=0.95, y=[57.0-198.0], x=[826.0-2234.0])
+      01: 'GJ)NT' (conf=0.87, y=[121.0-262.0], x=[2352.0-2726.0])
+      02: 'Certificate of Registration' (conf=0.95, y=[200.0-294.0], x=[841.0-2030.0])
+      03: 'ent uGujarat Stateid uGujarat Statet Gujarat 5' (conf=0.78, y=[311.0-345.0], x=[873.0-1610.0])
+      04: 'Date of Reg' (conf=0.97, y=[377.0-459.0], x=[1499.0-1849.0])
+      05: 'Reg.Validity' (conf=0.99, y=[380.0-459.0], x=[2029.0-2391.0])
+      06: 'Reg.No.' (conf=0.97, y=[383.0-456.0], x=[844.0-1092.0])
+      07: 'Phn bae' (conf=0.53, y=[412.0-444.0], x=[93.0-300.0])
+      08: 'GJ27AD6605' (conf=0.99, y=[479.0-549.0], x=[839.0-1371.0])
+      09: '23/05/2014' (conf=1.00, y=[485.0-543.0], x=[1491.0-1945.0])
+      10: '22/05/2029' (conf=1.00, y=[473.0-549.0], x=[1982.0-2443.0])
+      11: 'Owner' (conf=1.00, y=[587.0-678.0], x=[2030.0-2244.0])
+      12: 'Chassis No' (conf=0.96, y=[601.0-662.0], x=[853.0-1173.0])
+      13: '02' (conf=0.99, y=[610.0-694.0], x=[2283.0-2466.0])
+      14: 'MBLHA10AMEHD33943' (conf=0.99, y=[676.0-740.0], x=[841.0-1485.0])
+      15: 'Sr.No.' (conf=0.96, y=[679.0-752.0], x=[2035.0-2221.0])
+      16: 'Engine No.' (conf=0.97, y=[763.0-839.0], x=[850.0-1177.0])
+      17: 'Ownership Tr.Date' (conf=0.97, y=[798.0-859.0], x=[2047.0-2597.0])
+      18: 'HA10EJEHD27514' (conf=0.98, y=[851.0-912.0], x=[850.0-1336.0])
+      19: 'Owner Name' (conf=0.97, y=[941.0-999.0], x=[862.0-1252.0])
+      20: 'KANSARA CHANDRESH' (conf=0.97, y=[1019.0-1086.0], x=[853.0-1689.0])
+      21: 'Vehicle Class' (conf=0.96, y=[1109.0-1170.0], x=[268.0-652.0])
+      22: 'M-Cycle/Scooter' (conf=0.99, y=[1190.0-1248.0], x=[166.0-667.0])
+      23: 'Son/Daughter/Wife of' (conf=0.98, y=[1213.0-1292.0], x=[864.0-1514.0])
+      24: 'PUNABHAI' (conf=0.99, y=[1312.0-1373.0], x=[862.0-1211.0])
+      25: 'Address' (conf=1.00, y=[1503.0-1571.0], x=[876.0-1116.0])
+      26: 'FuelUsed' (conf=0.99, y=[1509.0-1589.0], x=[276.0-580.0])
+      27: 'MORABA AT-MORABA TA-GARIYADHAR Bhavnagar GJ 364505' (conf=0.93, y=[1541.0-1623.0], x=[862.0-2653.0])
+      28: 'PETROL' (conf=1.00, y=[1602.0-1678.0], x=[273.0-574.0])
+  [Back Image: sample_documents\8128034279\2026-08-10T09-04-58.948Z-rc_book-Rc_Chandresh Kansagra\184991776658492.jpg]
+    Quality: blur=4171.7 (is_blurry=False), bright=228.7, rot=0
+    OCR Text items (25):
+      00: 'Rec' (conf=0.83, y=[73.0-118.0], x=[814.0-911.0])
+      01: 'Seating Capacity' (conf=0.96, y=[282.0-371.0], x=[84.0-595.0])
+      02: 'Maker's Name' (conf=0.96, y=[294.0-355.0], x=[820.0-1236.0])
+      03: '002' (conf=1.00, y=[357.0-448.0], x=[83.0-262.0])
+      04: 'HERO HONDA MOTORS LTD' (conf=0.94, y=[370.0-450.0], x=[808.0-1742.0])
+      05: 'WheelBase' (conf=0.98, y=[472.0-556.0], x=[81.0-446.0])
+      06: 'GCN4198456' (conf=0.99, y=[528.0-615.0], x=[2239.0-2595.0])
+      07: '000000 mm' (conf=0.78, y=[561.0-641.0], x=[90.0-548.0])
+      08: 'ModelName' (conf=0.99, y=[611.0-673.0], x=[820.0-1206.0])
+      09: 'Cubic Capacity' (conf=0.98, y=[657.0-744.0], x=[84.0-551.0])
+      10: 'SPLENDOR PLUS MAC' (conf=0.93, y=[699.0-761.0], x=[823.0-1520.0])
+      11: '000100' (conf=0.99, y=[746.0-817.0], x=[97.0-401.0])
+      12: 'Cylinder No' (conf=0.93, y=[851.0-929.0], x=[90.0-463.0])
+      13: 'Colour' (conf=1.00, y=[922.0-999.0], x=[819.0-1040.0])
+      14: '01' (conf=0.98, y=[946.0-1013.0], x=[97.0-214.0])
+      15: 'CSV' (conf=0.90, y=[1008.0-1084.0], x=[820.0-993.0])
+      16: 'Financer Name' (conf=0.96, y=[1007.0-1078.0], x=[2149.0-2601.0])
+      17: 'Cylinder-Validity' (conf=0.97, y=[1043.0-1119.0], x=[99.0-592.0])
+      18: 'Body Type' (conf=0.96, y=[1154.0-1237.0], x=[819.0-1146.0])
+      19: 'Month&Yr.of.Mfg' (conf=0.96, y=[1237.0-1307.0], x=[97.0-671.0])
+      20: 'SOLWPR SOLO+PILLRIDER' (conf=0.96, y=[1236.0-1313.0], x=[828.0-1710.0])
+      21: 'April2014' (conf=0.95, y=[1304.0-1393.0], x=[105.0-522.0])
+      22: 'Registration Authonity' (conf=0.93, y=[1551.0-1631.0], x=[2105.0-2747.0])
+      23: 'Bhavnagac' (conf=0.87, y=[1639.0-1716.0], x=[2228.0-2642.0])
+      24: 'Jwne' (conf=0.81, y=[1680.0-1721.0], x=[176.0-348.0])
+
+======================================================================
+DRIVER: 8140680941
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\8140680941\2026-08-06T08-25-43.533Z-adhaar_card-Aadhaar_Thakor Mahendra Rameshbhai\833224295337310.jpg]
+    Quality: blur=1828.6 (is_blurry=False), bright=239.8, rot=0
+    OCR Text items (7):
+      00: 'Government of India' (conf=0.97, y=[210.0-286.0], x=[714.0-1519.0])
+      01: 'Issue Date:22/10/2013' (conf=0.93, y=[490.0-1140.0], x=[53.0-138.0])
+      02: 'Thakor Mahendra Rameshbhai' (conf=0.98, y=[519.0-586.0], x=[926.0-1916.0])
+      03: 'd/DOB:20/11/1996' (conf=0.93, y=[606.0-681.0], x=[923.0-1787.0])
+      04: 'yay/ MALE' (conf=0.86, y=[688.0-786.0], x=[925.0-1284.0])
+      05: '43297070.4394' (conf=0.98, y=[1402.0-1494.0], x=[897.0-1851.0])
+      06: 'VID :91937055.25767365' (conf=0.96, y=[1538.0-1604.0], x=[805.0-1922.0])
+  [Back Image: sample_documents\8140680941\2026-08-06T08-25-43.533Z-adhaar_card-Aadhaar_Thakor Mahendra Rameshbhai\833239009517464.jpg]
+    Quality: blur=2586.8 (is_blurry=False), bright=231.9, rot=0
+    OCR Text items (14):
+      00: 'Unigue Identification Authority of India' (conf=0.94, y=[198.0-289.0], x=[659.0-2323.0])
+      01: 'S/O:57s' (conf=0.83, y=[442.0-526.0], x=[86.0-1461.0])
+      02: 'jY2I-380024' (conf=0.81, y=[600.0-698.0], x=[80.0-636.0])
+      03: 'dAddress:' (conf=0.89, y=[748.0-833.0], x=[26.0-451.0])
+      04: 'S/O: Rameshbhai, 57, kabirvadi, opp,anil' (conf=0.95, y=[833.0-911.0], x=[86.0-1584.0])
+      05: 'starch, bapunagar, Ahmedabad City,' (conf=0.98, y=[920.0-995.0], x=[80.0-1393.0])
+      06: 'Ahmedabad,' (conf=0.98, y=[1004.0-1076.0], x=[89.0-543.0])
+      07: 'Downloa' (conf=0.97, y=[1051.0-1315.0], x=[23.0-90.0])
+      08: 'Gujarat-380024' (conf=0.99, y=[1082.0-1164.0], x=[89.0-707.0])
+      09: '4329 7070.4394' (conf=0.95, y=[1512.0-1627.0], x=[990.0-2043.0])
+      10: 'VID : 9193 7055 2576 7365' (conf=0.94, y=[1668.0-1753.0], x=[888.0-2127.0])
+      11: ' www.uidai.gov.in' (conf=0.92, y=[1767.0-1855.0], x=[1995.0-2813.0])
+      12: ' heipauidai.dov.in' (conf=0.79, y=[1798.0-1861.0], x=[957.0-1801.0])
+      13: '1944' (conf=0.53, y=[1819.0-1873.0], x=[382.0-576.0])
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\8140680941\2026-08-06T08-25-43.545Z-driving_license-Dl_Thakor Mahendra Rameshbhai\833349976375317.jpg]
+    Quality: blur=817.8 (is_blurry=False), bright=234.8, rot=0
+    OCR Text items (16):
+      00: 'UNION or INDIA Driving Licence' (conf=0.88, y=[137.0-270.0], x=[632.0-1981.0])
+      01: 'GUJARATSTATE' (conf=0.97, y=[272.0-330.0], x=[651.0-1343.0])
+      02: 'GJ0120160018059' (conf=1.00, y=[340.0-435.0], x=[653.0-1400.0])
+      03: 'Validity' (conf=0.99, y=[550.0-610.0], x=[1423.0-1604.0])
+      04: 'GJ070L0000184204' (conf=0.96, y=[621.0-1202.0], x=[67.0-151.0])
+      05: 'Date of First Issue' (conf=0.95, y=[610.0-665.0], x=[810.0-1265.0])
+      06: 'NT)25-05-2036' (conf=0.96, y=[632.0-696.0], x=[1361.0-1795.0])
+      07: '26-05-2016' (conf=0.99, y=[673.0-740.0], x=[807.0-1160.0])
+      08: 'CDOL26/05/2016' (conf=0.98, y=[789.0-846.0], x=[818.0-1332.0])
+      09: 'Bloed Group' (conf=0.91, y=[797.0-872.0], x=[1420.0-1752.0])
+      10: 'Date of Birth' (conf=0.96, y=[862.0-929.0], x=[809.0-1139.0])
+      11: '20-11-1996' (conf=0.99, y=[931.0-1006.0], x=[809.0-1160.0])
+      12: 'Name' (conf=1.00, y=[1032.0-1103.0], x=[249.0-421.0])
+      13: 'MAHENDRA R THAKOR' (conf=0.94, y=[1162.0-1254.0], x=[268.0-1063.0])
+      14: 'Sor/Daughter/Wife of' (conf=0.97, y=[1310.0-1397.0], x=[263.0-851.0])
+      15: 'RAMESHBHAI' (conf=0.99, y=[1451.0-1537.0], x=[279.0-749.0])
+  [Back Image: sample_documents\8140680941\2026-08-06T08-25-43.545Z-driving_license-Dl_Thakor Mahendra Rameshbhai\833370177155011.jpg]
+    Quality: blur=589.5 (is_blurry=False), bright=246.1, rot=0
+    OCR Text items (17):
+      00: 'Aadhaar No.' (conf=0.89, y=[145.0-204.0], x=[1394.0-1735.0])
+      01: 'GJ-0120160018059' (conf=0.98, y=[173.0-270.0], x=[152.0-921.0])
+      02: 'HCWOC' (conf=0.80, y=[494.0-545.0], x=[158.0-396.0])
+      03: '26-05-016' (conf=0.77, y=[550.0-616.0], x=[149.0-491.0])
+      04: 'HJT2SNHSO2E' (conf=0.64, y=[565.0-605.0], x=[2148.0-2535.0])
+      05: 'Fornn 7 Rule 16(2)' (conf=0.84, y=[650.0-1119.0], x=[2652.0-2727.0])
+      06: 'GJ' (conf=1.00, y=[684.0-798.0], x=[2274.0-2403.0])
+      07: 'Address' (conf=0.95, y=[1050.0-1108.0], x=[140.0-359.0])
+      08: '673KAEIRWADVASHAPURI' (conf=0.95, y=[1121.0-1184.0], x=[146.0-1035.0])
+      09: 'VAVANILSTARCHRD' (conf=0.98, y=[1201.0-1258.0], x=[149.0-869.0])
+      10: 'SARASPURAHMEADABAD' (conf=0.99, y=[1269.0-1335.0], x=[146.0-1024.0])
+      11: '380018' (conf=0.90, y=[1351.0-1402.0], x=[146.0-367.0])
+      12: 'AHMEDABAD' (conf=0.95, y=[1508.0-1564.0], x=[1964.0-2386.0])
+      13: 'Issuing Authority Sign' (conf=0.90, y=[1578.0-1650.0], x=[1904.0-2630.0])
+      14: 'Emergency Contact No' (conf=0.96, y=[1587.0-1661.0], x=[923.0-1586.0])
+      15: 'Hoider's Signature' (conf=0.95, y=[1635.0-1724.0], x=[134.0-712.0])
+      16: 'Gujarat State' (conf=0.95, y=[1669.0-1738.0], x=[2056.0-2489.0])
+
+--- Document: PAN ---
+  [Front Image: sample_documents\8140680941\2026-08-06T08-25-43.539Z-pan_card-Pan_Thakor Mahendra Rameshbhai\833296125986622.jpg]
+    Quality: blur=2983.3 (is_blurry=False), bright=188.7, rot=0
+    OCR Text items (14):
+      00: '3 fH' (conf=0.54, y=[0.0-263.0], x=[199.0-1300.0])
+      01: 'INCOME TAX DEPARTMENT' (conf=0.95, y=[163.0-400.0], x=[182.0-1284.0])
+      02: 'HR' (conf=0.66, y=[196.0-424.0], x=[1869.0-2700.0])
+      03: 'GOVT.OF INDI' (conf=0.95, y=[359.0-558.0], x=[1887.0-2693.0])
+      04: 'Permanent Account Number Card' (conf=0.98, y=[567.0-772.0], x=[878.0-2107.0])
+      05: 'BHMPT7444P' (conf=1.00, y=[728.0-898.0], x=[1116.0-1855.0])
+      06: 'M/Name' (conf=0.86, y=[771.0-883.0], x=[141.0-518.0])
+      07: 'THAKOR MAHENDRA RAMESHBHA' (conf=0.96, y=[861.0-1070.0], x=[136.0-1451.0])
+      08: 'faan cnTamg /Father's Name' (conf=0.72, y=[1045.0-1223.0], x=[124.0-1067.0])
+      09: 'RAMESHBHAITHAKOR' (conf=0.98, y=[1142.0-1302.0], x=[116.0-984.0])
+      10: 'q at arrg/Date of Birth' (conf=0.75, y=[1320.0-1509.0], x=[95.0-1059.0])
+      11: '20/11/1996' (conf=1.00, y=[1430.0-1571.0], x=[84.0-603.0])
+      12: 'Marendoy' (conf=0.66, y=[1546.0-1705.0], x=[1337.0-1797.0])
+      13: 'anerr/Signature' (conf=0.86, y=[1662.0-1803.0], x=[1269.0-1874.0])
+
+--- Document: RC ---
+  [Front Image: sample_documents\8140680941\2026-08-06T08-28-23.373Z-rc_book-Rc_Thakor Mahendra Rameshbhai\833507142292940.jpg]
+    Quality: blur=2572.1 (is_blurry=False), bright=235.1, rot=0
+    OCR Text items (28):
+      00: 'Government ofGujarat' (conf=0.99, y=[66.0-175.0], x=[812.0-2149.0])
+      01: 'Certificate ofRegistration' (conf=0.97, y=[186.0-272.0], x=[809.0-1957.0])
+      02: 'ryGujarat State' (conf=0.84, y=[305.0-325.0], x=[2322.0-2522.0])
+      03: 'Date of Reg.' (conf=0.95, y=[352.0-431.0], x=[1434.0-1773.0])
+      04: 'Reg.No.' (conf=0.98, y=[358.0-427.0], x=[809.0-1042.0])
+      05: 'Reg.Validity' (conf=0.99, y=[358.0-433.0], x=[1948.0-2290.0])
+      06: 'GJ01SF5195' (conf=0.99, y=[472.0-538.0], x=[793.0-1304.0])
+      07: '24/02/2014' (conf=1.00, y=[469.0-527.0], x=[1429.0-1764.0])
+      08: '23/02/2029' (conf=1.00, y=[469.0-527.0], x=[1938.0-2271.0])
+      09: 'Chassis No' (conf=0.98, y=[557.0-625.0], x=[806.0-1118.0])
+      10: 'Owner' (conf=1.00, y=[563.0-630.0], x=[1945.0-2144.0])
+      11: '01' (conf=1.00, y=[616.0-694.0], x=[2173.0-2281.0])
+      12: 'ME4JF501AET244821' (conf=1.00, y=[649.0-722.0], x=[793.0-1564.0])
+      13: 'Sr.No.' (conf=0.99, y=[644.0-705.0], x=[1948.0-2133.0])
+      14: 'Engine No.' (conf=0.95, y=[727.0-785.0], x=[809.0-1110.0])
+      15: 'Ownership Tr.Date' (conf=0.97, y=[752.0-816.0], x=[1927.0-2466.0])
+      16: 'JF50ET0244479' (conf=0.99, y=[813.0-871.0], x=[793.0-1356.0])
+      17: 'Owner Name' (conf=0.95, y=[882.0-944.0], x=[801.0-1178.0])
+      18: 'RAMESHBHAI' (conf=0.99, y=[965.0-1038.0], x=[793.0-1305.0])
+      19: 'Vehicle Class' (conf=0.97, y=[1041.0-1099.0], x=[238.0-601.0])
+      20: 'MOTOR CYCLE' (conf=0.96, y=[1157.0-1213.0], x=[122.0-620.0])
+      21: 'Son/Daughter/Wife of' (conf=0.98, y=[1154.0-1210.0], x=[806.0-1421.0])
+      22: 'DHIRAJITHAKOR' (conf=1.00, y=[1268.0-1326.0], x=[806.0-1448.0])
+      23: 'Address' (conf=1.00, y=[1417.0-1485.0], x=[795.0-1026.0])
+      24: 'Fuel Used' (conf=0.95, y=[1423.0-1490.0], x=[230.0-512.0])
+      25: '673 KABIRWADI,NR.ASHAPURI VAV.ANILSTRACH' (conf=0.96, y=[1537.0-1604.0], x=[798.0-2411.0])
+      26: 'PETROL' (conf=1.00, y=[1545.0-1604.0], x=[241.0-514.0])
+      27: 'ROAD.SARASPUR AHMEDABAD 380018' (conf=0.96, y=[1618.0-1679.0], x=[798.0-2089.0])
+  [Back Image: sample_documents\8140680941\2026-08-06T08-28-23.373Z-rc_book-Rc_Thakor Mahendra Rameshbhai\833520354944094.jpg]
+    ERROR processing image: Unable to allocate 1.05 MiB for an array with shape (6, 3, 48, 320) and data type float32
+
+======================================================================
+DRIVER: 8780256091
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\8780256091\2026-08-04T16-48-10.301Z-adhaar_card-Aadhaar_Harnish Choksi\doc_1785861899051865.jpg]
+    ERROR processing image: could not create a primitive
+  [Back Image: sample_documents\8780256091\2026-08-04T16-48-10.301Z-adhaar_card-Aadhaar_Harnish Choksi\doc_1785861925203442.jpg]
+    ERROR processing image: Unable to allocate 7.73 MiB for an array with shape (704, 960, 3) and data type float32
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\8780256091\2026-08-04T16-48-10.299Z-driving_license-Dl_Harnish Choksi\doc_1785861966374920.jpg]
+    ERROR processing image: Unable to allocate 5.27 MiB for an array with shape (720, 960) and data type float64
+  [Back Image: sample_documents\8780256091\2026-08-04T16-48-10.299Z-driving_license-Dl_Harnish Choksi\doc_1785861973995424.jpg]
+    ERROR processing image: could not create a primitive
+
+--- Document: PAN ---
+  [Front Image: sample_documents\8780256091\2026-08-04T16-48-10.303Z-pan_card-Pan_Harnish Choksi\doc_1785861946520640.jpg]
+    Quality: blur=184.7 (is_blurry=False), bright=183.1, rot=0
+    OCR Text items (13):
+      00: 'faHrsT' (conf=0.66, y=[172.0-209.0], x=[327.0-437.0])
+      01: 'PAt' (conf=0.55, y=[180.0-211.0], x=[575.0-666.0])
+      02: 'HRCOR' (conf=0.57, y=[184.0-210.0], x=[686.0-798.0])
+      03: 'INCOME TAX DEPARTMENT' (conf=0.97, y=[223.0-251.0], x=[171.0-435.0])
+      04: 'GOVT.OF INDIA' (conf=0.97, y=[226.0-253.0], x=[581.0-796.0])
+      05: 'HARNISH KAVINBHAI CHOKSI' (conf=0.95, y=[265.0-288.0], x=[180.0-501.0])
+      06: 'KAVINBHAI VIRESHBHAI CHOKSI' (conf=0.94, y=[321.0-345.0], x=[180.0-525.0])
+      07: '25/08/1995' (conf=1.00, y=[380.0-401.0], x=[179.0-297.0])
+      08: 'Permanent Account Number' (conf=0.98, y=[408.0-425.0], x=[178.0-413.0])
+      09: 'BFBPC4399R' (conf=0.99, y=[439.0-460.0], x=[178.0-343.0])
+      10: 'H.K.Clor' (conf=0.60, y=[482.0-513.0], x=[176.0-284.0])
+      11: '14102015' (conf=1.00, y=[475.0-551.0], x=[785.0-802.0])
+      12: 'Signature' (conf=1.00, y=[534.0-555.0], x=[175.0-261.0])
+
+--- Document: RC ---
+  [Front Image: sample_documents\8780256091\2026-08-04T16-48-57.295Z-rc_book-Rc_Harnish Choksi\doc_1785862115262517.jpg]
+    Quality: blur=420.9 (is_blurry=False), bright=162.8, rot=90
+    OCR Text items (26):
+      00: 'PETROL' (conf=1.00, y=[104.0-129.0], x=[738.0-820.0])
+      01: 'Address' (conf=1.00, y=[140.0-163.0], x=[583.0-651.0])
+      02: 'Fuel Used' (conf=0.96, y=[142.0-161.0], x=[735.0-817.0])
+      03: 'KAVINBHAI CHOKSI' (conf=0.97, y=[189.0-214.0], x=[440.0-655.0])
+      04: 'Son/Daughter/Wife of' (conf=0.99, y=[221.0-246.0], x=[469.0-650.0])
+      05: 'MOTOR CYCLE' (conf=0.97, y=[219.0-244.0], x=[705.0-853.0])
+      06: 'Vehicle Class' (conf=0.97, y=[257.0-274.0], x=[709.0-815.0])
+      07: 'ALKABEN' (conf=1.00, y=[275.0-300.0], x=[548.0-658.0])
+      08: 'Owner Name' (conf=0.97, y=[304.0-321.0], x=[542.0-650.0])
+      09: 'JEZPDM12099' (conf=1.00, y=[324.0-345.0], x=[504.0-657.0])
+      10: 'Ownership Tr.Date' (conf=0.95, y=[343.0-363.0], x=[171.0-322.0])
+      11: 'Engine No.' (conf=0.94, y=[350.0-368.0], x=[562.0-650.0])
+      12: '01' (conf=0.99, y=[379.0-405.0], x=[229.0-260.0])
+      13: 'Sr.No.' (conf=0.92, y=[374.0-396.0], x=[266.0-324.0])
+      14: 'MD2A37CZXDPM93952' (conf=1.00, y=[371.0-392.0], x=[415.0-658.0])
+      15: 'Owner' (conf=1.00, y=[393.0-418.0], x=[265.0-323.0])
+      16: 'Chassis No' (conf=0.97, y=[398.0-415.0], x=[560.0-650.0])
+      17: '13/05/2013' (conf=1.00, y=[426.0-445.0], x=[378.0-474.0])
+      18: 'GJ05KL2922' (conf=1.00, y=[422.0-444.0], x=[507.0-658.0])
+      19: '12/05/2028' (conf=0.99, y=[428.0-446.0], x=[233.0-328.0])
+      20: 'Reg.Validity' (conf=0.99, y=[452.0-477.0], x=[225.0-323.0])
+      21: 'Date of Reg.' (conf=0.95, y=[452.0-476.0], x=[373.0-470.0])
+      22: 'Reg.No.' (conf=0.96, y=[453.0-476.0], x=[583.0-651.0])
+      23: 'Certificate ofRegistration' (conf=0.99, y=[496.0-525.0], x=[322.0-650.0])
+      24: 'NT' (conf=0.76, y=[512.0-541.0], x=[138.0-175.0])
+      25: 'Government of Gujarat' (conf=0.96, y=[523.0-562.0], x=[268.0-650.0])
+  [Back Image: sample_documents\8780256091\2026-08-04T16-48-57.295Z-rc_book-Rc_Harnish Choksi\doc_1785862123618005.jpg]
+    Quality: blur=157.2 (is_blurry=False), bright=163.0, rot=90
+    OCR Text items (25):
+      00: 'SURAT' (conf=1.00, y=[109.0-131.0], x=[180.0-246.0])
+      01: 'Owner's Sign' (conf=0.98, y=[105.0-129.0], x=[716.0-825.0])
+      02: 'Registration Authority' (conf=0.99, y=[136.0-156.0], x=[116.0-313.0])
+      03: 'MAY2013' (conf=1.00, y=[196.0-218.0], x=[721.0-831.0])
+      04: 'SOLO+PILL.RIDER' (conf=0.99, y=[215.0-235.0], x=[451.0-629.0])
+      05: 'Month &Yr.of Mfg' (conf=0.95, y=[223.0-247.0], x=[680.0-835.0])
+      06: 'Body Type' (conf=0.97, y=[242.0-266.0], x=[552.0-638.0])
+      07: 'Cylinder Validity' (conf=0.98, y=[275.0-299.0], x=[701.0-833.0])
+      08: 'Financer Name' (conf=0.97, y=[282.0-304.0], x=[158.0-277.0])
+      09: 'BLK MEGAN' (conf=0.95, y=[278.0-296.0], x=[515.0-630.0])
+      10: 'Colour' (conf=1.00, y=[305.0-331.0], x=[580.0-639.0])
+      11: 'Cylinder No' (conf=0.97, y=[328.0-350.0], x=[737.0-834.0])
+      12: 'Fom23A' (conf=0.96, y=[358.0-424.0], x=[108.0-125.0])
+      13: '150' (conf=1.00, y=[353.0-376.0], x=[792.0-834.0])
+      14: 'DISCOVER 125 ST' (conf=0.93, y=[368.0-390.0], x=[462.0-632.0])
+      15: 'Cubic Capacity' (conf=0.98, y=[378.0-402.0], x=[711.0-835.0])
+      16: 'Model Name' (conf=0.94, y=[396.0-416.0], x=[532.0-638.0])
+      17: 'N1300209' (conf=0.99, y=[413.0-432.0], x=[158.0-251.0])
+      18: 'Wheel Base' (conf=0.96, y=[428.0-453.0], x=[738.0-835.0])
+      19: 'BAJAJ AUTO LTD' (conf=0.93, y=[456.0-479.0], x=[470.0-633.0])
+      20: '2' (conf=1.00, y=[459.0-481.0], x=[818.0-835.0])
+      21: 'Maker's Name' (conf=0.97, y=[479.0-501.0], x=[522.0-636.0])
+      22: 'Seating Capacity' (conf=0.98, y=[477.0-503.0], x=[695.0-834.0])
+      23: 'GJ05KL2922' (conf=0.99, y=[509.0-536.0], x=[481.0-633.0])
+      24: 'Reg.No.' (conf=0.95, y=[541.0-566.0], x=[570.0-638.0])
+
+======================================================================
+DRIVER: 9016504162
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\9016504162\aadhar card\275c1fbf-dafb-4cff-a213-c5e1a53612da.png]
+    ERROR processing image: could not create a primitive
+  [Back Image: sample_documents\9016504162\aadhar card\b90bd439-50c5-41b2-a479-a8408114db49.png]
+    ERROR processing image: could not create a primitive
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\9016504162\licence\2818ebcd-986b-487f-81ab-c6df8b3b469f.png]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 2583360 bytes in function 'cv::OutOfMemoryError'
+
+  [Back Image: sample_documents\9016504162\licence\d5dd097d-cc95-4996-b5d9-2e80553ca29e.png]
+    ERROR processing image: could not create a primitive
+
+--- Document: PAN ---
+  [Front Image: sample_documents\9016504162\pan_card\c88cb5f9-4f5d-4e09-a4f9-7d5adfee34d2.png]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 20666880 bytes in function 'cv::OutOfMemoryError'
+
+
+--- Document: RC ---
+  [Front Image: sample_documents\9016504162\rc\50c1a9da-6a0b-4d86-8715-764ef8369de2.png]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 20666880 bytes in function 'cv::OutOfMemoryError'
+
+  [Back Image: sample_documents\9016504162\rc\ba050ba6-2b31-4278-b2ce-16acf4f66a3f.png]
+    ERROR processing image: could not create a primitive
+
+======================================================================
+DRIVER: 9024518892
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\9024518892\2026-08-10T08-13-22.708Z-adhaar_card-Aadhaar_Mahendra Thakor\doc_1786349555030268.jpg]
+    Quality: blur=2551.0 (is_blurry=False), bright=223.1, rot=0
+    OCR Text items (34):
+      00: 'HRHROR' (conf=0.67, y=[5.0-37.0], x=[246.0-461.0])
+      01: 'Government of India' (conf=0.97, y=[42.0-77.0], x=[176.0-531.0])
+      02: 'In>phK Fln9h 2Je hPe' (conf=0.52, y=[169.0-203.0], x=[105.0-601.0])
+      03: 'Unigue Identification Authority of India' (conf=0.94, y=[213.0-236.0], x=[76.0-633.0])
+      04: '/Enrolment No.:0516/12112/03243' (conf=0.94, y=[256.0-278.0], x=[118.0-588.0])
+      05: 'To' (conf=0.99, y=[303.0-323.0], x=[125.0-151.0])
+      06: 'Thakor Mahendra' (conf=0.97, y=[357.0-375.0], x=[128.0-249.0])
+      07: 'C/O:Jensug Ram' (conf=0.92, y=[377.0-404.0], x=[123.0-255.0])
+      08: 'koli vas bhilda,' (conf=0.96, y=[405.0-424.0], x=[128.0-232.0])
+      09: 'VTC:Mandar' (conf=0.96, y=[422.0-449.0], x=[124.0-231.0])
+      10: 'PO:Mandar,' (conf=0.97, y=[452.0-471.0], x=[128.0-218.0])
+      11: 'Sub District: Reodar,' (conf=0.88, y=[474.0-496.0], x=[126.0-273.0])
+      12: 'District: Sirohi,' (conf=0.96, y=[499.0-518.0], x=[128.0-234.0])
+      13: 'State: Rajasthan,' (conf=0.95, y=[523.0-541.0], x=[128.0-242.0])
+      14: 'PIN Code:307513,' (conf=0.93, y=[544.0-566.0], x=[126.0-267.0])
+      15: 'Mobile:9024518892' (conf=0.98, y=[570.0-586.0], x=[128.0-279.0])
+      16: 'Signa' (conf=1.00, y=[633.0-647.0], x=[112.0-140.0])
+      17: 'otVerified' (conf=0.79, y=[630.0-647.0], x=[173.0-234.0])
+      18: 'sy Urinde' (conf=0.56, y=[657.0-675.0], x=[189.0-230.0])
+      19: '3 3R /Your Aadhaar No.' (conf=0.87, y=[878.0-901.0], x=[54.0-625.0])
+      20: '546101091054' (conf=1.00, y=[911.0-940.0], x=[230.0-478.0])
+      21: 'VID9176853670481835' (conf=0.99, y=[943.0-965.0], x=[232.0-476.0])
+      22: '3' (conf=0.58, y=[976.0-1008.0], x=[147.0-540.0])
+      23: 'H' (conf=0.66, y=[1067.0-1084.0], x=[232.0-341.0])
+      24: 'Government of India' (conf=0.97, y=[1090.0-1112.0], x=[190.0-388.0])
+      25: 'rno.issued:17/01/2016' (conf=0.91, y=[1129.0-1285.0], x=[59.0-81.0])
+      26: 'Thakor Mahendra' (conf=0.98, y=[1167.0-1186.0], x=[242.0-365.0])
+      27: '/D0B:10/02/2006' (conf=0.90, y=[1191.0-1213.0], x=[241.0-440.0])
+      28: '/MALE' (conf=0.96, y=[1212.0-1242.0], x=[238.0-333.0])
+      29: 'Aadhaar is proof of identity,not of citizenship' (conf=0.96, y=[1320.0-1342.0], x=[253.0-590.0])
+      30: 'or date of birth.It should be used with verification (online' (conf=0.95, y=[1337.0-1360.0], x=[253.0-668.0])
+      31: 'authentication, or scanning of QR code/offline XML)' (conf=0.96, y=[1360.0-1377.0], x=[253.0-635.0])
+      32: '54610109 1054' (conf=0.96, y=[1399.0-1422.0], x=[239.0-447.0])
+      33: '3' (conf=0.51, y=[1440.0-1464.0], x=[159.0-550.0])
+  [Back Image: sample_documents\9024518892\2026-08-10T08-13-22.708Z-adhaar_card-Aadhaar_Mahendra Thakor\doc_1786349560004614.jpg]
+    Quality: blur=3845.3 (is_blurry=False), bright=227.7, rot=90
+    OCR Text items (35):
+      00: 'Details as' (conf=0.97, y=[31.0-43.0], x=[300.0-370.0])
+      01: 'C/OJensug Ramkoli vas bhildaMandarPO' (conf=0.97, y=[43.0-363.0], x=[400.0-422.0])
+      02: 'Address:' (conf=0.94, y=[43.0-114.0], x=[420.0-439.0])
+      03: '-307513' (conf=0.95, y=[43.0-170.0], x=[451.0-469.0])
+      04: '1947' (conf=0.97, y=[64.0-156.0], x=[159.0-178.0])
+      05: 'Aadhaar helps you avai of various Govenment and Non-' (conf=0.91, y=[76.0-537.0], x=[757.0-794.0])
+      06: 'Aadhaaris proofofidentitynotof citizenship or date of birthDOB.DOB' (conf=0.88, y=[78.0-630.0], x=[1037.0-1065.0])
+      07: 'This Aadhaar tter should be verified through eithr onin' (conf=0.77, y=[97.0-556.0], x=[960.0-993.0])
+      08: '-' (conf=0.50, y=[87.0-106.0], x=[1452.0-1467.0])
+      09: 'Entities seeking Aadhaar are obligated to seek consent.' (conf=0.95, y=[99.0-523.0], x=[605.0-635.0])
+      10: 'security when not using Aadhaar/biometrics.' (conf=0.96, y=[107.0-448.0], x=[636.0-658.0])
+      11: 'Use the feature of Lock/Unlock Aadhaar/biometrics to ensure' (conf=0.98, y=[104.0-557.0], x=[658.0-682.0])
+      12: 'Download mAadhaar app to avail of Aadhaar services.' (conf=0.97, y=[104.0-517.0], x=[687.0-709.0])
+      13: 'Keep your mobile number and email id updated in Aadhaar' (conf=0.97, y=[102.0-543.0], x=[714.0-737.0])
+      14: 'Government benefits/services..' (conf=0.96, y=[104.0-343.0], x=[740.0-762.0])
+      15: 'Aadhaar after every 10 years from date of enrolment for Aadhaar.' (conf=0.93, y=[106.0-587.0], x=[789.0-817.0])
+      16: 'Documents to support identity and address should be updated in' (conf=0.94, y=[102.0-587.0], x=[811.0-841.0])
+      17: 'Aadhaar is unique and secure.' (conf=0.97, y=[102.0-338.0], x=[843.0-866.0])
+      18: 'www.uidai.gov.in.' (conf=0.98, y=[106.0-248.0], x=[868.0-889.0])
+      19: 'app stores or using secure QR code reader app available on' (conf=0.93, y=[102.0-561.0], x=[888.0-916.0])
+      20: 'regulations,submitted byAadhaar number holder.' (conf=0.89, y=[102.0-483.0], x=[988.0-1017.0])
+      21: 'is based on information supported by proofof DOB document specifiedin' (conf=0.93, y=[102.0-630.0], x=[1015.0-1037.0])
+      22: '   ' (conf=0.66, y=[99.0-509.0], x=[1067.0-1100.0])
+      23: '3' (conf=0.85, y=[102.0-537.0], x=[1094.0-1121.0])
+      24: '10' (conf=0.88, y=[104.0-583.0], x=[1261.0-1283.0])
+      25: '  Ph eh  s' (conf=0.53, y=[107.0-474.0], x=[1345.0-1368.0])
+      26: ' www.uidai.gov.in. 3y ' (conf=0.83, y=[107.0-611.0], x=[1368.0-1394.0])
+      27: '33' (conf=0.73, y=[106.0-630.0], x=[1397.0-1420.0])
+      28: '3' (conf=0.52, y=[102.0-628.0], x=[1529.0-1553.0])
+      29: ' h 2 ' (conf=0.62, y=[154.0-466.0], x=[531.0-561.0])
+      30: '---' (conf=0.50, y=[159.0-564.0], x=[563.0-586.0])
+      31: ' help@uidai.gov.in www.uidai.gov.in' (conf=0.94, y=[206.0-656.0], x=[157.0-179.0])
+      32: 'VID9176853670481835' (conf=0.99, y=[227.0-485.0], x=[186.0-209.0])
+      33: '546101091054' (conf=0.99, y=[228.0-455.0], x=[213.0-250.0])
+      34: 'T/INFORMATION' (conf=0.96, y=[241.0-498.0], x=[1578.0-1606.0])
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\9024518892\2026-08-10T08-13-22.713Z-driving_license-Dl_Mahendra Thakor\doc_1786349595484384.jpg]
+    Quality: blur=2747.1 (is_blurry=False), bright=233.0, rot=0
+    OCR Text items (28):
+      00: '1:40' (conf=0.91, y=[32.0-55.0], x=[38.0-235.0])
+      01: 'NR195' (conf=0.71, y=[25.0-62.0], x=[403.0-597.0])
+      02: '81%' (conf=0.96, y=[32.0-55.0], x=[620.0-684.0])
+      03: 'RJ3820250000715' (conf=1.00, y=[662.0-690.0], x=[190.0-540.0])
+      04: 'DL Number Holder Name' (conf=0.96, y=[737.0-769.0], x=[48.0-422.0])
+      05: 'THAKOR MAHENDRA' (conf=0.96, y=[817.0-846.0], x=[189.0-573.0])
+      06: 'ACTIVE' (conf=1.00, y=[868.0-903.0], x=[187.0-327.0])
+      07: 'Son/Wife/Daughter of' (conf=0.97, y=[948.0-977.0], x=[48.0-334.0])
+      08: 'JENSUG RAM' (conf=0.97, y=[948.0-977.0], x=[486.0-675.0])
+      09: 'Issue date' (conf=0.99, y=[1005.0-1033.0], x=[45.0-183.0])
+      10: '28-Feb-2025' (conf=0.99, y=[1005.0-1033.0], x=[500.0-675.0])
+      11: 'Licence Validity (Non' (conf=0.96, y=[1060.0-1092.0], x=[45.0-324.0])
+      12: '09-Feb-2046' (conf=0.99, y=[1060.0-1089.0], x=[498.0-673.0])
+      13: 'Transport)' (conf=1.00, y=[1097.0-1127.0], x=[45.0-187.0])
+      14: 'Date of Birth' (conf=0.97, y=[1152.0-1181.0], x=[50.0-218.0])
+      15: '10-Feb-2006' (conf=0.99, y=[1152.0-1181.0], x=[502.0-675.0])
+      16: 'Blood Group' (conf=0.98, y=[1206.0-1242.0], x=[48.0-213.0])
+      17: 'Unknown' (conf=1.00, y=[1207.0-1241.0], x=[550.0-677.0])
+      18: 'Mobile No.' (conf=0.97, y=[1263.0-1297.0], x=[46.0-191.0])
+      19: '******8892' (conf=0.99, y=[1261.0-1297.0], x=[522.0-676.0])
+      20: 'Vehicle Class' (conf=0.98, y=[1323.0-1352.0], x=[45.0-225.0])
+      21: 'MCWG,LMV' (conf=0.97, y=[1321.0-1355.0], x=[507.0-675.0])
+      22: 'RTO' (conf=1.00, y=[1380.0-1412.0], x=[47.0-111.0])
+      23: 'RJ38' (conf=1.00, y=[1380.0-1410.0], x=[601.0-677.0])
+      24: 'Licensing Authority' (conf=0.99, y=[1437.0-1471.0], x=[42.0-299.0])
+      25: 'DISTRICT TRANSPORT' (conf=0.98, y=[1440.0-1464.0], x=[372.0-673.0])
+      26: 'OFFICE,ABUROAD' (conf=0.98, y=[1472.0-1501.0], x=[431.0-675.0])
+      27: 'Tap to check the impound/seizure document status' (conf=0.98, y=[1523.0-1551.0], x=[59.0-665.0])
+  [Back Image: sample_documents\9024518892\2026-08-10T08-13-22.713Z-driving_license-Dl_Mahendra Thakor\doc_1786349599567612.jpg]
+    Quality: blur=2747.1 (is_blurry=False), bright=233.0, rot=0
+    OCR Text items (28):
+      00: '1:40' (conf=0.91, y=[32.0-55.0], x=[38.0-235.0])
+      01: 'NR195' (conf=0.71, y=[25.0-62.0], x=[403.0-597.0])
+      02: '81%' (conf=0.96, y=[32.0-55.0], x=[620.0-684.0])
+      03: 'RJ3820250000715' (conf=1.00, y=[662.0-690.0], x=[190.0-540.0])
+      04: 'DL Number Holder Name' (conf=0.96, y=[737.0-769.0], x=[48.0-422.0])
+      05: 'THAKOR MAHENDRA' (conf=0.96, y=[817.0-846.0], x=[189.0-573.0])
+      06: 'ACTIVE' (conf=1.00, y=[868.0-903.0], x=[187.0-327.0])
+      07: 'Son/Wife/Daughter of' (conf=0.97, y=[948.0-977.0], x=[48.0-334.0])
+      08: 'JENSUG RAM' (conf=0.97, y=[948.0-977.0], x=[486.0-675.0])
+      09: 'Issue date' (conf=0.99, y=[1005.0-1033.0], x=[45.0-183.0])
+      10: '28-Feb-2025' (conf=0.99, y=[1005.0-1033.0], x=[500.0-675.0])
+      11: 'Licence Validity (Non' (conf=0.96, y=[1060.0-1092.0], x=[45.0-324.0])
+      12: '09-Feb-2046' (conf=0.99, y=[1060.0-1089.0], x=[498.0-673.0])
+      13: 'Transport)' (conf=1.00, y=[1097.0-1127.0], x=[45.0-187.0])
+      14: 'Date of Birth' (conf=0.97, y=[1152.0-1181.0], x=[50.0-218.0])
+      15: '10-Feb-2006' (conf=0.99, y=[1152.0-1181.0], x=[502.0-675.0])
+      16: 'Blood Group' (conf=0.98, y=[1206.0-1242.0], x=[48.0-213.0])
+      17: 'Unknown' (conf=1.00, y=[1207.0-1241.0], x=[550.0-677.0])
+      18: 'Mobile No.' (conf=0.97, y=[1263.0-1297.0], x=[46.0-191.0])
+      19: '******8892' (conf=0.99, y=[1261.0-1297.0], x=[522.0-676.0])
+      20: 'Vehicle Class' (conf=0.98, y=[1323.0-1352.0], x=[45.0-225.0])
+      21: 'MCWG,LMV' (conf=0.97, y=[1321.0-1355.0], x=[507.0-675.0])
+      22: 'RTO' (conf=1.00, y=[1380.0-1412.0], x=[47.0-111.0])
+      23: 'RJ38' (conf=1.00, y=[1380.0-1410.0], x=[601.0-677.0])
+      24: 'Licensing Authority' (conf=0.99, y=[1437.0-1471.0], x=[42.0-299.0])
+      25: 'DISTRICT TRANSPORT' (conf=0.98, y=[1440.0-1464.0], x=[372.0-673.0])
+      26: 'OFFICE,ABUROAD' (conf=0.98, y=[1472.0-1501.0], x=[431.0-675.0])
+      27: 'Tap to check the impound/seizure document status' (conf=0.98, y=[1523.0-1551.0], x=[59.0-665.0])
+
+--- Document: PAN ---
+  [Front Image: sample_documents\9024518892\2026-08-10T08-13-22.711Z-pan_card-Pan_Mahendra Thakor\doc_1786349574003462.jpg]
+    Quality: blur=1558.3 (is_blurry=False), bright=178.0, rot=0
+    OCR Text items (12):
+      00: 'lelleb!' (conf=0.70, y=[37.0-65.0], x=[190.0-275.0])
+      01: '3e' (conf=0.69, y=[41.0-65.0], x=[79.0-180.0])
+      02: 'R RR' (conf=0.74, y=[44.0-68.0], x=[481.0-657.0])
+      03: 'INCOME TAX DEPARTMENT' (conf=0.96, y=[77.0-95.0], x=[44.0-324.0])
+      04: 'GOVT.OF INDIA' (conf=0.97, y=[75.0-97.0], x=[487.0-654.0])
+      05: 'Permanent Account Number' (conf=0.97, y=[138.0-156.0], x=[256.0-526.0])
+      06: 'JRGPM1665B' (conf=1.00, y=[164.0-185.0], x=[279.0-453.0])
+      07: '14/Name' (conf=0.84, y=[240.0-261.0], x=[37.0-147.0])
+      08: 'Thakor Mahendra' (conf=0.97, y=[266.0-287.0], x=[41.0-236.0])
+      09: 'faf/Date of Birth' (conf=0.86, y=[335.0-357.0], x=[38.0-256.0])
+      10: '10/02/2006' (conf=0.99, y=[365.0-387.0], x=[45.0-185.0])
+      11: 'edisr/Signature' (conf=0.79, y=[408.0-422.0], x=[37.0-184.0])
+
+--- Document: RC ---
+  [Front Image: sample_documents\9024518892\2026-08-10T08-14-02.608Z-rc_book-Rc_Mahendra Thakor\doc_1786349624821851.jpg]
+    Quality: blur=504.6 (is_blurry=False), bright=128.4, rot=90
+    OCR Text items (23):
+      00: 'Card Issue Date (31-08-2023' (conf=0.91, y=[114.0-374.0], x=[466.0-498.0])
+      01: 'BHARATSTAGE' (conf=0.98, y=[131.0-161.0], x=[1159.0-1317.0])
+      02: 'Address' (conf=0.99, y=[180.0-199.0], x=[1050.0-1132.0])
+      03: 'NDIVIDUAL' (conf=0.99, y=[208.0-232.0], x=[1020.0-1137.0])
+      04: 'Ownership' (conf=0.95, y=[226.0-257.0], x=[1021.0-1131.0])
+      05: 'THAKARA RAM' (conf=0.95, y=[256.0-286.0], x=[981.0-1133.0])
+      06: 'Son/Daughter/Wife of (In case of Individual Owner)' (conf=0.95, y=[270.0-308.0], x=[656.0-1128.0])
+      07: 'JENSUG RAM' (conf=0.96, y=[308.0-334.0], x=[991.0-1124.0])
+      08: 'Owner Name' (conf=0.97, y=[330.0-360.0], x=[998.0-1124.0])
+      09: 'TNN1C50997' (conf=0.99, y=[358.0-388.0], x=[980.0-1121.0])
+      10: 'Engine/Motor No' (conf=0.97, y=[379.0-409.0], x=[959.0-1121.0])
+      11: 'MA1ZU2TNIN1C32998' (conf=0.96, y=[406.0-436.0], x=[908.0-1118.0])
+      12: 'Chassis No' (conf=0.98, y=[431.0-461.0], x=[1005.0-1116.0])
+      13: 'sennl' (conf=0.62, y=[446.0-475.0], x=[586.0-640.0])
+      14: 'As per Fitness' (conf=0.98, y=[448.0-476.0], x=[668.0-808.0])
+      15: '04-05-2022' (conf=0.99, y=[455.0-483.0], x=[851.0-957.0])
+      16: 'Regn.Validity' (conf=0.95, y=[472.0-499.0], x=[672.0-804.0])
+      17: 'GJ27TD0431' (conf=0.99, y=[458.0-487.0], x=[993.0-1112.0])
+      18: 'oower' (conf=0.60, y=[474.0-493.0], x=[580.0-640.0])
+      19: 'Date of Reg..' (conf=0.96, y=[476.0-506.0], x=[829.0-957.0])
+      20: 'Regn No' (conf=0.97, y=[479.0-511.0], x=[1026.0-1113.0])
+      21: 'Gujarat Motor Vehicie Department' (conf=0.96, y=[535.0-570.0], x=[770.0-1119.0])
+      22: 'Indian Union Vehicle Registration Certificate' (conf=0.97, y=[557.0-596.0], x=[666.0-1119.0])
+  [Back Image: sample_documents\9024518892\2026-08-10T08-14-02.608Z-rc_book-Rc_Mahendra Thakor\doc_1786349628860132.jpg]
+    Quality: blur=677.7 (is_blurry=False), bright=120.3, rot=90
+    OCR Text items (23):
+      00: 'AHMEDABAD' (conf=0.99, y=[105.0-133.0], x=[496.0-643.0])
+      01: 'No ot Axe' (conf=0.82, y=[119.0-144.0], x=[1246.0-1348.0])
+      02: '4' (conf=0.65, y=[156.0-171.0], x=[1330.0-1345.0])
+      03: 'AU SMALL FINANCE SANK LTD' (conf=0.91, y=[170.0-201.0], x=[769.0-1087.0])
+      04: 'No.of Cylinders' (conf=0.97, y=[171.0-201.0], x=[1184.0-1345.0])
+      05: '03-2022' (conf=1.00, y=[208.0-232.0], x=[1263.0-1343.0])
+      06: 'Month-Year of Mfg.' (conf=0.91, y=[228.0-256.0], x=[1159.0-1345.0])
+      07: '3264' (conf=1.00, y=[234.0-253.0], x=[673.0-724.0])
+      08: '2523.0075.04' (conf=0.98, y=[234.0-258.0], x=[896.0-1080.0])
+      09: '17903490' (conf=0.99, y=[284.0-317.0], x=[919.0-1079.0])
+      10: 'Z' (conf=0.56, y=[350.0-365.0], x=[1062.0-1075.0])
+      11: 'Seating(in all) Capacity' (conf=0.96, y=[365.0-396.0], x=[834.0-1079.0])
+      12: 'AHARDTOP' (conf=0.92, y=[405.0-424.0], x=[690.0-814.0])
+      13: 'WHTE' (conf=0.83, y=[402.0-426.0], x=[1002.0-1077.0])
+      14: '/Body Type:' (conf=0.91, y=[426.0-448.0], x=[683.0-816.0])
+      15: 'orr' (conf=0.52, y=[420.0-451.0], x=[998.0-1076.0])
+      16: 'BOLEROPIK-UPFBPS1.7TXL' (conf=0.92, y=[457.0-481.0], x=[776.0-1075.0])
+      17: 'Model:' (conf=0.96, y=[483.0-502.0], x=[1005.0-1072.0])
+      18: 'MAHINDRA&MAHINDRA LIMITED' (conf=0.97, y=[509.0-533.0], x=[740.0-1070.0])
+      19: '3J27T00431' (conf=0.88, y=[503.0-530.0], x=[1196.0-1315.0])
+      20: 'Maker:' (conf=0.92, y=[531.0-559.0], x=[996.0-1071.0])
+      21: 'Regr.Number' (conf=0.89, y=[528.0-554.0], x=[1184.0-1315.0])
+      22: 'Vehide Class:GOODS CARRIER (LGV)' (conf=0.93, y=[594.0-625.0], x=[670.0-1065.0])
+
+======================================================================
+DRIVER: 9325900466
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\9325900466\2026-08-05T06-12-46.431Z-adhaar_card-Aadhaar_Gopal Thakare\doc_1785909967450990.jpg]
+    Quality: blur=137.3 (is_blurry=False), bright=168.0, rot=0
+    OCR Text items (9):
+      00: 'Govenament of India' (conf=0.89, y=[74.0-97.0], x=[265.0-480.0])
+      01: 'e kyh' (conf=0.56, y=[122.0-144.0], x=[249.0-380.0])
+      02: 'GopalBhikaThakre' (conf=0.99, y=[149.0-166.0], x=[251.0-444.0])
+      03: '/DB25/06/1995' (conf=0.95, y=[166.0-191.0], x=[247.0-501.0])
+      04: 'O/MALE' (conf=0.88, y=[190.0-214.0], x=[246.0-349.0])
+      05: '434552430650' (conf=0.99, y=[415.0-449.0], x=[281.0-565.0])
+      06: 'VID:905570376537216' (conf=0.91, y=[458.0-478.0], x=[297.0-535.0])
+      07: 'HTST' (conf=0.87, y=[483.0-515.0], x=[130.0-234.0])
+      08: '3R3' (conf=0.72, y=[482.0-515.0], x=[256.0-681.0])
+  [Back Image: sample_documents\9325900466\2026-08-05T06-12-46.431Z-adhaar_card-Aadhaar_Gopal Thakare\doc_1785909971072868.jpg]
+    Quality: blur=61.6 (is_blurry=True), bright=147.9, rot=90
+    OCR Text items (12):
+      00: 'mrefra fafereeav.n' (conf=0.50, y=[6.0-34.0], x=[326.0-595.0])
+      01: 'Unique ldentificationAuthoity of tadia' (conf=0.84, y=[23.0-77.0], x=[313.0-867.0])
+      02: '.' (conf=0.71, y=[115.0-156.0], x=[90.0-655.0])
+      03: '5R,' (conf=0.56, y=[153.0-180.0], x=[91.0-347.0])
+      04: 'ER-2511' (conf=0.76, y=[177.0-216.0], x=[88.0-287.0])
+      05: 'Address:' (conf=0.97, y=[231.0-255.0], x=[88.0-222.0])
+      06: 'C/O Gopal Bhika Thakre,At Sawned' (conf=0.85, y=[248.0-284.0], x=[86.0-604.0])
+      07: 'Marath Fost Sawkheda Hol Ta.,Pardl' (conf=0.90, y=[278.0-311.0], x=[85.0-608.0])
+      08: 'laigaon,' (conf=0.92, y=[318.0-341.0], x=[87.0-194.0])
+      09: 'Maharashtra-42511' (conf=0.88, y=[334.0-373.0], x=[81.0-385.0])
+      10: '434552430650' (conf=0.99, y=[525.0-573.0], x=[387.0-772.0])
+      11: 'D910577626' (conf=0.85, y=[577.0-612.0], x=[405.0-730.0])
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\9325900466\2026-08-05T06-12-46.433Z-driving_license-Dl_Gopal Thakare\doc_1785910303941704.jpg]
+    Quality: blur=4128.6 (is_blurry=False), bright=208.4, rot=0
+    OCR Text items (26):
+      00: 'MAHARASHTRA STATE MOTOR DRIVING LICENCE' (conf=0.96, y=[36.0-54.0], x=[78.0-431.0])
+      01: 'THE UNION OF INDIA' (conf=0.94, y=[25.0-39.0], x=[185.0-323.0])
+      02: 'DLNOMH1920160030104' (conf=0.97, y=[55.0-75.0], x=[67.0-238.0])
+      03: 'DOI:03-08-2016' (conf=0.90, y=[57.0-73.0], x=[289.0-396.0])
+      04: 'Valid Till02-08-2036 (NT' (conf=0.92, y=[69.0-87.0], x=[69.0-233.0])
+      05: 'FORM7' (conf=0.99, y=[82.0-92.0], x=[439.0-482.0])
+      06: 'AUTHORISATION TO DRIVE FOLLOWING CLASS' (conf=0.96, y=[95.0-110.0], x=[152.0-399.0])
+      07: 'RULE16(2)' (conf=0.91, y=[87.0-104.0], x=[437.0-500.0])
+      08: 'OF VEHICLES THROUGHOUT INDIA' (conf=0.96, y=[107.0-121.0], x=[153.0-335.0])
+      09: 'COV' (conf=0.79, y=[121.0-135.0], x=[163.0-197.0])
+      10: 'DOI' (conf=0.98, y=[122.0-135.0], x=[231.0-259.0])
+      11: 'MCWG' (conf=0.99, y=[135.0-149.0], x=[158.0-201.0])
+      12: '03-08-2016' (conf=0.99, y=[136.0-147.0], x=[218.0-280.0])
+      13: 'LMV' (conf=1.00, y=[147.0-161.0], x=[158.0-188.0])
+      14: '03-08-2016' (conf=0.99, y=[148.0-159.0], x=[218.0-280.0])
+      15: 'DOB25-06-1995' (conf=0.98, y=[198.0-214.0], x=[159.0-284.0])
+      16: 'BG:' (conf=0.90, y=[197.0-213.0], x=[302.0-333.0])
+      17: 'NameGOPAL THAKARE' (conf=0.95, y=[216.0-231.0], x=[18.0-189.0])
+      18: 'S/DMof:BHIKA' (conf=0.88, y=[229.0-245.0], x=[18.0-120.0])
+      19: 'AddA/P MARTHKHEDE,POT SAVAKHEDE,' (conf=0.94, y=[244.0-259.0], x=[20.0-281.0])
+      20: 'TAL PAROLA,DIST JALGAON' (conf=0.94, y=[258.0-271.0], x=[20.0-196.0])
+      21: 'PIN425111' (conf=0.99, y=[280.0-296.0], x=[19.0-94.0])
+      22: 'Signature/Thumb' (conf=0.99, y=[289.0-308.0], x=[382.0-493.0])
+      23: 'Signature &ID of' (conf=0.91, y=[293.0-314.0], x=[19.0-131.0])
+      24: 'Impression of Holder' (conf=0.96, y=[301.0-320.0], x=[381.0-515.0])
+      25: '/ssuing Authority MH19 2016165C' (conf=0.90, y=[308.0-322.0], x=[21.0-237.0])
+  [Back Image: sample_documents\9325900466\2026-08-05T06-12-46.433Z-driving_license-Dl_Gopal Thakare\doc_1785910351051998.jpg]
+    ERROR processing image: Unable to allocate 1.05 MiB for an array with shape (6, 3, 48, 320) and data type float32
+
+--- Document: PAN ---
+  [Front Image: sample_documents\9325900466\2026-08-05T06-12-46.427Z-pan_card-Pan_Gopal Thakare\doc_1785910043266029.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 6619536 bytes in function 'cv::OutOfMemoryError'
+
+
+--- Document: RC ---
+  [Front Image: sample_documents\9325900466\2026-08-05T06-13-21.469Z-rc_book-Rc_Gopal Thakare\doc_1785910389477846.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 4742168 bytes in function 'cv::OutOfMemoryError'
+
+  [Back Image: sample_documents\9325900466\2026-08-05T06-13-21.469Z-rc_book-Rc_Gopal Thakare\doc_1785910394703960.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 2017008 bytes in function 'cv::OutOfMemoryError'
+
+
+======================================================================
+DRIVER: 9638531394
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\9638531394\2026-08-05T06-03-04.160Z-adhaar_card-Aadhaar_Chaudhari Sanjay\doc_1785909712305146.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 1728720 bytes in function 'cv::OutOfMemoryError'
+
+  [Back Image: sample_documents\9638531394\2026-08-05T06-03-04.160Z-adhaar_card-Aadhaar_Chaudhari Sanjay\doc_1785909726130891.jpg]
+    ERROR processing image: could not create a primitive
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\9638531394\2026-08-05T06-09-35.658Z-driving_license-Dl_Chaudhari Sanjay\doc_1785910168211652.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 1437501 bytes in function 'cv::OutOfMemoryError'
+
+  [Back Image: sample_documents\9638531394\2026-08-05T06-09-35.658Z-driving_license-Dl_Chaudhari Sanjay\doc_1785910171853254.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 4312503 bytes in function 'cv::OutOfMemoryError'
+
+
+--- Document: PAN ---
+  [Front Image: sample_documents\9638531394\2026-08-05T06-03-04.163Z-pan_card-Pan_Chaudhari Sanjay\doc_1785909764483336.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 22659072 bytes in function 'cv::OutOfMemoryError'
+
+
+--- Document: RC ---
+  [Front Image: sample_documents\9638531394\2026-08-05T06-09-35.657Z-rc_book-Rc_Chaudhari Sanjay\doc_1785909911334102.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 5792000 bytes in function 'cv::OutOfMemoryError'
+
+  [Back Image: sample_documents\9638531394\2026-08-05T06-09-35.657Z-rc_book-Rc_Chaudhari Sanjay\doc_1785909915512698.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 2682816 bytes in function 'cv::OutOfMemoryError'
+
+
+======================================================================
+DRIVER: 9723404453
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\9723404453\2026-08-10T11-42-27.699Z-adhaar_card-Aadhaar_Ranjit Parmar\doc_1786361626175500.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 14214912 bytes in function 'cv::OutOfMemoryError'
+
+  [Back Image: sample_documents\9723404453\2026-08-10T11-42-27.699Z-adhaar_card-Aadhaar_Ranjit Parmar\doc_1786361650619984.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 14914272 bytes in function 'cv::OutOfMemoryError'
+
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\9723404453\2026-08-10T11-42-27.705Z-driving_license-Dl_Ranjit Parmar\1106310606203280.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 5875740 bytes in function 'cv::OutOfMemoryError'
+
+  [Back Image: sample_documents\9723404453\2026-08-10T11-42-27.705Z-driving_license-Dl_Ranjit Parmar\1106328999226743.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 4473735 bytes in function 'cv::OutOfMemoryError'
+
+
+--- Document: PAN ---
+  [Front Image: sample_documents\9723404453\2026-08-10T11-42-27.696Z-pan_card-Pan_Ranjit Parmar\1106256456110969.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 6872250 bytes in function 'cv::OutOfMemoryError'
+
+
+--- Document: RC ---
+  [Front Image: sample_documents\9723404453\2026-08-10T11-43-22.366Z-rc_book-Rc_Ranjit Parmar\1106366676858976.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 4945005 bytes in function 'cv::OutOfMemoryError'
+
+  [Back Image: sample_documents\9723404453\2026-08-10T11-43-22.366Z-rc_book-Rc_Ranjit Parmar\1106376031854669.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 3778164 bytes in function 'cv::OutOfMemoryError'
+
+
+======================================================================
+DRIVER: 9727023784
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\9727023784\2026-08-10T08-43-28.094Z-adhaar_card-Aadhaar_Soyab Qureshi\doc_1786351198949729.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 7685280 bytes in function 'cv::OutOfMemoryError'
+
+  [Back Image: sample_documents\9727023784\2026-08-10T08-43-28.094Z-adhaar_card-Aadhaar_Soyab Qureshi\doc_1786351202608809.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 7685280 bytes in function 'cv::OutOfMemoryError'
+
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\9727023784\2026-08-10T08-43-28.100Z-driving_license-Dl_Soyab Qureshi\2538639941637528.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 9714900 bytes in function 'cv::OutOfMemoryError'
+
+  [Back Image: sample_documents\9727023784\2026-08-10T08-43-28.100Z-driving_license-Dl_Soyab Qureshi\2538651036497760.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 7686042 bytes in function 'cv::OutOfMemoryError'
+
+
+--- Document: PAN ---
+  [Front Image: sample_documents\9727023784\2026-08-10T08-43-28.098Z-pan_card-Pan_Soyab Qureshi\doc_1786351265117178.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 4952352 bytes in function 'cv::OutOfMemoryError'
+
+
+--- Document: RC ---
+  [Front Image: sample_documents\9727023784\2026-08-10T08-45-09.159Z-rc_book-Rc_Soyab Qureshi\doc_1786351483064227.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 22904832 bytes in function 'cv::OutOfMemoryError'
+
+  [Back Image: sample_documents\9727023784\2026-08-10T08-45-09.159Z-rc_book-Rc_Soyab Qureshi\doc_1786351502500385.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 22904832 bytes in function 'cv::OutOfMemoryError'
+
+
+======================================================================
+DRIVER: 9898867027
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\9898867027\aadhar_card\001b71a2-9720-42a8-9624-6e22bc7282b5.png]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 9863568 bytes in function 'cv::OutOfMemoryError'
+
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\9898867027\licence\1f9291a4-ec67-4e8e-b981-9f4b69537d2e.png]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 11067168 bytes in function 'cv::OutOfMemoryError'
+
+  [Back Image: sample_documents\9898867027\licence\8d82430b-dd79-4930-bb15-980f6e9e6b8c.png]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 11416860 bytes in function 'cv::OutOfMemoryError'
+
+
+--- Document: PAN ---
+  [Front Image: sample_documents\9898867027\pan_card\7691d409-127c-493d-996d-6e7c4e154a80.png]
+    Quality: blur=1525.9 (is_blurry=False), bright=171.1, rot=0
+    OCR Text items (11):
+      00: 'INCOME TAX DEPARTMENT' (conf=0.97, y=[68.0-231.0], x=[91.0-729.0])
+      01: 'HTOT' (conf=0.64, y=[120.0-272.0], x=[1093.0-1615.0])
+      02: 'MANEKCHANDRA P DHULE' (conf=0.95, y=[184.0-350.0], x=[99.0-815.0])
+      03: 'GOVT.OF INDIA' (conf=0.95, y=[235.0-374.0], x=[1083.0-1599.0])
+      04: 'POPATBHAISONAJIDHULE' (conf=0.98, y=[315.0-477.0], x=[78.0-804.0])
+      05: '06/07/1981' (conf=1.00, y=[430.0-533.0], x=[73.0-390.0])
+      06: 'Permanent Account Number' (conf=0.99, y=[515.0-645.0], x=[33.0-597.0])
+      07: 'AKUPD8696H' (conf=1.00, y=[577.0-690.0], x=[41.0-438.0])
+      08: 'DhulemP' (conf=0.81, y=[664.0-858.0], x=[27.0-578.0])
+      09: 'Signature' (conf=1.00, y=[816.0-887.0], x=[0.0-195.0])
+      10: '2007' (conf=1.00, y=[926.0-1023.0], x=[1456.0-1507.0])
+
+--- Document: RC ---
+  [Front Image: sample_documents\9898867027\rc\3d8f3527-274f-4b25-ac47-b9b97979c181.png]
+    Quality: blur=3290.8 (is_blurry=False), bright=232.1, rot=0
+    OCR Text items (27):
+      00: 'Government of Gujarat' (conf=0.96, y=[15.0-107.0], x=[770.0-1922.0])
+      01: 'T' (conf=0.75, y=[76.0-141.0], x=[2224.0-2298.0])
+      02: 'Certificate ofRegistration' (conf=0.97, y=[129.0-189.0], x=[775.0-1757.0])
+      03: 'Date of Reg.' (conf=0.92, y=[266.0-331.0], x=[1311.0-1605.0])
+      04: 'Reg.No.' (conf=0.95, y=[279.0-331.0], x=[775.0-969.0])
+      05: 'GJ06AW2668' (conf=1.00, y=[346.0-406.0], x=[777.0-1279.0])
+      06: '23/08/2016' (conf=0.99, y=[338.0-396.0], x=[1272.0-1636.0])
+      07: 'Owner' (conf=1.00, y=[440.0-508.0], x=[1754.0-1927.0])
+      08: 'Chassis No.' (conf=0.95, y=[455.0-505.0], x=[780.0-1048.0])
+      09: '01' (conf=0.99, y=[470.0-540.0], x=[1973.0-2069.0])
+      10: 'MD2A24AZ5GWD25847' (conf=1.00, y=[505.0-570.0], x=[775.0-1538.0])
+      11: 'Sr.No.' (conf=0.91, y=[512.0-575.0], x=[1749.0-1912.0])
+      12: 'Engine No.' (conf=0.96, y=[597.0-647.0], x=[785.0-1041.0])
+      13: 'Ownership Tr.Date' (conf=0.97, y=[612.0-662.0], x=[1759.0-2209.0])
+      14: '24ZWGD47267' (conf=1.00, y=[649.0-712.0], x=[780.0-1262.0])
+      15: 'Owner Name' (conf=0.95, y=[731.0-789.0], x=[785.0-1105.0])
+      16: 'MANEKCHAND' (conf=1.00, y=[801.0-853.0], x=[787.0-1279.0])
+      17: 'Vehicle Class' (conf=0.97, y=[863.0-921.0], x=[310.0-620.0])
+      18: '3WHEELER (PAS)' (conf=0.93, y=[940.0-995.0], x=[157.0-696.0])
+      19: 'Son/Dauqhter/Wife of' (conf=0.97, y=[960.0-1013.0], x=[790.0-1316.0])
+      20: 'POPATBHAI DHULE' (conf=0.94, y=[1025.0-1080.0], x=[790.0-1371.0])
+      21: 'Jc' (conf=0.80, y=[1062.0-1174.0], x=[20.0-113.0])
+      22: 'Fuel Used' (conf=0.95, y=[1194.0-1246.0], x=[320.0-559.0])
+      23: 'I.' (conf=0.55, y=[1239.0-1353.0], x=[2.0-125.0])
+      24: 'NRMUKHINAGAR,NEWVIPROAD' (conf=0.98, y=[1261.0-1319.0], x=[782.0-1654.0])
+      25: 'PETICNG' (conf=0.99, y=[1279.0-1338.0], x=[283.0-595.0])
+      26: 'VADODARA 0' (conf=0.93, y=[1316.0-1363.0], x=[782.0-1139.0])
+  [Back Image: sample_documents\9898867027\rc\c6b121b6-9df5-4f21-9f2d-3feb4966045a.png]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 6158160 bytes in function 'cv::OutOfMemoryError'
+
+
+======================================================================
+DRIVER: 9904343779
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\9904343779\2026-08-10T09-39-31.668Z-adhaar_card-Aadhaar_Sunilbhai Prajapati\75710987463649.jpg]
+    Quality: blur=2193.9 (is_blurry=False), bright=223.6, rot=0
+    OCR Text items (10):
+      00: 'Government of india' (conf=0.95, y=[101.0-128.0], x=[251.0-533.0])
+      01: 'Aadhaar no.lssued:02/12/2011' (conf=0.90, y=[166.0-461.0], x=[43.0-75.0])
+      02: 'Prajapati Sunilbhai Mansukhbhai' (conf=0.98, y=[212.0-240.0], x=[325.0-646.0])
+      03: '/DB18/02/1988' (conf=0.93, y=[249.0-276.0], x=[324.0-613.0])
+      04: 'YRW/MALE' (conf=0.73, y=[287.0-320.0], x=[321.0-447.0])
+      05: 'y' (conf=0.61, y=[346.0-371.0], x=[334.0-942.0])
+      06: 'Aadhaar is proof of identity,not of citizenship' (conf=0.95, y=[437.0-464.0], x=[336.0-819.0])
+      07: 'or date of birth.It should be used with verification online' (conf=0.95, y=[466.0-491.0], x=[336.0-943.0])
+      08: 'authentication,or scanning of QR code /offline XML)' (conf=0.91, y=[493.0-519.0], x=[335.0-893.0])
+      09: '901706560058' (conf=1.00, y=[553.0-591.0], x=[314.0-614.0])
+  [Back Image: sample_documents\9904343779\2026-08-10T09-39-31.668Z-adhaar_card-Aadhaar_Sunilbhai Prajapati\75719500166111.jpg]
+    ERROR processing image: could not create a primitive
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\9904343779\2026-08-10T09-39-31.697Z-driving_license-Dl_Sunilbhai Prajapati\75788715436576.jpg]
+    ERROR processing image: could not create a primitive
+  [Back Image: sample_documents\9904343779\2026-08-10T09-39-31.697Z-driving_license-Dl_Sunilbhai Prajapati\75802113533269.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 1805040 bytes in function 'cv::OutOfMemoryError'
+
+
+--- Document: PAN ---
+  [Front Image: sample_documents\9904343779\2026-08-10T09-39-31.695Z-pan_card-Pan_Sunilbhai Prajapati\doc_1786354694377386.jpg]
+    ERROR processing image: <built-in function rotate> returned a result with an exception set
+
+--- Document: RC ---
+  [Front Image: sample_documents\9904343779\2026-08-10T09-40-11.865Z-rc_book-Rc_Sunilbhai Prajapati\doc_1786354788022173.jpg]
+    Quality: blur=217.0 (is_blurry=False), bright=108.3, rot=90
+    OCR Text items (29):
+      00: 'BHARAT STAGEV' (conf=0.95, y=[60.0-87.0], x=[934.0-1170.0])
+      01: 'HAT-382345' (conf=0.93, y=[94.0-119.0], x=[531.0-677.0])
+      02: 'AHMEDABAL' (conf=0.92, y=[93.0-118.0], x=[757.0-928.0])
+      03: 'Emission Norms' (conf=0.98, y=[91.0-122.0], x=[947.0-1169.0])
+      04: 'Card Issue Date (23-01-2025)' (conf=0.95, y=[99.0-451.0], x=[19.0-69.0])
+      05: '42,SANJAYN' (conf=0.94, y=[126.0-152.0], x=[756.0-920.0])
+      06: 'APARA NR S.T.STAND,SAIJPUR BOGHA' (conf=0.93, y=[131.0-155.0], x=[135.0-652.0])
+      07: 'CNG ONLY' (conf=0.95, y=[132.0-164.0], x=[1029.0-1168.0])
+      08: 'Address' (conf=1.00, y=[159.0-185.0], x=[808.0-922.0])
+      09: 'Fuek' (conf=0.86, y=[164.0-198.0], x=[1090.0-1171.0])
+      10: 'INDMIDUAL' (conf=0.94, y=[199.0-228.0], x=[779.0-922.0])
+      11: 'Ownership' (conf=1.00, y=[230.0-259.0], x=[772.0-918.0])
+      12: 'PRAJAPATI MANSUKHBHAI' (conf=0.98, y=[276.0-297.0], x=[596.0-914.0])
+      13: 'PRAJAPATI SUNILBHAI MANSUKHBHA' (conf=0.96, y=[346.0-367.0], x=[465.0-913.0])
+      14: 'Owner Name' (conf=0.97, y=[372.0-401.0], x=[743.0-912.0])
+      15: 'AZXWRJ19166' (conf=1.00, y=[413.0-438.0], x=[734.0-910.0])
+      16: 'Engine/Motor No' (conf=0.98, y=[443.0-468.0], x=[689.0-909.0])
+      17: 'MD2B47AX6RWJ76539' (conf=1.00, y=[480.0-504.0], x=[637.0-907.0])
+      18: 'Chassis No' (conf=0.97, y=[511.0-536.0], x=[762.0-907.0])
+      19: 'As per Fitne ss' (conf=0.93, y=[543.0-572.0], x=[303.0-488.0])
+      20: '21-01-2025' (conf=0.99, y=[547.0-572.0], x=[562.0-693.0])
+      21: 'GJ01TJ8580' (conf=1.00, y=[546.0-575.0], x=[749.0-903.0])
+      22: 'Serial' (conf=1.00, y=[548.0-571.0], x=[197.0-270.0])
+      23: 'Owner' (conf=0.99, y=[571.0-604.0], x=[186.0-274.0])
+      24: 'Regn.Validity' (conf=1.00, y=[577.0-602.0], x=[318.0-488.0])
+      25: 'Date of Regn.' (conf=0.98, y=[573.0-603.0], x=[522.0-692.0])
+      26: 'Regn No' (conf=0.95, y=[574.0-605.0], x=[789.0-902.0])
+      27: 'Issued by Gujarat Motor Vehicle Department' (conf=0.96, y=[655.0-684.0], x=[315.0-914.0])
+      28: 'Indian Union Vehicle Registraton Ceruncate' (conf=0.93, y=[688.0-716.0], x=[316.0-916.0])
+  [Back Image: sample_documents\9904343779\2026-08-10T09-40-11.865Z-rc_book-Rc_Sunilbhai Prajapati\doc_1786354803368323.jpg]
+    Quality: blur=287.8 (is_blurry=False), bright=53.3, rot=0
+    OCR Text items (29):
+      00: 'No. of Cylinders' (conf=0.95, y=[563.0-787.0], x=[272.0-306.0])
+      01: '12-2024' (conf=0.98, y=[568.0-687.0], x=[321.0-347.0])
+      02: 'Month-Year of Mfg.' (conf=0.94, y=[566.0-834.0], x=[350.0-383.0])
+      03: 'GJ01TJ8580' (conf=0.99, y=[597.0-756.0], x=[704.0-733.0])
+      04: 'Regn.Number' (conf=0.95, y=[594.0-781.0], x=[728.0-767.0])
+      05: 'TR' (conf=0.91, y=[607.0-731.0], x=[793.0-846.0])
+      06: 'BAJAIFINANCSLTD' (conf=0.89, y=[909.0-1178.0], x=[274.0-316.0])
+      07: 'Financier:' (conf=0.98, y=[916.0-1065.0], x=[316.0-342.0])
+      08: '236.20' (conf=0.99, y=[917.0-1036.0], x=[357.0-383.0])
+      09: 'Cubic Cap./ Horse Power (BHP/Kw) Wneel Base(mm)' (conf=0.93, y=[909.0-1621.0], x=[381.0-429.0])
+      10: '407' (conf=0.99, y=[919.0-980.0], x=[432.0-458.0])
+      11: 'Unladen/ Laden Weight (Kg)' (conf=0.98, y=[912.0-1302.0], x=[456.0-499.0])
+      12: 'Se ating(in all) Capacity' (conf=0.95, y=[916.0-1231.0], x=[528.0-567.0])
+      13: 'ECO GREEN' (conf=0.94, y=[918.0-1090.0], x=[564.0-606.0])
+      14: 'Colour:' (conf=0.98, y=[921.0-1036.0], x=[605.0-629.0])
+      15: 'BAJAJRE CNG 4SFI' (conf=0.89, y=[919.0-1177.0], x=[639.0-673.0])
+      16: 'Maker's Name:' (conf=0.94, y=[921.0-1124.0], x=[738.0-769.0])
+      17: 'Vehicle Class:THREE WHEELER (PASSENGER) (3WT)' (conf=0.93, y=[919.0-1594.0], x=[807.0-854.0])
+      18: 'BAJAJ AUTO LTD' (conf=0.93, y=[924.0-1138.0], x=[709.0-740.0])
+      19: '1717' (conf=0.92, y=[1016.0-1102.0], x=[432.0-458.0])
+      20: '/9.78' (conf=0.89, y=[1046.0-1143.0], x=[359.0-386.0])
+      21: '/BOLTED ON FRAME' (conf=0.94, y=[1255.0-1528.0], x=[571.0-608.0])
+      22: '/Body Type:' (conf=0.89, y=[1258.0-1426.0], x=[608.0-634.0])
+      23: '2000' (conf=1.00, y=[1389.0-1467.0], x=[364.0-391.0])
+      24: 'Registration Authority' (conf=0.97, y=[1467.0-1743.0], x=[236.0-282.0])
+      25: 'AHMEDABAD' (conf=0.99, y=[1557.0-1741.0], x=[204.0-251.0])
+      26: 'GJ06099678' (conf=0.99, y=[1641.0-1710.0], x=[637.0-812.0])
+      27: 'Form23A' (conf=0.99, y=[1688.0-1734.0], x=[418.0-553.0])
+      28: 'Galaxy M15 5G' (conf=0.96, y=[1787.0-1828.0], x=[63.0-294.0])
+
+======================================================================
+DRIVER: 9974848297
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\9974848297\2026-08-04T18-16-31.871Z-adhaar_card-Aadhaar_Manoj Sinora\1058932454819903.jpg]
+    Quality: blur=2982.6 (is_blurry=False), bright=234.7, rot=0
+    OCR Text items (7):
+      00: 'y ioond cik2' (conf=0.52, y=[512.0-588.0], x=[1235.0-2000.0])
+      01: 'D24/102013' (conf=0.95, y=[599.0-1440.0], x=[40.0-139.0])
+      02: 'Manoj Ashokbhal Sinora' (conf=0.94, y=[614.0-724.0], x=[1220.0-2294.0])
+      03: '/DOB09/06/1988' (conf=0.97, y=[734.0-848.0], x=[1220.0-2407.0])
+      04: 'you/ MALE' (conf=0.85, y=[850.0-980.0], x=[1222.0-1716.0])
+      05: '92344688 0858' (conf=0.96, y=[1794.0-1926.0], x=[1179.0-2480.0])
+      06: 'VID:9181760107556256' (conf=0.97, y=[1977.0-2072.0], x=[1062.0-2579.0])
+  [Back Image: sample_documents\9974848297\2026-08-04T18-16-31.871Z-adhaar_card-Aadhaar_Manoj Sinora\1058964444366141.jpg]
+    Quality: blur=1446.6 (is_blurry=False), bright=153.4, rot=0
+    OCR Text items (11):
+      00: 'eu ag ys' (conf=0.58, y=[52.0-149.0], x=[619.0-1828.0])
+      01: 'Unique Identification Authority of India' (conf=0.97, y=[166.0-275.0], x=[605.0-2232.0])
+      02: '27. ga' (conf=0.76, y=[388.0-500.0], x=[77.0-1627.0])
+      03: '-382345' (conf=0.99, y=[548.0-650.0], x=[82.0-606.0])
+      04: 'Address:' (conf=0.99, y=[692.0-769.0], x=[77.0-434.0])
+      05: '27.B Mangaldeep Aprt,Opp Prajapati Soc' (conf=0.94, y=[765.0-859.0], x=[20.0-1535.0])
+      06: 'Kuleshwar Mahadev,Gayatri Soc, Ahmedabad' (conf=0.94, y=[847.0-932.0], x=[17.0-1647.0])
+      07: 'City,Ahmedabad,' (conf=0.96, y=[932.0-1002.0], x=[86.0-688.0])
+      08: 'Gujarat-382345' (conf=0.99, y=[1008.0-1078.0], x=[89.0-674.0])
+      09: '9234 46880858' (conf=0.96, y=[1414.0-1520.0], x=[941.0-1942.0])
+      10: 'VID:9181760107556256' (conf=0.97, y=[1557.0-1633.0], x=[852.0-2025.0])
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\9974848297\2026-08-04T18-16-31.884Z-driving_license-Dl_Manoj Sinora\1059066251243133.jpg]
+    Quality: blur=3450.2 (is_blurry=False), bright=234.8, rot=0
+    OCR Text items (23):
+      00: 'Indian Union Driving Licence' (conf=0.96, y=[27.0-100.0], x=[500.0-1507.0])
+      01: 'Issued by Government of Gujarat' (conf=0.93, y=[121.0-194.0], x=[500.0-1650.0])
+      02: 'GJ2720220026651' (conf=1.00, y=[364.0-431.0], x=[563.0-1298.0])
+      03: '17-12-2022' (conf=0.97, y=[428.0-813.0], x=[2770.0-2850.0])
+      04: 'Validity(NT)' (conf=0.83, y=[516.0-580.0], x=[986.0-1355.0])
+      05: 'Vady(TR' (conf=0.90, y=[513.0-577.0], x=[1492.0-1888.0])
+      06: 'ssue Date' (conf=0.78, y=[522.0-577.0], x=[396.0-679.0])
+      07: '17-124002' (conf=0.81, y=[631.0-692.0], x=[387.0-641.0])
+      08: '16-12-2032' (conf=0.92, y=[634.0-686.0], x=[995.0-1242.0])
+      09: 'First issue' (conf=0.95, y=[873.0-1257.0], x=[2772.0-2857.0])
+      10: 'Name:' (conf=0.96, y=[1055.0-1130.0], x=[62.0-343.0])
+      11: 'MANOJ A SINORA' (conf=0.93, y=[1068.0-1126.0], x=[444.0-977.0])
+      12: 'Date Ot Barth' (conf=0.70, y=[1171.0-1238.0], x=[65.0-539.0])
+      13: '09-06-1988' (conf=0.94, y=[1187.0-1238.0], x=[512.0-828.0])
+      14: 'Blood Group:' (conf=0.92, y=[1186.0-1260.0], x=[949.0-1350.0])
+      15: 'Organ Donor' (conf=0.94, y=[1199.0-1259.0], x=[1873.0-2237.0])
+      16: 'Date Of' (conf=0.79, y=[1223.0-1508.0], x=[2779.0-2853.0])
+      17: 'SonDavghterWite of:' (conf=0.85, y=[1284.0-1347.0], x=[68.0-691.0])
+      18: 'ASHOKBHAIPSINORA' (conf=0.99, y=[1287.0-1338.0], x=[852.0-1519.0])
+      19: 'Address' (conf=1.00, y=[1386.0-1460.0], x=[83.0-355.0])
+      20: 'ZTS MANGALDEEPAPPARTMENT' (conf=0.90, y=[1475.0-1533.0], x=[62.0-891.0])
+      21: 'OPPPRAIAPATISOCIETY.' (conf=0.91, y=[1541.0-1596.0], x=[62.0-700.0])
+      22: 'KULESNWAR MAHADEV.CAYATRI SOCIETY3SZ34S' (conf=0.82, y=[1602.0-1660.0], x=[59.0-1293.0])
+  [Back Image: sample_documents\9974848297\2026-08-04T18-16-31.884Z-driving_license-Dl_Manoj Sinora\1059093649934477.jpg]
+    Quality: blur=3982.7 (is_blurry=False), bright=230.7, rot=0
+    OCR Text items (22):
+      00: 'DLNoGJ2720220026651' (conf=0.94, y=[68.0-142.0], x=[54.0-1004.0])
+      01: 'ADPVEHNo(Rogn.Numtxrs)' (conf=0.87, y=[210.0-274.0], x=[701.0-1540.0])
+      02: 'HilValdity' (conf=0.73, y=[464.0-546.0], x=[1892.0-2219.0])
+      03: 'Hazardoxuns vahdity' (conf=0.85, y=[477.0-549.0], x=[698.0-1218.0])
+      04: 'Clns ol' (conf=0.68, y=[790.0-868.0], x=[25.0-268.0])
+      05: 'Baxige' (conf=0.92, y=[793.0-881.0], x=[1876.0-2082.0])
+      06: 'Bakge' (conf=0.85, y=[789.0-872.0], x=[2265.0-2468.0])
+      07: 'Bake' (conf=0.88, y=[789.0-865.0], x=[2642.0-2841.0])
+      08: 'Dato of' (conf=0.87, y=[810.0-877.0], x=[1192.0-1409.0])
+      09: 'Vehide' (conf=0.68, y=[803.0-871.0], x=[1524.0-1747.0])
+      10: 'Corks' (conf=0.68, y=[839.0-910.0], x=[478.0-647.0])
+      11: 'Insuod by' (conf=0.89, y=[835.0-913.0], x=[793.0-1072.0])
+      12: 'Vehick,' (conf=0.80, y=[874.0-942.0], x=[45.0-268.0])
+      13: 'ied' (conf=0.68, y=[874.0-942.0], x=[2270.0-2470.0])
+      14: 'Canegory' (conf=0.89, y=[880.0-962.0], x=[1500.0-1770.0])
+      15: 'Numter' (conf=0.84, y=[887.0-945.0], x=[1865.0-2101.0])
+      16: 'B' (conf=0.53, y=[890.0-932.0], x=[2818.0-2878.0])
+      17: 'WCWG' (conf=0.58, y=[1012.0-1088.0], x=[461.0-642.0])
+      18: 'GJZ7' (conf=0.75, y=[1019.0-1080.0], x=[870.0-1004.0])
+      19: '1712-2022' (conf=0.89, y=[1022.0-1077.0], x=[1189.0-1447.0])
+      20: 'KT' (conf=0.77, y=[1019.0-1084.0], x=[1606.0-1693.0])
+      21: 'Emergency Contact Nunber' (conf=0.85, y=[1600.0-1671.0], x=[309.0-1113.0])
+
+--- Document: PAN ---
+  [Front Image: sample_documents\9974848297\2026-08-04T18-16-31.878Z-pan_card-Pan_Manoj Sinora\1058997818408576.jpg]
+    ERROR processing image: could not create a memory object
+
+--- Document: RC ---
+  [Front Image: sample_documents\9974848297\2026-08-04T18-18-08.467Z-rc_book-Rc_Manoj Sinora\1059162960207471.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 17986269 bytes in function 'cv::OutOfMemoryError'
+
+  [Back Image: sample_documents\9974848297\2026-08-04T18-18-08.467Z-rc_book-Rc_Manoj Sinora\1059183097369234.jpg]
+    ERROR processing image: OpenCV(4.11.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\alloc.cpp:73: error: (-4:Insufficient memory) Failed to allocate 17969778 bytes in function 'cv::OutOfMemoryError'
+
+
+======================================================================
+DRIVER: 9998542633
+======================================================================
+
+--- Document: AADHAAR ---
+  [Front Image: sample_documents\9998542633\2026-08-10T08-54-03.154Z-adhaar_card-Aadhaar_Vijaypal\doc_1786351745304416.jpg]
+    ERROR processing image: could not create a primitive
+  [Back Image: sample_documents\9998542633\2026-08-10T08-54-03.154Z-adhaar_card-Aadhaar_Vijaypal\doc_1786351774313907.jpg]
+    Quality: blur=87.8 (is_blurry=False), bright=106.2, rot=90
+    OCR Text items (14):
+      00: '1947' (conf=0.98, y=[271.0-345.0], x=[3123.0-3316.0])
+      01: 'help@uidai.gov.in' (conf=0.98, y=[285.0-349.0], x=[2361.0-2839.0])
+      02: ' www.uidai.gov.in' (conf=0.96, y=[302.0-357.0], x=[1781.0-2223.0])
+      03: 'VID :9154 33496247 9186' (conf=0.93, y=[391.0-468.0], x=[2270.0-2939.0])
+      04: '4374 7177 0827' (conf=0.94, y=[458.0-557.0], x=[2352.0-2939.0])
+      05: 'Rajasthan-314037' (conf=1.00, y=[743.0-808.0], x=[3024.0-3411.0])
+      06: 'PO:AntriDIST:Dungarpur,' (conf=0.92, y=[790.0-854.0], x=[2855.0-3411.0])
+      07: 'S/O:Shantilal Nanoma, Kahari b, Kanhari Chak-B,' (conf=0.93, y=[837.0-901.0], x=[2448.0-3411.0])
+      08: 'Address:' (conf=0.98, y=[883.0-940.0], x=[3232.0-3407.0])
+      09: '26/05/2025' (conf=1.00, y=[897.0-1096.0], x=[3428.0-3475.0])
+      10: '-314037' (conf=0.97, y=[964.0-1029.0], x=[3054.0-3407.0])
+      11: 'S/O' (conf=0.84, y=[1045.0-1131.0], x=[2461.0-3415.0])
+      12: 'Unique ldentification Authority of India' (conf=0.97, y=[1232.0-1309.0], x=[2102.0-3142.0])
+      13: 'n 9h 2 ' (conf=0.58, y=[1313.0-1368.0], x=[2349.0-3142.0])
+
+--- Document: DRIVING_LICENCE ---
+  [Front Image: sample_documents\9998542633\2026-08-10T08-54-03.174Z-driving_license-Dl_Vijaypal\334755244478361.jpg]
+    Quality: blur=654.3 (is_blurry=False), bright=236.9, rot=0
+    OCR Text items (16):
+      00: 'UNION oF INDIA Driving Licence' (conf=0.85, y=[81.0-242.0], x=[654.0-2081.0])
+      01: 'R.J' (conf=0.80, y=[112.0-174.0], x=[2177.0-2268.0])
+      02: 'NT+T' (conf=0.99, y=[101.0-191.0], x=[2359.0-2575.0])
+      03: 'RJ1220080033144' (conf=1.00, y=[308.0-413.0], x=[704.0-1757.0])
+      04: 'qean/Validity' (conf=0.83, y=[486.0-585.0], x=[1476.0-1850.0])
+      05: 'Date ofFirst Issue' (conf=0.96, y=[549.0-626.0], x=[812.0-1302.0])
+      06: '06/07/2028' (conf=0.99, y=[577.0-665.0], x=[1367.0-1907.0])
+      07: '07/07/2008' (conf=1.00, y=[634.0-709.0], x=[809.0-1251.0])
+      08: '17/08/2027' (conf=1.00, y=[678.0-766.0], x=[1463.0-1901.0])
+      09: 'Blood Group' (conf=0.97, y=[782.0-862.0], x=[1472.0-1824.0])
+      10: 'Date of Birth' (conf=0.96, y=[844.0-911.0], x=[804.0-1155.0])
+      11: '03/09/1989' (conf=1.00, y=[925.0-1013.0], x=[792.0-1235.0])
+      12: '4/Name' (conf=0.91, y=[1031.0-1108.0], x=[209.0-526.0])
+      13: 'VIJAYPAL NANOMA' (conf=0.96, y=[1147.0-1237.0], x=[187.0-1108.0])
+      14: 'fayaf/Son/Daughter/Wife of' (conf=0.88, y=[1340.0-1436.0], x=[201.0-1296.0])
+      15: 'SHANTI LAL' (conf=0.95, y=[1477.0-1562.0], x=[179.0-713.0])
+  [Back Image: sample_documents\9998542633\2026-08-10T08-54-03.174Z-driving_license-Dl_Vijaypal\334782007954901.jpg]
+    ERROR processing image: could not create a primitive
+
+--- Document: PAN ---
+  [Front Image: sample_documents\9998542633\2026-08-10T08-54-03.170Z-pan_card-Pan_Vijaypal\334727394268743.jpg]
+    ERROR processing image: could not create a primitive
+
+--- Document: RC ---
+  [Front Image: sample_documents\9998542633\2026-08-10T09-02-56.617Z-rc_book-Rc_Vijaypal\doc_1786352506427062.jpg]
+    ERROR processing image: could not create a primitive
+  [Back Image: sample_documents\9998542633\2026-08-10T09-02-56.617Z-rc_book-Rc_Vijaypal\doc_1786352511480247.jpg]
+    ERROR processing image: could not create a primitive

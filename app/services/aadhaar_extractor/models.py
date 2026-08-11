@@ -1,35 +1,32 @@
-from typing import Optional
-from pydantic import BaseModel
+from typing import Optional, Dict
+from pydantic import BaseModel, Field
 
 
 class AadhaarData(BaseModel):
-    # Aadhaar number
     aadhaar_number: Optional[str] = None
-
-    # Name
     full_name: Optional[str] = None
-    first_name: Optional[str] = None
-    middle_name: Optional[str] = None
-    last_name: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    gender: Optional[str] = None
 
-    # Personal details
-    dob: Optional[str] = None          # ISO YYYY-MM-DD
-    gender: Optional[str] = None       # MALE / FEMALE / TRANSGENDER
-
-    # Address (from back side)
-    address: Optional[str] = None
+    # Per-field failure diagnostics: field_name -> reason string
+    field_diagnostics: Dict[str, str] = Field(default_factory=dict)
 
     def display(self) -> str:
         """Pretty formatted string for console output."""
-        lines = [
-            f"  {'Aadhaar Number':<20}: {self.aadhaar_number or '—'}",
-            f"  {'Full Name':<20}: {self.full_name or '—'}",
-            f"  {'First Name':<20}: {self.first_name or '—'}",
-            f"  {'Middle Name':<20}: {self.middle_name or '—'}",
-            f"  {'Last Name':<20}: {self.last_name or '—'}",
-            f"  {'Date of Birth':<20}: {self.dob or '—'}",
-            f"  {'Gender':<20}: {self.gender or '—'}",
+        fields = [
+            ("Aadhaar Number", "aadhaar_number", self.aadhaar_number),
+            ("Full Name", "full_name", self.full_name),
+            ("Date of Birth", "date_of_birth", self.date_of_birth),
+            ("Gender", "gender", self.gender),
         ]
-        if self.address:
-            lines.append(f"  {'Address':<20}: {self.address}")
+        lines = []
+        for label, key, value in fields:
+            if value:
+                lines.append(f"  {label:<20}: {value}")
+            else:
+                reason = self.field_diagnostics.get(key, "")
+                if reason:
+                    lines.append(f"  {label:<20}: —  [!] {reason}")
+                else:
+                    lines.append(f"  {label:<20}: —")
         return "\n".join(lines)

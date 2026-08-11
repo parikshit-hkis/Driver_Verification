@@ -1,0 +1,41 @@
+{
+  "fuel_types": {
+    "PETROL": "PETROL",
+    "DIESEL": "DIESEL",
+    "CNG": "CNG",
+    "LPG": "LPG",
+    "ELECTRIC": "ELECTRIC",
+    "EV": "ELECTRIC",
+    "HYBRID": "HYBRID",
+    "PETROL+CNG": "PETROL+CNG",
+    "PETROL/CNG": "PETROL+CNG",
+    "PETROL+LPG": "PETROL+LPG",
+    "PETROL/LPG": "PETROL+LPG",
+    "DIESEL+CNG": "DIESEL+CNG"
+  },
+  "vehicle_classes": [
+    "LMV",
+    "LMV-CAR",
+    "LMV-GV",
+    "MCWG",
+    "MCWOG",
+    "M-CYCLE",
+    "MOTOR CYCLE",
+    "SCOOTER",
+    "M-CYCLE/SCOOTER",
+    "HMV",
+    "MGV",
+    "HGMV",
+    "LGV",
+    "TRANS",
+    "3W-NT",
+    "3W-CAB",
+    "TRACTOR",
+    "BUS",
+    "HPV",
+    "HPMV",
+    "HTV",
+    "3WTR",
+    "3WNT"
+  ]
+}

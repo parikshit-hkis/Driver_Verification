@@ -96,7 +96,8 @@ Driver_Verification/
     ├── pipeline.py                          # Unified extraction pipeline orchestrator
     │
     ├── models/                              # Data contracts & Pydantic models
-    │   └── ocr_models.py                    # Point, BoundingBox, OCRText, OCRResult, ImageQualityReport
+    │   ├── ocr_models.py                    # Point, BoundingBox, OCRText, OCRResult, ImageQualityReport
+    │   └── driver_models.py                 # DocumentExtractionResult, DriverVerificationResult
     │
     ├── ocr/                                 # OCR & Computer Vision package
     │   ├── __init__.py
@@ -111,6 +112,7 @@ Driver_Verification/
         ├── __init__.py
         ├── base_extractor.py                # Base class with label-proximity geometry helpers
         ├── doc_type_detector.py             # Automatic document type classifier
+        ├── directory_scanner.py             # Driver directory scanner & front/back Spec builder
         │
         ├── aadhaar_extractor/               # Aadhaar Card service
         │   ├── __init__.py

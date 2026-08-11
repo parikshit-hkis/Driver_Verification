@@ -44,25 +44,99 @@ _NAME_BLACKLIST = {
 class AadhaarExtractor(BaseExtractor):
     """Extracts structured data from Aadhaar card OCR output."""
 
+    def extract_aadhaar(self, ocr_front: Optional[OCRResult], ocr_back: Optional[OCRResult]) -> AadhaarData:
+        """Process front and back sides independently to avoid cross-side contamination."""
+        data_front = self.extract(ocr_front) if ocr_front else None
+        data_back = self.extract(ocr_back) if ocr_back else None
+
+        if data_front is None and data_back is None:
+            return AadhaarData()
+        if data_front is None:
+            return data_back
+        if data_back is None:
+            return data_front
+
+        merged = AadhaarData()
+        merged.aadhaar_number = data_front.aadhaar_number or data_back.aadhaar_number
+        merged.full_name = data_front.full_name or data_back.full_name
+        merged.date_of_birth = data_front.date_of_birth or data_back.date_of_birth
+        merged.gender = data_front.gender or data_back.gender
+
+        # Merge diagnostics from both sides for remaining missing fields
+        for key, reason in data_front.field_diagnostics.items():
+            if getattr(merged, key, None) is None:
+                merged.field_diagnostics[key] = reason
+        for key, reason in data_back.field_diagnostics.items():
+            if getattr(merged, key, None) is None and key not in merged.field_diagnostics:
+                merged.field_diagnostics[key] = reason
+
+        return merged
+
     def extract(self, ocr_result: OCRResult) -> AadhaarData:
         texts = ocr_result.texts
         data = AadhaarData()
 
         data.aadhaar_number = self.extract_aadhaar_number(texts)
-        data.dob = self.extract_dob(texts)
+        data.date_of_birth = self.extract_dob(texts)
         data.gender = self.extract_gender(texts)
 
         name_raw = self.extract_name_raw(texts)
         if name_raw:
             parsed = normalize_name(name_raw)
             data.full_name = parsed["full_name"]
-            data.first_name = parsed["first_name"]
-            data.middle_name = parsed["middle_name"]
-            data.last_name = parsed["last_name"]
 
-        data.address = self.extract_address(texts)
+        # ── Generate per-field diagnostics ────────────────────────────────
+        self._generate_diagnostics(data, texts)
 
         return data
+
+    # ── Diagnostics ──────────────────────────────────────────────────────
+
+    def _generate_diagnostics(self, data: AadhaarData, texts: List[OCRText]) -> None:
+        """For every missing field, explain why OCR failed to extract it."""
+        if not texts:
+            for field in ["aadhaar_number", "full_name", "date_of_birth", "gender"]:
+                data.field_diagnostics[field] = "OCR returned no text from image"
+            return
+
+        # Check if OCR output is mostly garbage / very low confidence
+        avg_conf = sum(t.confidence for t in texts) / len(texts) if texts else 0
+        low_quality_msg = ""
+        if avg_conf < 0.5:
+            low_quality_msg = f"Low OCR confidence ({avg_conf:.0%}); image may be blurry or low quality"
+
+        if not data.aadhaar_number:
+            # Check if any digit sequences exist
+            all_digits = "".join(re.findall(r"\d+", " ".join(t.text for t in texts)))
+            if len(all_digits) < 10:
+                data.field_diagnostics["aadhaar_number"] = low_quality_msg or "No 12-digit number found in OCR text; image may be unclear or cropped"
+            else:
+                data.field_diagnostics["aadhaar_number"] = "Digit sequences found but none match 12-digit Aadhaar format"
+
+        if not data.full_name:
+            alpha_texts = [t.text for t in texts if re.match(r'^[A-Za-z\s\.]+$', t.text.strip()) and len(t.text.strip()) > 3]
+            if not alpha_texts:
+                data.field_diagnostics["full_name"] = low_quality_msg or "No alphabetic name-like text found in OCR output"
+            else:
+                data.field_diagnostics["full_name"] = "Name candidates found but rejected by plausibility filter (may match blacklisted words)"
+
+        if not data.date_of_birth:
+            # Check what date-like content exists
+            date_like = re.findall(r"\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{2,4}", " ".join(t.text for t in texts))
+            yob_like = re.findall(r"\b(19\d{2}|20[0-2]\d)\b", " ".join(t.text for t in texts))
+            if not date_like and not yob_like:
+                data.field_diagnostics["date_of_birth"] = low_quality_msg or "No date or year found in OCR text; DOB label may be in non-English script"
+            elif date_like:
+                data.field_diagnostics["date_of_birth"] = f"Date pattern(s) found ({', '.join(date_like[:3])}) but could not parse to valid DOB"
+            else:
+                data.field_diagnostics["date_of_birth"] = f"Year(s) found ({', '.join(yob_like[:3])}) but could not associate with DOB label"
+
+        if not data.gender:
+            gender_words = [t.text for t in texts if any(g in t.text.upper() for g in ["MALE", "FEMALE", "TRANSGENDER"])]
+            if not gender_words:
+                data.field_diagnostics["gender"] = low_quality_msg or "No gender keyword (MALE/FEMALE) found in OCR text"
+            else:
+                data.field_diagnostics["gender"] = f"Gender word found ({gender_words[0]}) but extraction failed"
 
     # ── Aadhaar Number ────────────────────────────────────────────────────────
 
@@ -109,17 +183,20 @@ class AadhaarExtractor(BaseExtractor):
         Priority:
           1. Inline pattern — "DOB: DD/MM/YYYY" in a single text box (most common)
           2. Label-proximity — label and value in separate boxes
-          3. Regex fallback — date near a DOB-like word
-          4. Last resort — any date in plausible DOB year range (1930–2015)
+          3. Year of Birth standalone — "YOB: 1994" or "Year of Birth: 1994"
+          4. Regex fallback — date near a DOB-like word
+          5. Last resort — any date in plausible DOB year range (1930–2015)
         """
         date_patterns = [
             r"(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4})",
             r"(\d{4}[/\-\.]\d{1,2}[/\-\.]\d{1,2})",
             r"(\d{1,2}\s+[A-Za-z]{3,9}\s+\d{4})",
         ]
-        # Inline label keywords — includes OCR variants
+        # Inline label keywords — includes OCR variants and Gujarati
         dob_inline_keywords = [
-            "DOB", "D.O.B", "DATE OF BIRTH", "BIRTH", "जन्म", "YOB",
+            "DOB", "D.O.B", "D O B", "DATE OF BIRTH", "BIRTH", "YOB",
+            "YEAR OF BIRTH", "BIRT", "DOB:", "D.O.B.", "BRTH",
+            "જન્મ", "जन्म",  # Gujarati and Hindi for "birth"
         ]
 
         # 1. Inline: same text box contains DOB keyword + date
@@ -133,18 +210,49 @@ class AadhaarExtractor(BaseExtractor):
                         if parsed and self._is_plausible_dob_year(parsed):
                             return parsed
 
+                # Check for standalone year inline: "YOB: 1994" or "Year of Birth : 1994"
+                year_m = re.search(r"\b(19\d{2}|20[0-2]\d)\b", item.text)
+                if year_m:
+                    year = int(year_m.group(1))
+                    if 1930 <= year <= 2015:
+                        return f"{year}-01-01"
+
         # 2. Label-proximity
         label_keywords = [
-            "DOB", "Date of Birth", "D.O.B", "Year of Birth",
-            "जन्म तिथि", "जन्म की तारीख", "YOB",
+            "DOB", "Date of Birth", "D.O.B", "Year of Birth", "YOB",
+            "D.O.B.", "D O B", "Date Of Birth", "BIRTH",
+            "જન્મ તારીખ", "जन्म तिथि",  # Gujarati / Hindi
         ]
-        raw = self.find_value_near_label(texts, label_keywords)
+        raw = self.find_value_near_label(texts, label_keywords, max_distance=500.0)
         if raw:
             parsed = normalize_dob(raw)
             if parsed and self._is_plausible_dob_year(parsed):
                 return parsed
+            # Try as standalone year
+            year_m = re.search(r"\b(19\d{2}|20[0-2]\d)\b", raw)
+            if year_m:
+                year = int(year_m.group(1))
+                if 1930 <= year <= 2015:
+                    return f"{year}-01-01"
 
-        # 3. Last resort — any date in plausible DOB year range
+        # 3. Year of Birth standalone — scan all texts for "YOB" or year near birth label
+        for item in texts:
+            text_up = item.text.upper().strip()
+            if text_up in ["YOB", "YEAR OF BIRTH", "Y.O.B", "Y O B"]:
+                # Find the nearest text with a year
+                for other in texts:
+                    if other is item:
+                        continue
+                    year_m = re.search(r"\b(19\d{2}|20[0-2]\d)\b", other.text)
+                    if year_m:
+                        dy = abs(other.bounding_box.center_y - item.bounding_box.center_y)
+                        dx = other.bounding_box.min_x - item.bounding_box.max_x
+                        if (dy < 30 and dx > -10 and dx < 300) or (other.bounding_box.min_y > item.bounding_box.max_y - 5 and other.bounding_box.min_y - item.bounding_box.max_y < 80):
+                            year = int(year_m.group(1))
+                            if 1930 <= year <= 2015:
+                                return f"{year}-01-01"
+
+        # 4. Last resort — any date in plausible DOB year range
         for item in texts:
             for pat in date_patterns:
                 m = re.search(pat, item.text)
@@ -152,6 +260,15 @@ class AadhaarExtractor(BaseExtractor):
                     parsed = normalize_dob(m.group(1))
                     if parsed and self._is_plausible_dob_year(parsed):
                         return parsed
+
+        # 5. Absolute last resort — standalone 4-digit year in DOB range anywhere in text
+        for item in texts:
+            # Only consider if the text is short (likely a standalone field value, not a sentence)
+            if len(item.text.strip()) <= 10:
+                year_m = re.search(r"\b(19[3-9]\d|200\d|201[0-5])\b", item.text)
+                if year_m:
+                    year = int(year_m.group(1))
+                    return f"{year}-01-01"
 
         return None
 
@@ -164,21 +281,17 @@ class AadhaarExtractor(BaseExtractor):
         except (ValueError, IndexError):
             return False
 
-    # ── Gender ────────────────────────────────────────────────────────────────
+    # ── Gender ────────────────────────────────────────────────────────────
 
     def extract_gender(self, texts: List[OCRText]) -> Optional[str]:
         """
         Detect gender.
-        Handles: MALE, FEMALE, TRANSGENDER, पुरुष, महिला (Hindi),
+        Handles: MALE, FEMALE, TRANSGENDER,
         and abbreviated forms.
         """
         gender_map = {
-            "FEMALE": "FEMALE",
-            "महिला": "FEMALE",     # Hindi
-            "સ્ત્રી": "FEMALE",   # Gujarati
+            "FEMALE": "FEMALE", 
             "MALE": "MALE",
-            "पुरुष": "MALE",      # Hindi
-            "પુરુષ": "MALE",      # Gujarati
             "TRANSGENDER": "TRANSGENDER",
         }
 
@@ -189,13 +302,23 @@ class AadhaarExtractor(BaseExtractor):
                     return value
 
         # Proximity to "Sex" or "Gender" label
-        raw = self.find_value_near_label(texts, ["Gender", "Sex", "लिंग", "જાતિ"])
+        raw = self.find_value_near_label(texts, ["Gender", "Sex",])
         if raw:
-            raw_upper = raw.upper()
+            raw_upper = raw.upper().strip()
             for keyword, value in gender_map.items():
                 if keyword in raw_upper:
                     return value
 
+        
+
+        # 2. Search OCR text for English gender values
+         # ---------------------------------------------------------
+        for item in texts:
+            text_upper = item.text.upper().strip()
+
+            # Exact match is preferable to substring matching
+            if text_upper in gender_map:
+                return gender_map[text_upper]
         return None
 
     # ── Name ─────────────────────────────────────────────────────────────────
@@ -211,7 +334,7 @@ class AadhaarExtractor(BaseExtractor):
         """
         # 1. Label-proximity
         label_keywords = [
-            "Name", "NAME", "नाम", "નામ",
+            "Name", "NAME",
         ]
         candidate = self.find_value_near_label(
             texts, label_keywords, direction="auto", max_distance=500.0
@@ -260,7 +383,7 @@ class AadhaarExtractor(BaseExtractor):
 
         return True
 
-    # ── Address ───────────────────────────────────────────────────────────────
+    # ── Address ───────────────────────────────────────────────────────────
 
     def extract_address(self, texts: List[OCRText]) -> Optional[str]:
         """

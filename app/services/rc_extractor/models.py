@@ -1,48 +1,53 @@
-from typing import Optional
-from pydantic import BaseModel
+
+from typing import Optional, Dict
+from pydantic import BaseModel, Field
 
 
 class RCData(BaseModel):
-    # Registration details
-    registration_number: Optional[str] = None  # GJ-RR-XX-NNNN
+    registration_number: Optional[str] = None    # Registration No
+    owner_name: Optional[str] = None             # Owner Name
+    vehicle_type: Optional[str] = None           # Vehicle Type
+    date_of_registration: Optional[str] = None   # Date of Registration
+    registration_validity: Optional[str] = None  # Registration Validity / Expiry Date
 
-    # Owner
-    owner_name: Optional[str] = None
+    # Confidence & Uncertainty Output Metrics
+    confidence_scores: Dict[str, float] = Field(default_factory=dict)
+    overall_confidence: float = 0.0
 
-    # Vehicle details
-    vehicle_class: Optional[str] = None        # e.g. LMV-CAR, M-CYCLE/SCOOTER
-    vehicle_type: Optional[str] = None         # e.g. MOTOR CAR, MOTORCYCLE
-    fuel_type: Optional[str] = None            # PETROL / DIESEL / CNG / EV / HYBRID
-    manufacturer: Optional[str] = None         # e.g. MARUTI SUZUKI
-    model: Optional[str] = None               # e.g. SWIFT DZIRE
-    chassis_number: Optional[str] = None
-    engine_number: Optional[str] = None
+    # Per-field failure diagnostics: field_name -> reason string
+    field_diagnostics: Dict[str, str] = Field(default_factory=dict)
 
-    # Dates
-    date_of_registration: Optional[str] = None  # ISO YYYY-MM-DD
-    registration_validity: Optional[str] = None  # ISO YYYY-MM-DD
-    fitness_validity: Optional[str] = None        # ISO YYYY-MM-DD
-    insurance_validity: Optional[str] = None      # ISO YYYY-MM-DD
-    tax_validity: Optional[str] = None
-
-    # Issuing RTO
-    issuing_rto: Optional[str] = None
+    def _fmt_conf(self, field_name: str) -> str:
+        score = self.confidence_scores.get(field_name)
+        if score is None or getattr(self, field_name) is None:
+            return "—"
+        pct = int(score * 100)
+        if score >= 0.85:
+            rating = "HIGH"
+        elif score >= 0.65:
+            rating = "MEDIUM"
+        else:
+            rating = "LOW / UNCERTAIN"
+        return f"{pct}% {rating}"
 
     def display(self) -> str:
-        lines = [
-            f"  {'Registration No':<24}: {self.registration_number or '—'}",
-            f"  {'Owner Name':<24}: {self.owner_name or '—'}",
-            f"  {'Vehicle Class':<24}: {self.vehicle_class or '—'}",
-            f"  {'Vehicle Type':<24}: {self.vehicle_type or '—'}",
-            f"  {'Fuel Type':<24}: {self.fuel_type or '—'}",
-            f"  {'Manufacturer':<24}: {self.manufacturer or '—'}",
-            f"  {'Model':<24}: {self.model or '—'}",
-            f"  {'Chassis Number':<24}: {self.chassis_number or '—'}",
-            f"  {'Engine Number':<24}: {self.engine_number or '—'}",
-            f"  {'Date of Registration':<24}: {self.date_of_registration or '—'}",
-            f"  {'Registration Validity':<24}: {self.registration_validity or '—'}",
-            f"  {'Fitness Validity':<24}: {self.fitness_validity or '—'}",
-            f"  {'Insurance Validity':<24}: {self.insurance_validity or '—'}",
-            f"  {'Issuing RTO':<24}: {self.issuing_rto or '—'}",
+        fields = [
+            ("Registration No", "registration_number"),
+            ("Owner Name", "owner_name"),
+            ("Date of Registration", "date_of_registration"),
+            ("Registration Validity", "registration_validity"),
         ]
+        lines = []
+        for label, key in fields:
+            value = getattr(self, key)
+            conf = self._fmt_conf(key)
+            if value:
+                lines.append(f"  {label:<24}: {value:<28} [{conf}]")
+            else:
+                reason = self.field_diagnostics.get(key, "")
+                if reason:
+                    lines.append(f"  {label:<24}: {'—':<28} [{conf}]  [!] {reason}")
+                else:
+                    lines.append(f"  {label:<24}: {'—':<28} [{conf}]")
+        lines.append(f"  {'Overall Confidence':<24}: {f'{int(self.overall_confidence * 100)}%' if self.overall_confidence else '—'}")
         return "\n".join(lines)
