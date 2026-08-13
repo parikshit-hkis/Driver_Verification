@@ -228,6 +228,23 @@ class PanExtractor(BaseExtractor):
           Layout A: Label above Value (Name -> [Person Name])
           Layout B: Value above Label ([Person Name] -> Name)
         """
+
+        # 0. PAN card special case: no literal "Name" label exists —
+        #    name is the first plausible text block directly below "INCOME TAX" header
+        income_tax_box = self._find_label_box(texts, ["INCOME TAX", "INCOMETAX"])
+        if income_tax_box:
+            ref_y = income_tax_box.bounding_box.max_y
+            below_candidates = sorted(
+                [t for t in texts if t is not income_tax_box and self._centroid_y(t) > ref_y and self._x_overlap(income_tax_box, t)],
+                key=lambda t: t.bounding_box.min_y,
+            )
+            for t in below_candidates:
+                txt = t.text.strip()
+                if re.search(r"govt|india|government|income\s*tax", txt, re.IGNORECASE):
+                    continue
+                if self._is_plausible_name(txt):
+                    return txt
+                    
         label_keywords = ["Name", "NAME"]
         name_box = self._find_label_box(texts, label_keywords)
 
@@ -289,6 +306,19 @@ class PanExtractor(BaseExtractor):
 
     # ── Father Name ───────────────────────────────────────────────────────
 
+    def _x_overlap(self, box_a, box_b, min_ratio: float = 0.3) -> bool:
+        """True if two boxes overlap horizontally by at least min_ratio of the narrower box's width."""
+        a_min, a_max = box_a.bounding_box.min_x, box_a.bounding_box.max_x
+        b_min, b_max = box_b.bounding_box.min_x, box_b.bounding_box.max_x
+        overlap = min(a_max, b_max) - max(a_min, b_min)
+        if overlap <= 0:
+            return False
+        narrower = min(a_max - a_min, b_max - b_min)
+        return narrower > 0 and (overlap / narrower) >= min_ratio
+
+    def _centroid_y(self, t) -> float:
+        return (t.bounding_box.min_y + t.bounding_box.max_y) / 2.0
+
     def extract_father_name_raw(self, texts: List[OCRText], person_name: Optional[str] = None) -> Optional[str]:
         """
         Extract father's/parent's name from PAN card.
@@ -308,6 +338,31 @@ class PanExtractor(BaseExtractor):
                 if p_norm == f_norm:
                     return False
             return True
+
+        # New step 0 in extract_father_name_raw, before the generic label search:
+        if not father_box:
+            income_tax_box = self._find_label_box(texts, ["INCOME TAX", "INCOMETAX"])
+            if income_tax_box:
+                ref_y = self._centroid_y(income_tax_box)
+                below_candidates = sorted(
+                    [t for t in texts
+                    if t is not income_tax_box
+                    and self._centroid_y(t) > ref_y
+                    and self._x_overlap(income_tax_box, t)],
+                    key=lambda t: self._centroid_y(t),
+                )
+                seen_person_name = False
+                for t in below_candidates:
+                    txt = t.text.strip()
+                    if re.search(r"govt|india|government|income\s*tax", txt, re.IGNORECASE):
+                        continue
+                    if not self._is_plausible_name(txt):
+                        continue
+                    if person_name and txt.strip().lower() == person_name.strip().lower():
+                        seen_person_name = True
+                        continue
+                    if seen_person_name or not person_name:
+                        return txt
 
         # 1. Check directly ABOVE the Father Name label (within 65px)
         if father_box:

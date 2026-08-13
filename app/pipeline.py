@@ -111,6 +111,7 @@ class Pipeline:
             elif doc_type == DocumentType.RC:
                 driver_result.rc_result = doc_res
 
+        driver_result.save_json("result/extr_result")
         return driver_result
 
     def extract_document(self, doc_spec: DocumentFilesSpec) -> DocumentExtractionResult:
@@ -160,8 +161,6 @@ class Pipeline:
                 document_type=doc_spec.doc_type,
                 status="FAILED",
                 warning="; ".join(warnings) if warnings else "Failed to process images",
-                front_path=doc_spec.front_path,
-                back_path=doc_spec.back_path,
             )
 
         # 3. Combine OCR Results & Extract Fields
@@ -199,26 +198,14 @@ class Pipeline:
             back_ocr=ocr_back,
             status=status,
             warning="; ".join(warnings) if warnings else None,
-            front_path=doc_spec.front_path,
-            back_path=doc_spec.back_path,
         )
 
     # ── Legacy Single-Image Extraction ─────────────────────────────────────────
 
-    def extract(
-        self,
-        image_input,
-        *,
-        doc_type: Optional[DocumentType] = None,
-        fix_orientation: bool = True,
-        enhance: bool = True,
-    ) -> ExtractionResult:
+    def extract(self,image_input,*,doc_type: Optional[DocumentType] = None,fix_orientation: bool = True,enhance: bool = True,) -> ExtractionResult:
         """Process a single image (legacy entry point)."""
-        img_array, quality_report = self._preprocessor.preprocess(
-            image_input,
-            fix_orientation=fix_orientation,
-            enhance=enhance,
-        )
+        img_array, quality_report = self._preprocessor.preprocess(image_input,fix_orientation=fix_orientation,enhance=enhance,)
+        
         ocr_result = self._ocr.extract(img_array)
 
         if doc_type is None:

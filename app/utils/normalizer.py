@@ -26,16 +26,21 @@ _MONTH_MAP: Dict[str, int] = {
 
 # Ordered from most to least specific to avoid wrong matches
 _DATE_PATTERNS = [
-    # YYYY-MM-DD or YYYY/MM/DD  (already ISO)
+    # YYYY-MM-DD or YYYY/MM/DD
     (r"(\d{4})[-/\.](\d{1,2})[-/\.](\d{1,2})", "ymd"),
-    # DD-MM-YYYY or DD/MM/YYYY or DD.MM.YYYY  (Indian standard)
+    
+    # DD-MM-YYYY or DD/MM/YYYY
     (r"(\d{1,2})[-/\.](\d{1,2})[-/\.](\d{4})", "dmy"),
+    
     # DD-MM-YY or DD/MM/YY
     (r"(\d{1,2})[-/\.](\d{1,2})[-/\.](\d{2})", "dmy2"),
-    # DD Mon YYYY   e.g.  18 May 1999  /  18-May-1999
-    (r"(\d{1,2})[\s\-]([A-Za-z]{3,9})[\s\-](\d{4})", "dmy_alpha"),
-    # Mon DD, YYYY  e.g.  May 18, 1999
-    (r"([A-Za-z]{3,9})[\s\-](\d{1,2})[,\s]+(\d{4})", "mdy_alpha"),
+    
+    
+    # DD Mon YYYY -> EXACTLY 3 CAPTURE GROUPS FOR THE PARSER
+    (r"(\d{1,2})[\s\-]+([A-Za-z]{3,9})[\s\-]+(\d{4})", "dmy_alpha"),
+    
+    # Mon DD, YYYY -> EXACTLY 3 CAPTURE GROUPS FOR THE PARSER
+    (r"([A-Za-z]{3,9})[\s\-]+(\d{1,2})[,\s]+(\d{4})", "mdy_alpha"),
 ]
 
 

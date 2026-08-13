@@ -4,8 +4,10 @@ Driver Verification Data Models
 Defines data structures for driver-level document extraction results.
 """
 
+import json
+from pathlib import Path
 from dataclasses import dataclass, field
-from typing import Optional, Union, List
+from typing import Optional, Union, List, Dict, Any
 
 from app.services.doc_type_detector import DocumentType
 from app.models.ocr_models import ImageQualityReport, OCRResult
@@ -56,6 +58,22 @@ class DocumentExtractionResult:
             lines.append(self.data.display())
 
         return "\n".join(lines)
+
+    def to_dict(self) -> Dict[str, Any]:
+        data_dict = None
+        if self.data is not None:
+            if hasattr(self.data, "model_dump"):
+                data_dict = self.data.model_dump()
+            elif hasattr(self.data, "dict"):
+                data_dict = self.data.dict()
+            elif hasattr(self.data, "__dict__"):
+                data_dict = dict(self.data.__dict__)
+        return {
+            "document_type": self.document_type.value if hasattr(self.document_type, "value") else str(self.document_type),
+            "status": self.status,
+            "warning": self.warning,
+            "data": data_dict,
+        }
 
 
 @dataclass
@@ -110,3 +128,29 @@ class DriverVerificationResult:
         lines.append("")
 
         return "\n".join(lines)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert result to serializable dictionary."""
+        return {
+            "driver_id": self.driver_id,
+            "documents": {
+                "aadhaar": self.aadhaar_result.to_dict() if self.aadhaar_result else None,
+                "licence": self.licence_result.to_dict() if self.licence_result else None,
+                "pan": self.pan_result.to_dict() if self.pan_result else None,
+                "rc": self.rc_result.to_dict() if self.rc_result else None,
+            }
+        }
+
+    def save_json(self, output_dir: str = "result/extr_result") -> str:
+        """
+        Store output of extracted details of driver into a JSON file with driver number.
+        File is saved as: {output_dir}/{driver_id}.json
+        """
+        out_path = Path(output_dir)
+        out_path.mkdir(parents=True, exist_ok=True)
+        file_path = out_path / f"{self.driver_id}.json"
+
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(self.to_dict(), f, indent=2, ensure_ascii=False)
+
+        return str(file_path)

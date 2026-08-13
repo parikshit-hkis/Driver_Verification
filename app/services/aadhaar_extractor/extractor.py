@@ -36,8 +36,9 @@ _NAME_BLACKLIST = {
     "transgender", "download", "date", "dob", "year", "permanent", "resident",
     "unique", "identification", "authority", "enrolment", "enrollment",
     "village", "post", "district", "state", "pin", "pincode", "s/o", "d/o",
-    "w/o", "care", "of", "house", "near", "sector", "ward", "taluka",
+    "w/o", "c/o", "care", "of", "house", "near", "sector", "ward", "taluka",
     "tehsil", "nagar", "gujarat", "ahmedabad", "surat", "vadodara",
+    "bharat", "sarkar", "mera", "meri", "pechan", "pehchan", "issued",
 }
 
 
@@ -177,98 +178,139 @@ class AadhaarExtractor(BaseExtractor):
     # ── Date of Birth ─────────────────────────────────────────────────────────
 
     def extract_dob(self, texts: List[OCRText]) -> Optional[str]:
-        """
-        Extract DOB.
 
-        Priority:
-          1. Inline pattern — "DOB: DD/MM/YYYY" in a single text box (most common)
-          2. Label-proximity — label and value in separate boxes
-          3. Year of Birth standalone — "YOB: 1994" or "Year of Birth: 1994"
-          4. Regex fallback — date near a DOB-like word
-          5. Last resort — any date in plausible DOB year range (1930–2015)
-        """
         date_patterns = [
             r"(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4})",
             r"(\d{4}[/\-\.]\d{1,2}[/\-\.]\d{1,2})",
             r"(\d{1,2}\s+[A-Za-z]{3,9}\s+\d{4})",
         ]
-        # Inline label keywords — includes OCR variants and Gujarati
-        dob_inline_keywords = [
-            "DOB", "D.O.B", "D O B", "DATE OF BIRTH", "BIRTH", "YOB",
-            "YEAR OF BIRTH", "BIRT", "DOB:", "D.O.B.", "BRTH",
-            "જન્મ", "जन्म",  # Gujarati and Hindi for "birth"
+
+        dob_keywords = [
+            "DOB",
+            "D.O.B",
+            "D0B",
+            "DB",
+            "DATE OF BIRTH",
+            "BIRTH",
+            "YOB",
+            "YEAR OF BIRTH",
+            "BIRT",
+            "BRTH",
         ]
 
-        # 1. Inline: same text box contains DOB keyword + date
+        # 1. DOB + date in the same OCR box
         for item in texts:
             text_up = item.text.upper()
-            if any(kw in text_up for kw in dob_inline_keywords):
-                for pat in date_patterns:
-                    m = re.search(pat, item.text)
-                    if m:
-                        parsed = normalize_dob(m.group(1))
+
+            if any(kw in text_up for kw in dob_keywords):
+                for pattern in date_patterns:
+                    match = re.search(pattern, item.text)
+
+                    if match:
+                        parsed = normalize_dob(match.group(1))
+
                         if parsed and self._is_plausible_dob_year(parsed):
                             return parsed
 
-                # Check for standalone year inline: "YOB: 1994" or "Year of Birth : 1994"
-                year_m = re.search(r"\b(19\d{2}|20[0-2]\d)\b", item.text)
-                if year_m:
-                    year = int(year_m.group(1))
-                    if 1930 <= year <= 2015:
-                        return f"{year}-01-01"
+        # 2. Find DOB label boxes
+        dob_labels = []
 
-        # 2. Label-proximity
-        label_keywords = [
-            "DOB", "Date of Birth", "D.O.B", "Year of Birth", "YOB",
-            "D.O.B.", "D O B", "Date Of Birth", "BIRTH",
-            "જન્મ તારીખ", "जन्म तिथि",  # Gujarati / Hindi
-        ]
-        raw = self.find_value_near_label(texts, label_keywords, max_distance=500.0)
-        if raw:
-            parsed = normalize_dob(raw)
-            if parsed and self._is_plausible_dob_year(parsed):
-                return parsed
-            # Try as standalone year
-            year_m = re.search(r"\b(19\d{2}|20[0-2]\d)\b", raw)
-            if year_m:
-                year = int(year_m.group(1))
-                if 1930 <= year <= 2015:
-                    return f"{year}-01-01"
-
-        # 3. Year of Birth standalone — scan all texts for "YOB" or year near birth label
         for item in texts:
             text_up = item.text.upper().strip()
-            if text_up in ["YOB", "YEAR OF BIRTH", "Y.O.B", "Y O B"]:
-                # Find the nearest text with a year
-                for other in texts:
-                    if other is item:
+
+            if any(kw in text_up for kw in dob_keywords):
+                dob_labels.append(item)
+
+        # 3. Find all valid date candidates
+        date_candidates = []
+
+        for item in texts:
+            for pattern in date_patterns:
+                match = re.search(pattern, item.text)
+
+                if not match:
+                    continue
+
+                parsed = normalize_dob(match.group(1))
+
+                if parsed and self._is_plausible_dob_year(parsed):
+                    date_candidates.append((item, parsed))
+                    break
+
+        # 4. Select the date nearest to DOB label
+        best_candidate = None
+        best_distance = float("inf")
+
+        for label in dob_labels:
+
+            label_cx = label.bounding_box.center_x
+            label_cy = label.bounding_box.center_y
+
+            for date_box, parsed_date in date_candidates:
+
+                if date_box is label:
+                    continue
+
+                date_cx = date_box.bounding_box.center_x
+                date_cy = date_box.bounding_box.center_y
+
+                dx = abs(date_cx - label_cx)
+                dy = abs(date_cy - label_cy)
+
+                # Same row
+                if dy <= 25:
+                    distance = dx
+
+                # Directly below
+                elif date_box.bounding_box.min_y >= label.bounding_box.max_y - 10:
+                    distance = dy + dx * 0.5
+
+                else:
+                    continue
+
+                if distance < best_distance:
+                    best_distance = distance
+                    best_candidate = parsed_date
+
+        if best_candidate:
+            return best_candidate
+
+            # 5. YOB fallback
+            for label in dob_labels:
+
+                label_cy = label.bounding_box.center_y
+                label_x2 = label.bounding_box.max_x
+
+                for item in texts:
+
+                    if item is label:
                         continue
-                    year_m = re.search(r"\b(19\d{2}|20[0-2]\d)\b", other.text)
-                    if year_m:
-                        dy = abs(other.bounding_box.center_y - item.bounding_box.center_y)
-                        dx = other.bounding_box.min_x - item.bounding_box.max_x
-                        if (dy < 30 and dx > -10 and dx < 300) or (other.bounding_box.min_y > item.bounding_box.max_y - 5 and other.bounding_box.min_y - item.bounding_box.max_y < 80):
-                            year = int(year_m.group(1))
-                            if 1930 <= year <= 2015:
-                                return f"{year}-01-01"
 
-        # 4. Last resort — any date in plausible DOB year range
-        for item in texts:
-            for pat in date_patterns:
-                m = re.search(pat, item.text)
-                if m:
-                    parsed = normalize_dob(m.group(1))
-                    if parsed and self._is_plausible_dob_year(parsed):
-                        return parsed
+                    match = re.search(r"\b(19\d{2}|20[0-2]\d)\b", item.text)
 
-        # 5. Absolute last resort — standalone 4-digit year in DOB range anywhere in text
-        for item in texts:
-            # Only consider if the text is short (likely a standalone field value, not a sentence)
-            if len(item.text.strip()) <= 10:
-                year_m = re.search(r"\b(19[3-9]\d|200\d|201[0-5])\b", item.text)
-                if year_m:
-                    year = int(year_m.group(1))
-                    return f"{year}-01-01"
+                    if not match:
+                        continue
+
+                    year = int(match.group(1))
+
+                    if not 1930 <= year <= 2015:
+                        continue
+
+                    dy = abs(item.bounding_box.center_y - label_cy)
+                    dx = item.bounding_box.min_x - label_x2
+
+                    if dy <= 50 and -20 <= dx <= 500:
+                        return f"{year}-01-01"
+
+                    if (
+                        item.bounding_box.min_y >= label.bounding_box.max_y - 10
+                        and item.bounding_box.min_y - label.bounding_box.max_y <= 120
+                    ):
+                        return f"{year}-01-01"
+
+            # 6. Last resort
+            for item, parsed in date_candidates:
+                return parsed
 
         return None
 
@@ -321,39 +363,70 @@ class AadhaarExtractor(BaseExtractor):
                 return gender_map[text_upper]
         return None
 
-    # ── Name ─────────────────────────────────────────────────────────────────
+    def _find_dob_or_gender_anchor(self, texts: List[OCRText]) -> Optional[OCRText]:
+        """Find the OCRText box containing DOB or Gender label/value to use as a layout anchor."""
+        anchor_keywords = [
+            "DOB", "DATE OF BIRTH", "BIRTH", "YOB", "YEAR OF BIRTH",
+            "MALE", "FEMALE", "TRANSGENDER", "जन्म", "જન્મ", "पुरुष", "મહિલા"
+        ]
+        for item in texts:
+            up = item.text.upper()
+            if any(kw in up for kw in anchor_keywords):
+                return item
+        return None
 
     def extract_name_raw(self, texts: List[OCRText]) -> Optional[str]:
         """
         Extract the person's name as a raw string.
 
         Priority:
-          1. Text directly below / to the right of "Name:" label
-          2. Heuristic: highest-confidence multi-word alphabetic text that
-             passes the blacklist filter
+          1. Text directly below / to the right of "Name:" label (if explicitly present)
+          2. Spatial Anchor: Text line situated directly ABOVE the DOB or Gender line
+          3. Heuristic: highest-confidence alphabetic text that passes the blacklist filter
         """
-        # 1. Label-proximity
-        label_keywords = [
-            "Name", "NAME",
-        ]
-        candidate = self.find_value_near_label(
-            texts, label_keywords, direction="auto", max_distance=500.0
-        )
+        # 1. Inline or Label-proximity (if "Name:" label is explicitly present)
+        for item in texts:
+            up = item.text.upper()
+            if "NAME" in up or "Name" in up or "name" in up:
+                cleaned = re.sub(r"^(name|Name)[\s\:\-]*", "", item.text, flags=re.IGNORECASE).strip()
+                if cleaned and self._is_plausible_name(cleaned):
+                    return cleaned
+
+        label_keywords = ["Name", "NAME"]
+        candidate = self.find_value_near_label(texts, label_keywords, direction="auto", max_distance=500.0)
+
         if candidate and self._is_plausible_name(candidate):
             return candidate
 
-        # 2. Heuristic: scan all texts
-        # Sort by confidence descending
-        sorted_texts = sorted(texts, key=lambda t: t.confidence, reverse=True)
+        # 2. Spatial Anchor: Search for English text line directly ABOVE DOB or Gender
+        dob_anchor = self._find_dob_or_gender_anchor(texts)
+        if dob_anchor:
+            anchor_min_y = dob_anchor.bounding_box.min_y
+            above_candidates = []
+            for item in texts:
+                if item is dob_anchor:
+                    continue
+                # Line must be situated vertically ABOVE DOB/Gender anchor (within 150px)
+                y_gap = anchor_min_y - item.bounding_box.max_y
+                if -10 <= y_gap <= 250:
+                    if self._is_plausible_name(item.text):
+                        above_candidates.append((y_gap, item))
 
+            if above_candidates:
+                # Sort by vertical distance ascending (closest above DOB first)
+                above_candidates.sort(key=lambda c: c[0])
+                return above_candidates[0][1].text
+
+        # 3. Heuristic: scan all texts
+        sorted_texts = sorted(texts, key=lambda t: t.confidence, reverse=True)
         for item in sorted_texts:
-            if self._is_plausible_name(item.text) and item.confidence >= 0.80:
+            if self._is_plausible_name(item.text) and item.confidence >= 0.70:
                 return item.text
 
         return None
 
     def _is_plausible_name(self, text: str) -> bool:
-        """Return True if text could be an Indian person's name."""
+        """Return True if text could be an Indian person's name (1 to 5 words)."""
         text = text.strip()
         if not text:
             return False
@@ -365,15 +438,21 @@ class AadhaarExtractor(BaseExtractor):
         # Split into words
         words = text.split()
 
-        # 2 to 5 words
-        if len(words) < 2 or len(words) > 5:
-            return False
+        # 1 to 5 words (allows single-word names like 'Sunil' as well as full names)
+        # if len(words) < 1 or len(words) > 5:
+        #     return False
 
         # Every word: letters only (allow dot/apostrophe inside)
         for w in words:
             cleaned = w.replace(".", "").replace("'", "")
             if not cleaned.isalpha():
                 return False
+
+        # If single word, length must be at least 3 letters
+        # if len(words) == 1:
+        #     cleaned_single = words[0].replace(".", "").replace("'", "")
+        #     if len(cleaned_single) < 3:
+        #         return False
 
         # Blacklist check
         lower_text = text.lower()

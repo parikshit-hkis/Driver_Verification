@@ -3,15 +3,11 @@
     "PETROL": "PETROL",
     "DIESEL": "DIESEL",
     "CNG": "CNG",
-    "LPG": "LPG",
     "ELECTRIC": "ELECTRIC",
     "EV": "ELECTRIC",
     "HYBRID": "HYBRID",
     "PETROL+CNG": "PETROL+CNG",
-    "PETROL/CNG": "PETROL+CNG",
-    "PETROL+LPG": "PETROL+LPG",
-    "PETROL/LPG": "PETROL+LPG",
-    "DIESEL+CNG": "DIESEL+CNG"
+    "PETROL/CNG": "PETROL+CNG"
   },
   "vehicle_classes": [
     "LMV",

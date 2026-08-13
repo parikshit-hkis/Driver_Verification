@@ -231,9 +231,7 @@ class RCExtractor(BaseExtractor):
 
     # ── Master Field Extractor with Confidence Calculation ────────────────────
 
-    def _extract_field_with_confidence(
-        self, texts: List[OCRText], field_name: str, side: str
-    ) -> Tuple[Optional[str], float]:
+    def _extract_field_with_confidence(self, texts: List[OCRText], field_name: str, side: str) -> Tuple[Optional[str], float]:
 
         if field_name == "registration_number":
             reg_val, reg_conf = self._extract_registration_number_with_fallback(texts, side)
@@ -272,7 +270,7 @@ class RCExtractor(BaseExtractor):
             return None, 0.0
 
         val = cand.text.strip()
-
+    
         ocr_conf = cand.ocr_box.confidence
         score_conf = min(1.0, max(0.5, cand.total_score / 140.0))
         field_conf = round(min(1.0, max(0.0, (0.55 * ocr_conf) + (0.45 * score_conf))), 2)
@@ -673,12 +671,12 @@ class RCExtractor(BaseExtractor):
                 "Type of Veh", "Veh Type",
             ],
             "date_of_registration": [
-                "Registration Date", "Date of Registration", "Date of Reg", "Reg Date",
-                "Regn Date", "Date of Regn.", "Date of Reg.",
+                "Registration Date", "Date of Registration", "Date of Reg.", "Reg Date",
+                "Regn Date", "Date of Regn.",
             ],
             "registration_validity": [
                 "Registration Validity", "Regn.Validity", "Regn. Validity", "Registration Upto",
-                "Regn Upto", "Reg Upto", "Fitness UpTo", "Fitness Upto", "Fitness Valid Upto",
+                "Fitness UpTo",
                 "Registration Valid Upto", "Regn Valid Till", "Fitness Validity",
             ],
         }
