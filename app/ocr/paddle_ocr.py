@@ -8,7 +8,7 @@ from app.models.ocr_models import (
     OCRResult,
 )
 
-MIN_CONFIDENCE = 0.80  # tune against your own document set
+MIN_CONFIDENCE = 0.70  # tune against your own document set
 
 
 class PaddleOCRService:

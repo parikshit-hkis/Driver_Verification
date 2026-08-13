@@ -296,7 +296,7 @@ class DrivingLicenceExtractor(BaseExtractor):
     # ── Name (Phase 12: Structural Name Rejection) ────────────────────────────
 
     def extract_name_raw(self, texts: List[OCRText]) -> Optional[str]:
-        # 1. Inline label check e.g. "Name:RAJAN KUMAR SAROJ"
+        # 1. Inline label check
         for item in texts:
             up = item.text.upper().strip()
             m = re.match(r"^(?:NAME|HOLDER|APPLICANT|MAME)[\s:\-/]*([A-Z\.\s']{3,})", up)
@@ -363,8 +363,8 @@ class DrivingLicenceExtractor(BaseExtractor):
             rel_y = rel_label.bounding_box.min_y
             above_candidates = [
                 t for t in texts
-                if t.bounding_box.max_y < rel_y + 10
-                and t.bounding_box.max_y > rel_y - 80
+                if t.bounding_box.max_y < rel_y + 20
+                and t.bounding_box.max_y > rel_y - 150
             ]
             for t in above_candidates:
                 cleaned = self._strip_name_prefix(t.text)
@@ -477,6 +477,43 @@ class DrivingLicenceExtractor(BaseExtractor):
                     horizontal_distance = date_x1 - class_x2
 
                     if -50.0 <= horizontal_distance <= 500.0:
+                        found.add(self._normalize_vehicle_class(vc))
+                        break
+
+        # ---------------------------------------------------------
+        # SECOND PRIORITY / FALLBACK:
+        # Vehicle class associated with "Vehicle Class" label
+        # ---------------------------------------------------------
+
+        vehicle_class_labels = [
+            t for t in texts
+            if "VEHICLE CLASS" in t.text.upper()
+        ]
+
+        for item in texts:
+            text = item.text.upper().strip()
+
+            for vc in _VEHICLE_CLASSES:
+                if vc not in text:
+                    continue
+
+                class_cy = item.bounding_box.center_y
+                class_x1 = item.bounding_box.min_x
+
+                for label in vehicle_class_labels:
+
+                    label_cy = label.bounding_box.center_y
+                    label_x2 = label.bounding_box.max_x
+                    label_y2 = label.bounding_box.max_y
+
+                    # Same row and class is to the right
+                    same_row = abs(class_cy - label_cy) <= 300.0
+
+                    right_of_label = class_x1 >= label_x2 - 100.0
+
+                    
+
+                    if (same_row and right_of_label):
                         found.add(self._normalize_vehicle_class(vc))
                         break
 

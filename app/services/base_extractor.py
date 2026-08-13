@@ -24,14 +24,9 @@ class BaseExtractor:
 
     # ── Label-proximity search ─────────────────────────────────────────────
 
-    def find_value_near_label(
-        self,
-        texts: List[OCRText],
-        label_keywords: List[str],
-        *,
-        direction: str = "auto",   # "right" | "below" | "auto"
+    def find_value_near_label(self,texts: List[OCRText],label_keywords: List[str],*,direction: str = "auto",
         max_distance: float = 400.0,
-        same_row_tolerance: float = 18.0,  # px — how far off-y still counts as same row
+        same_row_tolerance: float = 18.0,
         min_confidence: float = 0.0,
         skip_label_chars: bool = True,
     ) -> Optional[str]:
