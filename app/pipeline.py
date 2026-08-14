@@ -16,6 +16,7 @@ from typing import Optional, Union, List, Dict
 from app.models.ocr_models import ImageQualityReport, OCRResult, OCRText
 from app.models.driver_models import DocumentExtractionResult, DriverVerificationResult, DocumentData
 from app.ocr.preprocessor import ImagePreprocessor
+# from app.image_straightener import ImageStraightener
 from app.ocr.paddle_ocr import PaddleOCRService
 from app.services.doc_type_detector import DocTypeDetector, DocumentType
 from app.services.directory_scanner import DirectoryScanner, DriverFolderSpec, DocumentFilesSpec, MANDATORY_DOC_ORDER
@@ -65,6 +66,7 @@ class Pipeline:
     def __init__(self):
         self._preprocessor = ImagePreprocessor()
         self._ocr = PaddleOCRService()
+        # self._straightener = ImageStraightener(ocr_service=self._ocr)
         self._detector = DocTypeDetector()
         self._scanner = DirectoryScanner()
         self._extractors = {
@@ -144,6 +146,7 @@ class Pipeline:
         if doc_spec.front_path:
             try:
                 img_front, quality_front = self._preprocessor.preprocess(doc_spec.front_path)
+                # img_front = self._straightener.straighten(img_front)
                 ocr_front = self._ocr.extract(img_front)
             except Exception as e:
                 warnings.append(f"Front image error: {e}")
@@ -152,6 +155,7 @@ class Pipeline:
         if doc_spec.back_path:
             try:
                 img_back, quality_back = self._preprocessor.preprocess(doc_spec.back_path)
+                # img_back = self._straightener.straighten(img_back)
                 ocr_back = self._ocr.extract(img_back)
             except Exception as e:
                 warnings.append(f"Back image error: {e}")
@@ -205,7 +209,7 @@ class Pipeline:
     def extract(self,image_input,*,doc_type: Optional[DocumentType] = None,fix_orientation: bool = True,enhance: bool = True,) -> ExtractionResult:
         """Process a single image (legacy entry point)."""
         img_array, quality_report = self._preprocessor.preprocess(image_input,fix_orientation=fix_orientation,enhance=enhance,)
-        
+        # img_array = self._straightener.straighten(img_array)
         ocr_result = self._ocr.extract(img_array)
 
         if doc_type is None:

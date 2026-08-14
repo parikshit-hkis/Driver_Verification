@@ -151,16 +151,16 @@ class ImagePreprocessor:
             s = str(image_input)
 
             # data-URI base64
-            if s.startswith("data:image"):
-                return self._from_base64(s)
+            # if s.startswith("data:image"):
+            #     return self._from_base64(s)
 
             # Plain base64 string (long, no path chars)
-            if self._looks_like_base64(s):
-                return self._from_base64(s)
+            # if self._looks_like_base64(s):
+            #     return self._from_base64(s)
 
             # URL
-            if s.startswith("http://") or s.startswith("https://"):
-                return self._from_url(s)
+            # if s.startswith("http://") or s.startswith("https://"):
+            #     return self._from_url(s)
 
             # File path
             return self._from_file(s)
@@ -183,43 +183,24 @@ class ImagePreprocessor:
             raise FileNotFoundError(f"Could not read image: {path}")
         return img
 
-    def _from_bytes(self, data: bytes) -> np.ndarray:
-        nparr = np.frombuffer(data, np.uint8)
-        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        if img is None:
-            pil_img = Image.open(io.BytesIO(data))
-            img = self._pil_to_bgr(pil_img)
-        return img
-
-    def _from_base64(self, b64: str) -> np.ndarray:
-        if "," in b64:
-            b64 = b64.split(",", 1)[1]
-        data = base64.b64decode(b64)
-        return self._from_bytes(data)
-
-    def _from_url(self, url: str) -> np.ndarray:
-        logger.debug(f"Downloading image from URL: {url}")
-        with urllib.request.urlopen(url, timeout=15) as resp:
-            data = resp.read()
-        return self._from_bytes(data)
 
     @staticmethod
     def _pil_to_bgr(pil_img: Image.Image) -> np.ndarray:
         rgb = np.array(pil_img.convert("RGB"))
         return cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
 
-    @staticmethod
-    def _looks_like_base64(s: str) -> bool:
-        if len(s) < 50:
-            return False
-        # Base64 strings don't have path separators
-        if "/" in s[:20] or "\\" in s[:20] or "." in s[:10]:
-            return False
-        try:
-            base64.b64decode(s[:64], validate=True)
-            return True
-        except Exception:
-            return False
+    # @staticmethod
+    # def _looks_like_base64(s: str) -> bool:
+    #     if len(s) < 50:
+    #         return False
+    #     # Base64 strings don't have path separators
+    #     if "/" in s[:20] or "\\" in s[:20] or "." in s[:10]:
+    #         return False
+    #     try:
+    #         base64.b64decode(s[:64], validate=True)
+    #         return True
+    #     except Exception:
+    #         return False
 
     # ── EXIF orientation ──────────────────────────────────────────────────────
 
@@ -236,11 +217,8 @@ class ImagePreprocessor:
                 pil_img = original_input
             elif isinstance(original_input, (str, Path)):
                 path = str(original_input)
-                if (
-                    not path.startswith("http")
-                    and not self._looks_like_base64(path)
-                    and not path.startswith("data:")
-                ):
+                if (Path(path).exists() and Path(path).is_file()):
+                    # not path.startswith("http") and not path.startswith("data:") and not self._looks_like_base64(path)
                     pil_img = Image.open(path)
 
             if pil_img is None:

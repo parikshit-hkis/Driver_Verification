@@ -31,14 +31,10 @@ from app.utils.normalizer import normalize_dob, normalize_aadhaar_number, normal
 
 # Words that must NOT be the name (exact or contained)
 _NAME_BLACKLIST = {
-    "government", "india", "aadhaar", "uidai", "address", "authentication",
-    "proof", "citizenship", "birth", "help", "xml", "qr", "male", "female",
-    "transgender", "download", "date", "dob", "year", "permanent", "resident",
-    "unique", "identification", "authority", "enrolment", "enrollment",
-    "village", "post", "district", "state", "pin", "pincode", "s/o", "d/o",
-    "w/o", "c/o", "care", "of", "house", "near", "sector", "ward", "taluka",
-    "tehsil", "nagar", "gujarat", "ahmedabad", "surat", "vadodara",
-    "bharat", "sarkar", "mera", "meri", "pechan", "pehchan", "issued",
+    "government", "india", "aadhaar", "uidai", "address", "authentication","proof", "citizenship", "birth", "help", "xml", "qr", "male", "female",
+    "transgender", "download", "date", "dob", "year", "permanent", "resident","unique", "identification", "authority", "enrolment", "enrollment",
+    "village", "post", "district", "state", "pin", "pincode", "s/o", "d/o","w/o", "c/o", "care", "of", "house", "near", "sector", "ward", "taluka",
+    "tehsil", "nagar", "gujarat", "ahmedabad", "surat", "vadodara","bharat", "sarkar", "mera", "meri", "pechan", "pehchan", "issued",
 }
 
 
@@ -115,7 +111,7 @@ class AadhaarExtractor(BaseExtractor):
                 data.field_diagnostics["aadhaar_number"] = "Digit sequences found but none match 12-digit Aadhaar format"
 
         if not data.full_name:
-            alpha_texts = [t.text for t in texts if re.match(r'^[A-Za-z\s\.]+$', t.text.strip()) and len(t.text.strip()) > 3]
+            alpha_texts = [t.text for t in texts if re.match(r'^[A-Za-z\s\.]+$', t.text.strip()) and len(t.text.strip()) >= 3]
             if not alpha_texts:
                 data.field_diagnostics["full_name"] = low_quality_msg or "No alphabetic name-like text found in OCR output"
             else:
@@ -142,15 +138,8 @@ class AadhaarExtractor(BaseExtractor):
     # ── Aadhaar Number ────────────────────────────────────────────────────────
 
     def extract_aadhaar_number(self, texts: List[OCRText]) -> Optional[str]:
-        """
-        Find the 12-digit Aadhaar number.
+        """Find the 12-digit Aadhaar number."""
 
-        Handles all common formats:
-          4341 3155 9547  (spaced)
-          434131559547    (compact)
-          4341-3155-9547  (hyphenated)
-          XXXX XXXX 9547  (partially masked — skip these)
-        """
         # Pattern 1: 4-4-4 with any separator (space, hyphen, nothing)
         pattern_444 = r"\b(\d{4}[\s\-]?\d{4}[\s\-]?\d{4})\b"
 
@@ -275,42 +264,42 @@ class AadhaarExtractor(BaseExtractor):
         if best_candidate:
             return best_candidate
 
-            # 5. YOB fallback
-            for label in dob_labels:
+        # 5. YOB fallback
+        for label in dob_labels:
 
-                label_cy = label.bounding_box.center_y
-                label_x2 = label.bounding_box.max_x
+            label_cy = label.bounding_box.center_y
+            label_x2 = label.bounding_box.max_x
 
-                for item in texts:
+            for item in texts:
 
-                    if item is label:
-                        continue
+                if item is label:
+                    continue
 
-                    match = re.search(r"\b(19\d{2}|20[0-2]\d)\b", item.text)
+                match = re.search(r"\b(19\d{2}|20[0-2]\d)\b", item.text)
 
-                    if not match:
-                        continue
+                if not match:
+                    continue
 
-                    year = int(match.group(1))
+                year = int(match.group(1))
 
-                    if not 1930 <= year <= 2015:
-                        continue
+                if not 1930 <= year <= 2015:
+                    continue
 
-                    dy = abs(item.bounding_box.center_y - label_cy)
-                    dx = item.bounding_box.min_x - label_x2
+                dy = abs(item.bounding_box.center_y - label_cy)
+                dx = item.bounding_box.min_x - label_x2
 
-                    if dy <= 50 and -20 <= dx <= 500:
-                        return f"{year}-01-01"
+                if dy <= 50 and -20 <= dx <= 500:
+                    return f"{year}-01-01"
 
-                    if (
-                        item.bounding_box.min_y >= label.bounding_box.max_y - 10
-                        and item.bounding_box.min_y - label.bounding_box.max_y <= 120
-                    ):
-                        return f"{year}-01-01"
+                if (
+                    item.bounding_box.min_y >= label.bounding_box.max_y - 10
+                    and item.bounding_box.min_y - label.bounding_box.max_y <= 120
+                ):
+                    return f"{year}-01-01"
 
-            # 6. Last resort
-            for item, parsed in date_candidates:
-                return parsed
+        # 6. Last resort
+        for item, parsed in date_candidates:
+            return parsed
 
         return None
 
@@ -326,11 +315,7 @@ class AadhaarExtractor(BaseExtractor):
     # ── Gender ────────────────────────────────────────────────────────────
 
     def extract_gender(self, texts: List[OCRText]) -> Optional[str]:
-        """
-        Detect gender.
-        Handles: MALE, FEMALE, TRANSGENDER,
-        and abbreviated forms.
-        """
+      
         gender_map = {
             "FEMALE": "FEMALE", 
             "MALE": "MALE",
@@ -365,10 +350,8 @@ class AadhaarExtractor(BaseExtractor):
 
     def _find_dob_or_gender_anchor(self, texts: List[OCRText]) -> Optional[OCRText]:
         """Find the OCRText box containing DOB or Gender label/value to use as a layout anchor."""
-        anchor_keywords = [
-            "DOB", "DATE OF BIRTH", "BIRTH", "YOB", "YEAR OF BIRTH",
-            "MALE", "FEMALE", "TRANSGENDER", "जन्म", "જન્મ", "पुरुष", "મહિલા"
-        ]
+        
+        anchor_keywords = ["DOB", "DATE OF BIRTH", "BIRTH", "YOB", "YEAR OF BIRTH","MALE", "FEMALE", "TRANSGENDER"]
         for item in texts:
             up = item.text.upper()
             if any(kw in up for kw in anchor_keywords):

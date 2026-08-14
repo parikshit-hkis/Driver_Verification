@@ -10,6 +10,13 @@ gvenv/
 result/
 dump/
 
+
+
+# extra files
+project_review.md
+report.md
+ocr_dump.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

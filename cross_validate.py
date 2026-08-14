@@ -44,6 +44,8 @@ def print_driver_validation(res) -> None:
         print(f"DOB         : {dob_info['status']}")
         print(f"Status      : {pair_data['status']}\n")
 
+    print(f"Overall Name: {res.overall_name_status}")
+    print(f"Overall DOB : {res.overall_dob_status}")
     print(f"Overall     : {res.overall_status}")
     out_file = Path("result/vldt_result") / f"{res.driver_id}.json"
     print(f"\nSaved:\n{out_file.as_posix()}\n")
@@ -78,14 +80,40 @@ def main():
             return
 
         print(f"\nFound {len(json_files)} extraction file(s) in '{extr_dir}'. Cross-validating...\n")
+        
+        # Overall counters
         matched_count = 0
         review_count = 0
         mismatch_count = 0
+
+        # Name counters
+        name_matched_count = 0
+        name_review_count = 0
+        name_mismatch_count = 0
+
+        # DOB counters
+        dob_matched_count = 0
+        dob_mismatch_count = 0
 
         for jf in json_files:
             res = validator.validate_file(str(jf))
             print_driver_validation(res)
 
+            # Name status tracking
+            if res.overall_name_status == "MATCHED":
+                name_matched_count += 1
+            elif res.overall_name_status == "REVIEW":
+                name_review_count += 1
+            else:
+                name_mismatch_count += 1
+
+            # DOB status tracking
+            if res.overall_dob_status == "MATCHED":
+                dob_matched_count += 1
+            else:
+                dob_mismatch_count += 1
+
+            # Overall status tracking
             if res.overall_status == "MATCHED":
                 matched_count += 1
             elif res.overall_status == "REVIEW":
@@ -94,9 +122,17 @@ def main():
                 mismatch_count += 1
 
         print("=" * 55)
-        print(f"IDENTITY CROSS-VALIDATION BATCH SUMMARY")
+        print("IDENTITY CROSS-VALIDATION BATCH SUMMARY")
         print("=" * 55)
         print(f"Total Drivers Validated : {len(json_files)}")
+        print("\nNAME VALIDATION:")
+        print(f"  MATCHED   : {name_matched_count}")
+        print(f"  REVIEW    : {name_review_count}")
+        print(f"  MISMATCH  : {name_mismatch_count}")
+        print("\nDOB VALIDATION:")
+        print(f"  MATCHED   : {dob_matched_count}")
+        print(f"  MISMATCH  : {dob_mismatch_count}")
+        print("\nOVERALL IDENTITY:")
         print(f"  MATCHED   : {matched_count}")
         print(f"  REVIEW    : {review_count}")
         print(f"  MISMATCH  : {mismatch_count}")

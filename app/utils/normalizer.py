@@ -113,9 +113,9 @@ def normalize_name(text: str) -> Dict[str, Optional[str]]:
     """
     empty = {
         "full_name": None,
-        "first_name": None,
-        "middle_name": None,
-        "last_name": None,
+        # "first_name": None,
+        # "middle_name": None,
+        # "last_name": None,
     }
 
     if not text:
@@ -136,33 +136,30 @@ def normalize_name(text: str) -> Dict[str, Optional[str]]:
 
     full_name = " ".join(words)
 
-    if len(words) == 1:
-        return {**empty, "full_name": full_name, "first_name": words[0]}
+    # if len(words) == 1:
+    #     return {**empty, "full_name": full_name, "first_name": words[0]}
 
-    if len(words) == 2:
-        # Two words: [0] = Surname (first_name), [1] = Given Name (middle_name)
-        return {
-            "full_name": full_name,
-            "first_name": words[0],
-            "middle_name": words[1],
-            "last_name": None,
-        }
+    # if len(words) == 2:
+    #     # Two words: [0] = Surname (first_name), [1] = Given Name (middle_name)
+    #     return {
+    #         "full_name": full_name,
+    #         "first_name": words[0],
+    #         "middle_name": words[1],
+    #         "last_name": None,
+    #     }
 
-    if len(words) == 3:
-        # Three words: [0] = Surname (first_name), [1] = Given Name (middle_name), [2] = Father/Last (last_name)
-        return {
-            "full_name": full_name,
-            "first_name": words[0],
-            "middle_name": words[1],
-            "last_name": words[2],
-        }
+    # if len(words) == 3:
+    #     # Three words: [0] = Surname (first_name), [1] = Given Name (middle_name), [2] = Father/Last (last_name)
+    #     return {
+    #         "full_name": full_name,
+    #         "first_name": words[0],
+    #         "middle_name": words[1],
+    #         "last_name": words[2],
+    #     }
 
     # 4+ words: [0] = Surname (first_name), [1] = Given Name (middle_name), rest = last_name
     return {
         "full_name": full_name,
-        "first_name": words[0],
-        "middle_name": words[1],
-        "last_name": " ".join(words[2:]),
     }
 
 

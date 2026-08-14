@@ -2,8 +2,7 @@
 Driving Licence Extractor
 =========================
 Extracts and normalizes:
-  - Licence number (All-India DL formats: GJ, UP, MH, RJ, KA, DL, etc.)
-  - Full name (Given Name + Surname)
+  - Full name
   - Date of birth (ISO YYYY-MM-DD)
   - Issue date & expiry date / validity (ISO YYYY-MM-DD)
   - Vehicle classes (MCWG, LMV, HMV, HPMV, TRANS, 3W-CAB, LMV-CAB, LMV-NT, etc.)
@@ -70,10 +69,10 @@ _NAME_BLACKLIST = {
 
 @dataclass
 class DateCandidate:
-    date: str               # ISO YYYY-MM-DD
-    text: str               # Raw text string
-    box: OCRText            # OCR text item
-    confidence: float       # OCR confidence
+    date: str
+    text: str
+    box: OCRText
+    confidence: float
     context: Optional[str] = None
     label_score: float = 0.0
     spatial_score: float = 0.0
@@ -98,14 +97,13 @@ class DrivingLicenceExtractor(BaseExtractor):
             return data_front
 
         merged = DrivingLicenceData()
+        
         merged.licence_number = data_front.licence_number or data_back.licence_number
         merged.full_name = data_front.full_name or data_back.full_name
         merged.date_of_birth = data_front.date_of_birth or data_back.date_of_birth
         merged.issue_date = data_front.issue_date or data_back.issue_date
         merged.expiry_date = data_front.expiry_date or data_back.expiry_date
-        merged.vehicle_classes = self._combine_vehicle_classes(
-            data_front.vehicle_classes, data_back.vehicle_classes
-        )
+        merged.vehicle_classes = self._combine_vehicle_classes(data_front.vehicle_classes, data_back.vehicle_classes)
 
         # Merge diagnostics from both sides — only keep diagnostics for fields still missing
         for key, reason in data_front.field_diagnostics.items():
@@ -438,9 +436,9 @@ class DrivingLicenceExtractor(BaseExtractor):
             text = item.text.upper().strip()
 
             for vc in _VEHICLE_CLASSES:
-                if vc not in text:
+                if not re.search(rf"(?<![A-Z0-9]){re.escape(vc)}(?![A-Z0-9])",text):
                     continue
-
+                    
                 # If the class and date are in the same OCR box,
                 # accept the class directly.
                 if normalize_date(item.text):
@@ -505,11 +503,15 @@ class DrivingLicenceExtractor(BaseExtractor):
                     label_cy = label.bounding_box.center_y
                     label_x2 = label.bounding_box.max_x
                     label_y2 = label.bounding_box.max_y
+                    label_height = label.bounding_box.height
+
+                    same_row_tolerance = max(20.0, label_height * 1.2)
+                    same_row = abs(class_cy - label_cy) <= same_row_tolerance
 
                     # Same row and class is to the right
-                    same_row = abs(class_cy - label_cy) <= 300.0
-
-                    right_of_label = class_x1 >= label_x2 - 100.0
+                    # same_row = abs(class_cy - label_cy) <= 300.0
+                    right_of_label = class_x1 >= label_x2 - 20.0
+                    # right_of_label = class_x1 >= label_x2 + 100.0
 
                     
 

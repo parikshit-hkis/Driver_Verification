@@ -22,8 +22,8 @@ from app.services.identity_cross_validator.models import (
     DriverCrossValidationResult,
 )
 
-NAME_MATCH_THRESHOLD = 78.0
-NAME_REVIEW_THRESHOLD = 60.0
+NAME_MATCH_THRESHOLD = 60.0
+NAME_REVIEW_THRESHOLD = 50.0
 
 
 class IdentityCrossValidator:
@@ -184,20 +184,33 @@ class IdentityCrossValidator:
         # 3. PAN ↔ Licence
         pan_vs_licence = self.validate_pair("pan", "licence", p_name, p_dob, l_name, l_dob)
 
-        # Overall Status Determination (Section 11)
-        # Priority: Strong contradiction -> MISMATCH, No contradiction + ambiguous -> REVIEW, All agree -> MATCHED
+        # Overall Status Determination
         pairs = [aadhaar_vs_pan, aadhaar_vs_licence, pan_vs_licence]
 
-        has_dob_mismatch = any(p.date_of_birth.status == "MISMATCH" for p in pairs)
-        has_name_mismatch = any(p.name.status == "MISMATCH" for p in pairs)
-        has_review = any(p.name.status == "REVIEW" for p in pairs)
-        all_match = all(p.name.status == "MATCH" and p.date_of_birth.status == "MATCH" for p in pairs)
+        # 1. Overall Name Status across all document pairs
+        if any(p.name.status in ("MISMATCH", "MISSING") for p in pairs):
+            overall_name_status = "MISMATCH"
+        elif any(p.name.status == "REVIEW" for p in pairs):
+            overall_name_status = "REVIEW"
+        elif all(p.name.status == "MATCH" for p in pairs):
+            overall_name_status = "MATCHED"
+        else:
+            overall_name_status = "MISMATCH"
 
-        if has_dob_mismatch or has_name_mismatch:
+        # 2. Overall DOB Status across all document pairs
+        if any(p.date_of_birth.status in ("MISMATCH", "MISSING") for p in pairs):
+            overall_dob_status = "MISMATCH"
+        elif all(p.date_of_birth.status == "MATCH" for p in pairs):
+            overall_dob_status = "MATCHED"
+        else:
+            overall_dob_status = "MISMATCH"
+
+        # 3. Overall Identity Status
+        if overall_name_status == "MISMATCH" or overall_dob_status == "MISMATCH":
             overall_status = "MISMATCH"
-        elif has_review:
+        elif overall_name_status == "REVIEW":
             overall_status = "REVIEW"
-        elif all_match:
+        elif overall_name_status == "MATCHED" and overall_dob_status == "MATCHED":
             overall_status = "MATCHED"
         else:
             overall_status = "MISMATCH"
@@ -207,6 +220,8 @@ class IdentityCrossValidator:
             aadhaar_vs_pan=aadhaar_vs_pan,
             aadhaar_vs_licence=aadhaar_vs_licence,
             pan_vs_licence=pan_vs_licence,
+            overall_name_status=overall_name_status,
+            overall_dob_status=overall_dob_status,
             overall_status=overall_status,
         )
 
