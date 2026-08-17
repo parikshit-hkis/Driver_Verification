@@ -34,21 +34,20 @@ from typing import Optional, Tuple, Union
 import cv2
 import numpy as np
 from PIL import Image, ExifTags
+from app.ocr.config import preprocessor_config
 
 logger = logging.getLogger(__name__)
 
 # ── Supported file extensions ─────────────────────────────────────────────────
-SUPPORTED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.webp', '.bmp', '.tiff', '.tif', '.gif'}
-
+SUPPORTED_EXTENSIONS = preprocessor_config.SUPPORTED_EXTENSIONS
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Quality thresholds
+# Quality thresholds (loaded from PreprocessorConfig)
 # ══════════════════════════════════════════════════════════════════════════════
-
-BLUR_THRESHOLD = 80.0          # Laplacian variance — below this = blurry
-DARK_THRESHOLD = 55.0          # Mean brightness — below this = too dark
-BRIGHT_THRESHOLD = 215.0       # Mean brightness — above this = overexposed
-GLARE_THRESHOLD_PERCENT = 12.0 # % of pixels > 250 brightness — above = glare
+BLUR_THRESHOLD = preprocessor_config.BLUR_THRESHOLD
+DARK_THRESHOLD = preprocessor_config.DARK_THRESHOLD
+BRIGHT_THRESHOLD = preprocessor_config.BRIGHT_THRESHOLD
+GLARE_THRESHOLD_PERCENT = preprocessor_config.GLARE_THRESHOLD_PERCENT
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -75,7 +74,10 @@ class ImagePreprocessor:
         img = self._load_image(image_input)
         report.original_height, report.original_width = img.shape[:2]
 
-        # 2. EXIF orientation fix (must happen before anything else)
+        # 2. Downscale oversized smartphone photos (e.g. 12MP-48MP) to preserve memory & speed
+        img = self._downscale_if_oversized(img)
+
+        # 3. EXIF orientation fix (must happen before anything else)
         img = self._fix_exif_orientation(image_input, img)
 
         # 3. Document-level rotation correction (90/180/270)
@@ -183,6 +185,21 @@ class ImagePreprocessor:
             raise FileNotFoundError(f"Could not read image: {path}")
         return img
 
+
+    @staticmethod
+    def _downscale_if_oversized(img: np.ndarray, max_dim: int | None = None) -> np.ndarray:
+        """
+        Downscales images whose longest edge exceeds max_dim (default from PreprocessorConfig: 1920px)
+        while preserving original aspect ratio.
+        """
+        target_max = max_dim or preprocessor_config.MAX_IMAGE_DIMENSION
+        h, w = img.shape[:2]
+        if max(h, w) > target_max:
+            scale = target_max / float(max(h, w))
+            new_w = max(1, int(w * scale))
+            new_h = max(1, int(h * scale))
+            img = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_AREA)
+        return img
 
     @staticmethod
     def _pil_to_bgr(pil_img: Image.Image) -> np.ndarray:
@@ -406,7 +423,10 @@ class ImagePreprocessor:
         lab = cv2.cvtColor(enhanced, cv2.COLOR_BGR2LAB)
         l_ch, a_ch, b_ch = cv2.split(lab)
 
-        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        clahe = cv2.createCLAHE(
+            clipLimit=preprocessor_config.CLAHE_CLIP_LIMIT,
+            tileGridSize=preprocessor_config.CLAHE_TILE_GRID_SIZE,
+        )
         l_ch = clahe.apply(l_ch)
 
         lab = cv2.merge([l_ch, a_ch, b_ch])
@@ -414,7 +434,7 @@ class ImagePreprocessor:
 
         # Additional gamma correction for very dark images
         if report.is_too_dark:
-            gamma = 1.6
+            gamma = preprocessor_config.GAMMA
             inv_gamma = 1.0 / gamma
             lut = np.array(
                 [((i / 255.0) ** inv_gamma) * 255 for i in range(256)],

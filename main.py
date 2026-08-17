@@ -21,6 +21,7 @@ if hasattr(sys.stdout, "reconfigure"):
     except Exception:
         pass
 
+from app.config.settings import settings
 from app.pipeline import Pipeline
 from app.services.doc_type_detector import DocumentType
 
@@ -48,21 +49,26 @@ def run_driver(pipeline: Pipeline, driver_folder: str):
         print(f"\n  [ERROR] Failed to process driver folder {driver_folder}: {e}\n")
 
 
-def run_all_drivers(pipeline: Pipeline, base_dir: str = "sample_documents"):
+def run_all_drivers(pipeline: Pipeline, base_dir: str | None = None, max_workers: int = 1):
     """Scan base_dir for all drivers and process driver-by-driver."""
-    driver_specs = pipeline._scanner.scan_all_drivers(base_dir)
+    target_dir = base_dir or settings.SAMPLE_DOCUMENTS_DIR
+    driver_specs = pipeline._scanner.scan_all_drivers(target_dir)
 
     if not driver_specs:
         # Fallback to single image demo if legacy flat layout is present
-        print(f"  No driver folders found in {base_dir}. Checking for direct images...")
-        _run_legacy_demo(pipeline, base_dir)
+        print(f"  No driver folders found in {target_dir}. Checking for direct images...")
+        _run_legacy_demo(pipeline, target_dir)
         return
 
-    print(f"\n  Found {len(driver_specs)} driver(s) in '{base_dir}'. Processing driver-by-driver...")
+    print(f"\n  Found {len(driver_specs)} driver(s) in '{target_dir}'. Processing (workers={max_workers})...\n")
 
-    for spec in driver_specs:
-        result = pipeline.extract_driver(spec)
-        print(result.display(detailed=True))
+    results = pipeline.extract_all_drivers(target_dir, max_workers=max_workers, show_progress=True)
+
+    if max_workers <= 1:
+        for result in results:
+            print(result.display(detailed=True))
+    else:
+        print(f"\n  [COMPLETED] Processed {len(results)} driver(s). Extraction JSON files saved to '{settings.EXTRACTION_OUTPUT_DIR}'.\n")
 
 
 def run_single_image(pipeline: Pipeline, image_path: str, doc_type=None):
@@ -116,41 +122,56 @@ def main():
 
     args = sys.argv[1:]
 
-    if not args:
-        # Default: scan all driver folders in sample_documents/
-        run_all_drivers(pipeline, "sample_documents")
+    # Parse optional --workers / -w flag
+    workers = 1
+    clean_args = []
+    i = 0
+    while i < len(args):
+        if args[i] in ("-w", "--workers") and i + 1 < len(args):
+            try:
+                workers = max(1, int(args[i + 1]))
+                i += 2
+                continue
+            except ValueError:
+                pass
+        clean_args.append(args[i])
+        i += 1
 
-    elif len(args) == 1:
-        target = Path(args[0])
+    if not clean_args:
+        # Default: scan all driver folders in configured sample documents directory
+        run_all_drivers(pipeline, settings.SAMPLE_DOCUMENTS_DIR, max_workers=workers)
+
+    elif len(clean_args) == 1:
+        target = Path(clean_args[0])
         if target.is_dir():
             # Check if this directory is a single driver folder or contains multiple driver folders
             subdirs = [p for p in target.iterdir() if p.is_dir()]
             has_driver_subdirs = any(p.name.startswith("DRIVER_") or p.name.isdigit() for p in subdirs)
 
             if has_driver_subdirs:
-                run_all_drivers(pipeline, str(target))
+                run_all_drivers(pipeline, str(target), max_workers=workers)
             else:
                 run_driver(pipeline, str(target))
         elif target.is_file():
             run_single_image(pipeline, str(target))
         else:
-            print(f"\n  Path '{args[0]}' does not exist.\n")
+            print(f"\n  Path '{clean_args[0]}' does not exist.\n")
 
-    elif len(args) == 2:
-        image_path = args[0]
-        type_str = args[1].lower()
+    elif len(clean_args) == 2:
+        image_path = clean_args[0]
+        type_str = clean_args[1].lower()
         doc_type = _TYPE_ALIASES.get(type_str)
         if doc_type is None:
-            print(f"\n  Unknown document type '{args[1]}'. Valid: {', '.join(_TYPE_ALIASES)}\n")
+            print(f"\n  Unknown document type '{clean_args[1]}'. Valid: {', '.join(_TYPE_ALIASES)}\n")
             sys.exit(1)
         run_single_image(pipeline, image_path, doc_type=doc_type)
 
     else:
         print("\n  Usage:")
-        print("    python main.py                              # scan all drivers in sample_documents/")
-        print("    python main.py <driver_folder_path>         # process single driver directory")
-        print("    python main.py <image_path>                 # single image auto-detect")
-        print("    python main.py <image_path> <doc_type>      # single image forced type\n")
+        print("    python main.py [-w 4]                          # scan all drivers in sample_documents/ with 4 workers")
+        print("    python main.py <driver_folder_path> [-w 4]     # process drivers in directory")
+        print("    python main.py <image_path>                    # single image auto-detect")
+        print("    python main.py <image_path> <doc_type>         # single image forced type\n")
 
 
 if __name__ == "__main__":

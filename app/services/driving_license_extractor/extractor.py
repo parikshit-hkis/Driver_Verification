@@ -26,45 +26,17 @@ from typing import List, Optional, Set, Tuple, Dict
 from app.models.ocr_models import OCRResult, OCRText
 from app.services.base_extractor import BaseExtractor
 from app.services.driving_license_extractor.models import DrivingLicenceData
+from app.services.driving_license_extractor.config import dl_config
 from app.utils.normalizer import normalize_dob, normalize_date, normalize_dl_number, normalize_name, _DATE_PATTERNS
 
 
-# ── All-India DL number pattern ──────────────────────────────────────────────
-_DL_REGEX = re.compile(
-    r"\b([A-Z]{2}\s*[-]?\s*\d{2}[A-Z0-9]?\s*[-]?\s*\d{4}\s*[-]?\s*\d{7})\b",
-    re.IGNORECASE,
-)
-
-# Known vehicle class codes on Indian DLs
-_VEHICLE_CLASSES: Set[str] = {
-    "MCWG", "MCWO", "MCWOG", "LMV", "LMY", "LMV-NT", "LMV-TR", "LMV-CAB", "LMVCAB","HMV", "HPMV",
-    "HGMV", "MGV", "HTV","TRANS", "TRANSPORT", "AGRTLR","3W-NT", "3W-TR", "3WNT", "3WTR", "3W-CAB",
-    "3WCAB","FVG", "ADAPTED", "INVCR", "PSV-BUS", "PSVBUS", "TRACTOR", "TRCTOR", "LDRXCV",
-    }
-
-_ISSUE_KEYWORDS = [
-    "DATE OF ISSUE","ISSUE DATE","DATE OF FIRST ISSUE","DATE OF 1ST ISSUE",
-    "FIRST ISSUE DATE","FIRST ISSUE","DOI",
-    ]
-
-_EXPIRY_KEYWORDS = [
-    "VALIDITY","VALIDITY UPTO","VALID UPTO","VALID TILL","VALID UNTIL",
-    "VALID TO","EXPIRY DATE","EXPIRY","EXPIRATION DATE","Licence Validity","Issue DateValidity(NT)",
-    ]
-
-_DOB_KEYWORDS = ["DATE OF BIRTH","BIRTH DATE","DATE OF BIRT","DOB","D.O.B"]
-
-_NAME_BLACKLIST = {
-    "UNION", "INDIAN", "DRIVING", "LICENCE", "LICENSE", "GOVERNMENT", "GOVT",
-    "STATE", "TRANSPORT", "DEPARTMENT", "AUTHORITY", "REGISTERING", "ISSUING",
-    "DATE", "ISSUE", "VALIDITY", "EXPIRE", "EXPIRY", "BIRTH", "BLOOD", "GROUP",
-    "ORGAN", "DONOR", "ADDRESS", "FORM", "RULE", "CLASS", "VEHICLE", "CATEGORY",
-    "CODE", "BADGE", "NUMBER", "EMERGENCY", "CONTACT", "SIGNATURE", "HOLDER",
-    "MVSD", "UP66", "UTTAR", "PRADESH", "GUJARAT", "MAHARASHTRA", "RAJASTHAN",
-    "FIRST", "DATE OF FIRST ISSUE", "DATE OF ISSUE", "FIRST ISSUE", "ISSUE DATE",
-    "OFFICER", "AHMEDABAD", "RTO", "AHMEDABAD RTO", "REGISTERING AUTHORITY",
-    "ISSUING AUTHORITY", "HOLDER'S SIGNATURE", "HOLDER SIGNATURE", "'S SIGNATURE",
-}
+# ── All-India DL number pattern & Domain Configuration ────────────────────────
+_DL_REGEX = dl_config.DL_REGEX
+_VEHICLE_CLASSES = dl_config.VEHICLE_CLASSES
+_ISSUE_KEYWORDS = dl_config.ISSUE_KEYWORDS
+_EXPIRY_KEYWORDS = dl_config.EXPIRY_KEYWORDS
+_DOB_KEYWORDS = dl_config.DOB_KEYWORDS
+_NAME_BLACKLIST = dl_config.NAME_BLACKLIST
 
 
 @dataclass

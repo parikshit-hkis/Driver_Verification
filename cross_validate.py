@@ -23,6 +23,7 @@ if hasattr(sys.stdout, "reconfigure"):
     except Exception:
         pass
 
+from app.config.settings import settings
 from app.services.identity_cross_validator.cross_validator import IdentityCrossValidator
 
 
@@ -47,13 +48,13 @@ def print_driver_validation(res) -> None:
     print(f"Overall Name: {res.overall_name_status}")
     print(f"Overall DOB : {res.overall_dob_status}")
     print(f"Overall     : {res.overall_status}")
-    out_file = Path("result/vldt_result") / f"{res.driver_id}.json"
+    out_file = Path(settings.VALIDATION_OUTPUT_DIR) / f"{res.driver_id}.json"
     print(f"\nSaved:\n{out_file.as_posix()}\n")
 
 
 def main():
     validator = IdentityCrossValidator()
-    extr_dir = Path("result/extr_result")
+    extr_dir = Path(settings.EXTRACTION_OUTPUT_DIR)
 
     if not extr_dir.exists():
         print(f"Directory '{extr_dir}' does not exist. Please run extraction first.")

@@ -9,6 +9,7 @@ import json
 import logging
 from pathlib import Path
 from typing import List, Set, Optional
+from app.services.rc_extractor.config import rc_config
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ class ManufacturerRepository:
 
     def __init__(self, data_path: Optional[Path] = None):
         if data_path is None:
-            data_path = Path(__file__).resolve().parents[2] / "config" / "known_manufacturers.json"
+            data_path = rc_config.KNOWN_MANUFACTURERS_PATH
         self._data_path = data_path
         self._known_manufacturers: Set[str] = set()
         self.reload()

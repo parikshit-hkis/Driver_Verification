@@ -10,10 +10,10 @@ import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
-
+from app.config.settings import settings
 from app.services.doc_type_detector import DocumentType
 
-SUPPORTED_IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tiff", ".tif"}
+SUPPORTED_IMAGE_EXTS = settings.SUPPORTED_IMAGE_EXTENSIONS
 
 MANDATORY_DOC_ORDER = [
     DocumentType.AADHAAR,
@@ -58,12 +58,13 @@ class DriverFolderSpec:
 class DirectoryScanner:
     """Discovers and validates driver directory structures."""
 
-    def scan_all_drivers(self, base_dir: str = "sample_documents") -> List[DriverFolderSpec]:
+    def scan_all_drivers(self, base_dir: Optional[str] = None) -> List[DriverFolderSpec]:
         """
         Scan base directory for all driver folders and return specifications
         in driver-by-driver order.
         """
-        base_path = Path(base_dir)
+        target_dir = base_dir or settings.SAMPLE_DOCUMENTS_DIR
+        base_path = Path(target_dir)
         if not base_path.exists() or not base_path.is_dir():
             return []
 

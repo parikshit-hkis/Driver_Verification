@@ -26,16 +26,11 @@ from typing import List, Optional
 from app.models.ocr_models import OCRResult, OCRText
 from app.services.base_extractor import BaseExtractor
 from app.services.aadhaar_extractor.models import AadhaarData
+from app.services.aadhaar_extractor.config import aadhaar_config
 from app.utils.normalizer import normalize_dob, normalize_aadhaar_number, normalize_name
 
-
 # Words that must NOT be the name (exact or contained)
-_NAME_BLACKLIST = {
-    "government", "india", "aadhaar", "uidai", "address", "authentication","proof", "citizenship", "birth", "help", "xml", "qr", "male", "female",
-    "transgender", "download", "date", "dob", "year", "permanent", "resident","unique", "identification", "authority", "enrolment", "enrollment",
-    "village", "post", "district", "state", "pin", "pincode", "s/o", "d/o","w/o", "c/o", "care", "of", "house", "near", "sector", "ward", "taluka",
-    "tehsil", "nagar", "gujarat", "ahmedabad", "surat", "vadodara","bharat", "sarkar", "mera", "meri", "pechan", "pehchan", "issued",
-}
+_NAME_BLACKLIST = aadhaar_config.NAME_BLACKLIST
 
 
 class AadhaarExtractor(BaseExtractor):
@@ -282,7 +277,7 @@ class AadhaarExtractor(BaseExtractor):
 
                 year = int(match.group(1))
 
-                if not 1930 <= year <= 2015:
+                if not aadhaar_config.MIN_DOB_YEAR <= year <= 2015:
                     continue
 
                 dy = abs(item.bounding_box.center_y - label_cy)
@@ -308,7 +303,7 @@ class AadhaarExtractor(BaseExtractor):
         """Return True if the year is in a realistic DOB range."""
         try:
             year = int(iso_date[:4])
-            return 1930 <= year <= 2026
+            return aadhaar_config.MIN_DOB_YEAR <= year <= aadhaar_config.MAX_DOB_YEAR
         except (ValueError, IndexError):
             return False
 

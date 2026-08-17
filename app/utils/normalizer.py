@@ -102,21 +102,13 @@ def _parse_date(text: str) -> Optional[str]:
 
 def normalize_name(text: str) -> Dict[str, Optional[str]]:
     """
-    Normalize an Indian name string.
-
-    Gujarat naming convention is typically:
-        Surname  FirstName  FatherName
-        e.g. "Patel Jay Dhansukhbhai"
-
-    Returns a dict with keys:
-        full_name, first_name, middle_name, last_name
+    Normalize an Indian name string:
+      - Strips digits, non-alpha symbols (preserves internal dots and apostrophes)
+      - Standardizes casing to Title Case
+      - Collapses whitespace
+    Returns a dict with 'full_name'.
     """
-    empty = {
-        "full_name": None,
-        # "first_name": None,
-        # "middle_name": None,
-        # "last_name": None,
-    }
+    empty = {"full_name": None}
 
     if not text:
         return empty
@@ -135,32 +127,7 @@ def normalize_name(text: str) -> Dict[str, Optional[str]]:
         return empty
 
     full_name = " ".join(words)
-
-    # if len(words) == 1:
-    #     return {**empty, "full_name": full_name, "first_name": words[0]}
-
-    # if len(words) == 2:
-    #     # Two words: [0] = Surname (first_name), [1] = Given Name (middle_name)
-    #     return {
-    #         "full_name": full_name,
-    #         "first_name": words[0],
-    #         "middle_name": words[1],
-    #         "last_name": None,
-    #     }
-
-    # if len(words) == 3:
-    #     # Three words: [0] = Surname (first_name), [1] = Given Name (middle_name), [2] = Father/Last (last_name)
-    #     return {
-    #         "full_name": full_name,
-    #         "first_name": words[0],
-    #         "middle_name": words[1],
-    #         "last_name": words[2],
-    #     }
-
-    # 4+ words: [0] = Surname (first_name), [1] = Given Name (middle_name), rest = last_name
-    return {
-        "full_name": full_name,
-    }
+    return {"full_name": full_name}
 
 
 # ══════════════════════════════════════════════════════════════════════════════

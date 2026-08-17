@@ -13,6 +13,7 @@ Processing Order per Driver:
 from dataclasses import dataclass
 from typing import Optional, Union, List, Dict
 
+from app.config.settings import settings
 from app.models.ocr_models import ImageQualityReport, OCRResult, OCRText
 from app.models.driver_models import DocumentExtractionResult, DriverVerificationResult, DocumentData
 from app.ocr.preprocessor import ImagePreprocessor
@@ -78,16 +79,52 @@ class Pipeline:
 
     # ── Driver-by-Driver Orchestration ────────────────────────────────────────
 
-    def extract_all_drivers(self, base_dir: str = "sample_documents") -> List[DriverVerificationResult]:
-        """Scan base directory and process all discovered drivers driver-by-driver."""
-        driver_specs = self._scanner.scan_all_drivers(base_dir)
-        results = []
-        for spec in driver_specs:
-            res = self.extract_driver(spec)
-            results.append(res)
+    def extract_all_drivers(
+        self,
+        base_dir: Optional[str] = None,
+        max_workers: int = 1,
+        show_progress: bool = True,
+    ) -> List[DriverVerificationResult]:
+        """
+        Scan base directory and process all discovered drivers driver-by-driver.
+        Supports parallel multi-threaded extraction when max_workers > 1.
+        """
+        target_dir = base_dir or settings.SAMPLE_DOCUMENTS_DIR
+        driver_specs = self._scanner.scan_all_drivers(target_dir)
+        total = len(driver_specs)
+        if total == 0:
+            return []
+
+        results: List[DriverVerificationResult] = []
+
+        if max_workers <= 1 or total == 1:
+            for idx, spec in enumerate(driver_specs, 1):
+                if show_progress:
+                    print(f"  [{idx:03d}/{total:03d}] Processing Driver: {spec.driver_id}...", flush=True)
+                res = self.extract_driver(spec)
+                results.append(res)
+        else:
+            import concurrent.futures
+            completed = 0
+            with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+                future_to_spec = {
+                    executor.submit(self.extract_driver, spec): spec
+                    for spec in driver_specs
+                }
+                for future in concurrent.futures.as_completed(future_to_spec):
+                    spec = future_to_spec[future]
+                    completed += 1
+                    try:
+                        res = future.result()
+                        results.append(res)
+                        if show_progress:
+                            print(f"  [{completed:03d}/{total:03d}] Finished Driver: {spec.driver_id}", flush=True)
+                    except Exception as exc:
+                        print(f"  [{completed:03d}/{total:03d}] [ERROR] Driver {spec.driver_id} failed: {exc}", flush=True)
+
         return results
 
-    def extract_driver(self, driver_input: Union[str, DriverFolderSpec]) -> DriverVerificationResult:
+    def extract_driver(self, driver_input: Union[str, DriverFolderSpec], output_dir: Optional[str] = None) -> DriverVerificationResult:
         """
         Process all documents for a single driver in strict order:
         Aadhaar → Driving Licence → PAN → RC Book.
@@ -113,7 +150,8 @@ class Pipeline:
             elif doc_type == DocumentType.RC:
                 driver_result.rc_result = doc_res
 
-        driver_result.save_json("result/extr_result")
+        target_output_dir = output_dir or settings.EXTRACTION_OUTPUT_DIR
+        driver_result.save_json(target_output_dir)
         return driver_result
 
     def extract_document(self, doc_spec: DocumentFilesSpec) -> DocumentExtractionResult:

@@ -24,12 +24,13 @@ from rapidfuzz import fuzz
 from app.models.ocr_models import OCRResult, OCRText, BoundingBox
 from app.services.base_extractor import BaseExtractor
 from app.services.rc_extractor.models import RCData
+from app.services.rc_extractor.config import rc_config
 from app.utils.normalizer import normalize_date, normalize_name, normalize_rc_number
 
 logger = logging.getLogger(__name__)
 
 # ── Load Configuration File (rc_config.json) ─────────────────────────────────
-_CONFIG_PATH = Path(__file__).resolve().parents[2] / "config" / "rc_config.json"
+_CONFIG_PATH = rc_config.RC_CONFIG_PATH
 
 def _load_rc_config() -> Tuple[Dict[str, str], Set[str]]:
     fuel_types = {}
@@ -509,12 +510,13 @@ class RCExtractor(BaseExtractor):
                         score = 90.0
 
                 if score == 0.0 and len(kw_clean) >= 4 and len(t_clean) >= 4:
+                    fuzzy_threshold = rc_config.FUZZY_MATCH_THRESHOLD
                     ratio = fuzz.ratio(kw_clean, t_clean)
-                    if ratio >= 85.0:
+                    if ratio >= fuzzy_threshold:
                         score = ratio
                     else:
                         ts_ratio = fuzz.token_set_ratio(kw_clean, t_clean)
-                        if ts_ratio >= 85.0 and abs(len(t_clean) - len(kw_clean)) <= 12:
+                        if ts_ratio >= fuzzy_threshold and abs(len(t_clean) - len(kw_clean)) <= 12:
                             score = ts_ratio
 
                 if score > 0:
@@ -532,7 +534,7 @@ class RCExtractor(BaseExtractor):
         return unique
 
     def _is_structural_label(self, text: str) -> bool:
-        """Determines if text matches a canonical RC label using RapidFuzz (threshold ~85)."""
+        """Determines if text matches a canonical RC label using RapidFuzz."""
         clean = text.upper().strip().rstrip(":").rstrip(".").strip()
         if not clean:
             return True
@@ -540,14 +542,15 @@ class RCExtractor(BaseExtractor):
         if text.strip().endswith(":") and len(text.strip()) <= 35:
             return True
 
+        fuzzy_threshold = rc_config.FUZZY_MATCH_THRESHOLD
         for lbl in _CANONICAL_RC_LABELS:
             lbl_clean = lbl.upper()
             if clean == lbl_clean or clean.startswith(lbl_clean + ":") or clean.startswith(lbl_clean + " "):
                 return True
             if len(lbl_clean) >= 6 and len(clean) >= 4:
-                if fuzz.token_set_ratio(lbl_clean, clean) >= 85.0 and abs(len(clean) - len(lbl_clean)) <= 15:
+                if fuzz.token_set_ratio(lbl_clean, clean) >= fuzzy_threshold and abs(len(clean) - len(lbl_clean)) <= 15:
                     return True
-                if fuzz.ratio(lbl_clean, clean) >= 85.0:
+                if fuzz.ratio(lbl_clean, clean) >= fuzzy_threshold:
                     return True
 
         return False

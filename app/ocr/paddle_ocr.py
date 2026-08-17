@@ -1,6 +1,7 @@
 # app/ocr/paddle_ocr.py
 import numpy as np
 from paddleocr import PaddleOCR
+from app.ocr.config import ocr_config
 from app.models.ocr_models import (
     Point,
     BoundingBox,
@@ -8,35 +9,33 @@ from app.models.ocr_models import (
     OCRResult,
 )
 
-MIN_CONFIDENCE = 0.70  # tune against your own document set
-
 
 class PaddleOCRService:
     """
-    PaddleOCR wrapper — now using server-weight det/rec models instead of
-    the default mobile weights, since the mobile recognizer is the main
-    source of hallucinated text on small/dense ID-card fonts.
+    PaddleOCR wrapper — uses server-weight det/rec models configured via OCRConfig.
     """
 
     def __init__(
         self,
-        det_model_dir: str = "models/det_server/ch_PP-OCRv4_det_server_infer",
-        rec_model_dir: str = "models/rec_server/en_PP-OCRv4_rec_server_infer",
-        cls_model_dir: str = "models/cls/ch_ppocr_mobile_v2.0_cls_infer",
-        min_confidence: float = MIN_CONFIDENCE,
+        det_model_dir: str | None = None,
+        rec_model_dir: str | None = None,
+        cls_model_dir: str | None = None,
+        min_confidence: float | None = None,
+        rec_image_shape: str | None = None,
+        use_gpu: bool | None = None,
     ):
-        self.min_confidence = min_confidence
+        self.min_confidence = (
+            min_confidence if min_confidence is not None else ocr_config.MIN_CONFIDENCE
+        )
         self.ocr = PaddleOCR(
-            use_angle_cls=True,
-            lang="en",
-            show_log=False,
-            use_gpu=True,
-            det_model_dir=det_model_dir,
-            rec_model_dir=rec_model_dir,
-            cls_model_dir=cls_model_dir,
-            # server rec models expect a taller input — bump this up from
-            # the mobile default (48) or you lose most of the accuracy gain
-            rec_image_shape="3,64,320",
+            use_angle_cls=ocr_config.USE_ANGLE_CLS,
+            lang=ocr_config.LANG,
+            show_log=ocr_config.SHOW_LOG,
+            use_gpu=use_gpu if use_gpu is not None else ocr_config.USE_GPU,
+            det_model_dir=det_model_dir or ocr_config.DET_MODEL_DIR,
+            rec_model_dir=rec_model_dir or ocr_config.REC_MODEL_DIR,
+            cls_model_dir=cls_model_dir or ocr_config.CLS_MODEL_DIR,
+            rec_image_shape=rec_image_shape or ocr_config.REC_IMAGE_SHAPE,
         )
 
     def extract(self, image_input, min_confidence: float | None = None) -> OCRResult:

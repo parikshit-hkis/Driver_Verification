@@ -64,7 +64,9 @@ class DriverCrossValidationResult:
     aadhaar_vs_pan: PairwiseValidationResult
     aadhaar_vs_licence: PairwiseValidationResult
     pan_vs_licence: PairwiseValidationResult
-    overall_status: str  # "MATCHED", "REVIEW", "MISMATCH"
+    overall_name_status: str  # "MATCHED", "REVIEW", "MISMATCH"
+    overall_dob_status: str   # "MATCHED", "MISMATCH"
+    overall_status: str       # "MATCHED", "REVIEW", "MISMATCH"
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -73,6 +75,8 @@ class DriverCrossValidationResult:
                 "aadhaar_vs_pan": self.aadhaar_vs_pan.to_dict(),
                 "aadhaar_vs_licence": self.aadhaar_vs_licence.to_dict(),
                 "pan_vs_licence": self.pan_vs_licence.to_dict(),
+                "overall_name_status": self.overall_name_status,
+                "overall_dob_status": self.overall_dob_status,
                 "overall_status": self.overall_status,
             }
         }

@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Optional, Dict, Any
 
 from rapidfuzz import fuzz
-
+from app.services.identity_cross_validator.config import cross_validator_config
 from app.services.identity_cross_validator.models import (
     NameValidationResult,
     DobValidationResult,
@@ -22,16 +22,25 @@ from app.services.identity_cross_validator.models import (
     DriverCrossValidationResult,
 )
 
-NAME_MATCH_THRESHOLD = 60.0
-NAME_REVIEW_THRESHOLD = 50.0
-
 
 class IdentityCrossValidator:
     """Validates extracted identity details across Aadhaar, PAN, and Driving Licence."""
 
-    def __init__(self,name_match_threshold: float = NAME_MATCH_THRESHOLD,name_review_threshold: float = NAME_REVIEW_THRESHOLD,):
-        self.name_match_threshold = name_match_threshold
-        self.name_review_threshold = name_review_threshold
+    def __init__(
+        self,
+        name_match_threshold: float | None = None,
+        name_review_threshold: float | None = None,
+    ):
+        self.name_match_threshold = (
+            name_match_threshold
+            if name_match_threshold is not None
+            else cross_validator_config.NAME_MATCH_THRESHOLD
+        )
+        self.name_review_threshold = (
+            name_review_threshold
+            if name_review_threshold is not None
+            else cross_validator_config.NAME_REVIEW_THRESHOLD
+        )
 
     @staticmethod
     def normalize_name(name: Optional[str]) -> str:
@@ -225,12 +234,13 @@ class IdentityCrossValidator:
             overall_status=overall_status,
         )
 
-    def validate_file(self, json_file_path: str, output_dir: str = "result/vldt_result") -> DriverCrossValidationResult:
-        """Read extraction JSON file from result/extr_result and save validation JSON to result/vldt_result."""
+    def validate_file(self, json_file_path: str, output_dir: str | None = None) -> DriverCrossValidationResult:
+        """Read extraction JSON file from result/extr_result and save validation JSON to output_dir."""
+        target_output_dir = output_dir or cross_validator_config.DEFAULT_VALIDATION_DIR
         path = Path(json_file_path)
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
 
         result = self.validate_driver_json(data)
-        result.save_json(output_dir)
+        result.save_json(target_output_dir)
         return result

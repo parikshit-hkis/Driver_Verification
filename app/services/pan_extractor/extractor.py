@@ -32,10 +32,10 @@ from typing import List, Optional
 from app.models.ocr_models import OCRResult, OCRText
 from app.services.base_extractor import BaseExtractor
 from app.services.pan_extractor.models import PanData
+from app.services.pan_extractor.config import pan_config
 from app.utils.normalizer import normalize_dob, normalize_pan_number, normalize_name
 
-
-_PAN_REGEX = re.compile(r"\b([A-Z]{5}[0-9]{4}[A-Z])\b")
+_PAN_REGEX = pan_config.PAN_REGEX
 
 
 class PanExtractor(BaseExtractor):
@@ -422,11 +422,7 @@ class PanExtractor(BaseExtractor):
 
     # ── Helpers ───────────────────────────────────────────────────────────
 
-    _NAME_BLACKLIST = {
-        "income", "tax", "department", "government", "india", "permanent",
-        "account", "number", "pan", "name", "father", "birth", "date",
-        "signature",
-    }
+    _NAME_BLACKLIST = pan_config.NAME_BLACKLIST
 
     def _is_plausible_name(self, text: str) -> bool:
         text = text.strip()
