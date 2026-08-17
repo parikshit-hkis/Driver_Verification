@@ -9,3 +9,7 @@ python-dateutil
 rapidfuzz
 python-dotenv
 setuptools
+fastapi
+uvicorn[standard]
+python-multipart
+opencv-python-headless
