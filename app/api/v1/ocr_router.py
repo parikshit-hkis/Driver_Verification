@@ -9,15 +9,9 @@ from fastapi import APIRouter, File, UploadFile, Query, HTTPException
 import numpy as np
 import cv2
 
-from app.ocr.preprocessor import ImagePreprocessor
-from app.ocr.paddle_ocr import PaddleOCRService
-from app.models.ocr_models import OCRResult
+from app.dependencies import get_preprocessor, get_ocr_service
 
 router = APIRouter(prefix="/ocr", tags=["OCR Engine"])
-
-# Shared service instances
-_preprocessor = ImagePreprocessor()
-_ocr = PaddleOCRService()
 
 
 @router.post("/extract", summary="Run OCR on document image")
@@ -39,13 +33,13 @@ async def extract_ocr(
         if img is None:
             raise HTTPException(status_code=400, detail="Invalid image file or unsupported format")
 
-        preprocessed_img, quality_report = _preprocessor.preprocess(
+        preprocessed_img, quality_report = get_preprocessor().preprocess(
             img,
             fix_orientation=fix_orientation,
             enhance=enhance,
         )
 
-        ocr_res = _ocr.extract(preprocessed_img, min_confidence=min_confidence)
+        ocr_res = get_ocr_service().extract(preprocessed_img, min_confidence=min_confidence)
 
         return {
             "status": "SUCCESS",

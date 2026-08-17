@@ -9,15 +9,12 @@ from fastapi import APIRouter, File, UploadFile, HTTPException
 import numpy as np
 import cv2
 
-from app.ocr.preprocessor import ImagePreprocessor
-from app.ocr.paddle_ocr import PaddleOCRService
 from app.services.rc_extractor.extractor import RCExtractor
 from app.services.rc_extractor.models import RCData
+from app.dependencies import get_preprocessor, get_ocr_service
 
 router = APIRouter(prefix="/rc", tags=["RC Extractor"])
 
-_preprocessor = ImagePreprocessor()
-_ocr = PaddleOCRService()
 _extractor = RCExtractor()
 
 
@@ -26,8 +23,8 @@ def _process_image(file_bytes: bytes):
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     if img is None:
         return None, None
-    prep_img, quality = _preprocessor.preprocess(img)
-    ocr_res = _ocr.extract(prep_img)
+    prep_img, quality = get_preprocessor().preprocess(img)
+    ocr_res = get_ocr_service().extract(prep_img)
     return ocr_res, quality
 
 

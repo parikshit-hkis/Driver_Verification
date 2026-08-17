@@ -9,16 +9,12 @@ from fastapi import APIRouter, File, UploadFile, Form, HTTPException
 import numpy as np
 import cv2
 
-from app.pipeline import Pipeline
 from app.services.doc_type_detector import DocumentType
-from app.models.driver_models import DocumentExtractionResult, DriverVerificationResult, DocumentData
+from app.models.driver_models import DocumentExtractionResult, DriverVerificationResult
 from app.services.directory_scanner import DocumentFilesSpec, MANDATORY_DOC_ORDER
-from app.services.identity_cross_validator.cross_validator import IdentityCrossValidator
+from app.dependencies import get_pipeline, get_cross_validator
 
 router = APIRouter(prefix="/driver", tags=["Driver Verification Gateway"])
-
-_pipeline = Pipeline()
-_cross_validator = IdentityCrossValidator()
 
 
 async def _read_image(upload_file: Optional[UploadFile]):
@@ -52,6 +48,9 @@ async def verify_driver(
     5. Identity cross-validation (Pairwise Name Fuzzy Score + Exact DOB Match)
     """
     try:
+        pipeline = get_pipeline()
+        cross_validator = get_cross_validator()
+
         doc_uploads = {
             DocumentType.AADHAAR: (aadhaar_front, aadhaar_back),
             DocumentType.DRIVING_LICENCE: (licence_front, licence_back),
@@ -69,7 +68,7 @@ async def verify_driver(
             if front_img is None and back_img is None:
                 doc_res = DocumentExtractionResult(
                     document_type=doc_type,
-                    status=DocumentData.MISSING,
+                    status="MISSING",
                     warning=f"No {doc_type.value} images uploaded",
                 )
             else:
@@ -78,7 +77,7 @@ async def verify_driver(
                     front_path=front_img,
                     back_path=back_img,
                 )
-                doc_res = _pipeline.extract_document(doc_spec)
+                doc_res = pipeline.extract_document(doc_spec)
 
             if doc_type == DocumentType.AADHAAR:
                 driver_result.aadhaar_result = doc_res
@@ -93,7 +92,7 @@ async def verify_driver(
         driver_result.save_json()
 
         # Run identity cross-validation
-        cross_val = _cross_validator.validate_driver_json(driver_result.to_dict())
+        cross_val = cross_validator.validate_driver_json(driver_result.to_dict())
         cross_val.save_json()
 
         return {

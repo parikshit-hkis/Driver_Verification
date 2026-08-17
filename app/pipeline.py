@@ -181,7 +181,7 @@ class Pipeline:
         warnings = []
 
         # 1. Process Front Image
-        if doc_spec.front_path:
+        if doc_spec.front_path is not None:
             try:
                 img_front, quality_front = self._preprocessor.preprocess(doc_spec.front_path)
                 # img_front = self._straightener.straighten(img_front)
@@ -190,7 +190,7 @@ class Pipeline:
                 warnings.append(f"Front image error: {e}")
 
         # 2. Process Back Image
-        if doc_spec.back_path:
+        if doc_spec.back_path is not None:
             try:
                 img_back, quality_back = self._preprocessor.preprocess(doc_spec.back_path)
                 # img_back = self._straightener.straighten(img_back)
@@ -198,7 +198,7 @@ class Pipeline:
             except Exception as e:
                 warnings.append(f"Back image error: {e}")
 
-        if not ocr_front and not ocr_back:
+        if ocr_front is None and ocr_back is None:
             return DocumentExtractionResult(
                 document_type=doc_spec.doc_type,
                 status="FAILED",
@@ -227,7 +227,7 @@ class Pipeline:
 
         # Determine status
         status = "EXTRACTED"
-        if not doc_spec.front_path or not doc_spec.back_path:
+        if doc_spec.front_path is None or doc_spec.back_path is None:
             warnings.append("Partial document (missing front or back image)")
             status = "PARTIAL"
 
