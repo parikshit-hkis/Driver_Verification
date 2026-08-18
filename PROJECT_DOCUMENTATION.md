@@ -1,95 +1,90 @@
 # Driver Document Verification System — Technical Architecture & Complete Reference Manual
 
-**System Version**: 2.2 (Microservices Architecture & High-Accuracy KYC Pipeline)  
-**Target Domain**: Automated Driver KYC & Identity Onboarding for Ride-Hailing Platforms (Rapido, Ola, Uber style)  
-**Core Technologies**: Python 3.10+, FastAPI, Uvicorn, OpenCV, PaddleOCR (PP-OCRv4 Server Weights), Pydantic, RapidFuzz, NumPy, Pillow  
+**System Version**: 3.0 (Distributed Microservices Suite & Enterprise KYC Platform)  
+**Target Domain**: Automated Driver KYC & Vehicle Identity Onboarding for Ride-Hailing Platforms (Rapido, Ola, Uber style)  
+**Core Technologies**: Python 3.10+, FastAPI, Uvicorn, Asynchronous HTTPX, OpenCV, PaddleOCR (PP-OCRv4 Server Weights), Pydantic v2, RapidFuzz, NumPy, Pillow  
 
 ---
 
 ## 📌 Table of Contents
 
-1. [System Architecture & Core Principles](#1-system-architecture--core-principles)
-   - [1.1 Architectural Principles](#11-architectural-principles)
-   - [1.2 End-to-End Verification Lifecycle](#12-end-to-end-verification-lifecycle)
+1. [System Overview & Microservices Architecture](#1-system-overview--microservices-architecture)
+   - [1.1 Architectural Evolution & Core Principles](#11-architectural-evolution--core-principles)
+   - [1.2 Distributed Microservices Topology & Port Layout](#12-distributed-microservices-topology--port-layout)
    - [1.3 System Flow Architecture Diagram](#13-system-flow-architecture-diagram)
 2. [Directory & Repository Structure](#2-directory--repository-structure)
-3. [Deep-Dive Component Reference](#3-deep-dive-component-reference)
-   - [3.1 Master Pipeline Orchestrator (`app/pipeline.py`)](#31-master-pipeline-orchestrator)
-   - [3.2 Process Singleton Dependencies (`app/dependencies.py`)](#32-process-singleton-dependencies)
-   - [3.3 Image Preprocessing & OCR Engine (`app/ocr/`)](#33-image-preprocessing--ocr-engine)
-   - [3.4 Shared Normalization Utilities (`app/utils/normalizer.py`)](#34-shared-normalization-utilities)
-   - [3.5 Document-Specific Domain Extractors (`app/services/`)](#35-document-specific-domain-extractors)
-     - [Base Extractor (`base_extractor.py`)](#base-extractor)
-     - [Aadhaar Extractor (`aadhaar_extractor/`)](#aadhaar-extractor)
-     - [Driving Licence Extractor (`driving_license_extractor/`)](#driving-licence-extractor)
-     - [PAN Card Extractor (`pan_extractor/`)](#pan-card-extractor)
-     - [RC Extractor & Manufacturer Repository (`rc_extractor/`)](#rc-extractor--manufacturer-repository)
-   - [3.6 Identity Cross-Validator (`app/services/identity_cross_validator/`)](#36-identity-cross-validator)
-   - [3.7 Directory Scanner Service (`app/services/directory_scanner.py`)](#37-directory-scanner-service)
-   - [3.8 Document Type Detector (`app/services/doc_type_detector.py`)](#38-document-type-detector)
-4. [FastAPI Microservices Suite & REST API Reference](#4-fastapi-microservices-suite--rest-api-reference)
-   - [4.1 API Architecture & Router Layout](#41-api-architecture--router-layout)
-   - [4.2 Endpoint Specifications](#42-endpoint-specifications)
-   - [4.3 Interactive Swagger UI & OpenAPI Specification](#43-interactive-swagger-ui--openapi-specification)
-5. [Storage Formats & Output JSON Schemas](#5-storage-formats--output-json-schemas)
-   - [5.1 Extraction JSON Schema (`result/extr_result/<driver_id>.json`)](#51-extraction-json-schema)
-   - [5.2 Validation JSON Schema (`result/vldt_result/<driver_id>.json`)](#52-validation-json-schema)
-6. [Production Deployment & Concurrency Architecture](#6-production-deployment--concurrency-architecture)
-   - [6.1 Uvicorn Multi-Worker Process Isolation](#61-uvicorn-multi-worker-process-isolation)
-   - [6.2 GPU VRAM Memory Optimization](#62-gpu-vram-memory-optimization)
-7. [Usage & Execution Guide](#7-usage--execution-guide)
-   - [7.1 CLI Commands](#71-cli-commands)
-   - [7.2 Server Startup Commands](#72-server-startup-commands)
-   - [7.3 Programmatic Python API](#73-programmatic-python-api)
+3. [Microservices Deep-Dive Reference](#3-microservices-deep-dive-reference)
+   - [3.1 Master API Gateway (`microservices/api_gateway/` - Port 8000)](#31-master-api-gateway)
+   - [3.2 OCR Engine Microservice (`microservices/ocr_service/` - Port 8001)](#32-ocr-engine-microservice)
+   - [3.3 Aadhaar Extractor Microservice (`microservices/aadhaar_service/` - Port 8002)](#33-aadhaar-extractor-microservice)
+   - [3.4 Driving Licence Extractor Microservice (`microservices/dl_service/` - Port 8003)](#34-driving-licence-extractor-microservice)
+   - [3.5 PAN Card Extractor Microservice (`microservices/pan_service/` - Port 8004)](#35-pan-card-extractor-microservice)
+   - [3.6 Vehicle RC Extractor Microservice (`microservices/rc_service/` - Port 8005)](#36-vehicle-rc-extractor-microservice)
+   - [3.7 Identity Cross-Validator Microservice (`microservices/validator_service/` - Port 8006)](#37-identity-cross-validator-microservice)
+   - [3.8 Shared Microservices Library (`microservices/shared/`)](#38-shared-microservices-library)
+4. [Computer Vision & Neural OCR Engine (`app/ocr/`)](#4-computer-vision--neural-ocr-engine)
+   - [4.1 Image Preprocessing & Aspect-Ratio Rotation](#41-image-preprocessing--aspect-ratio-rotation)
+   - [4.2 Neural Text Detection & Recognition (PP-OCRv4)](#42-neural-text-detection--recognition-pp-ocrv4)
+   - [4.3 Image Quality Assessment & Real-Time Diagnostics](#43-image-quality-assessment--real-time-diagnostics)
+5. [Domain Extraction Algorithms & Spatial Layout Reasoning](#5-domain-extraction-algorithms--spatial-layout-reasoning)
+   - [5.1 Aadhaar Card Spatial Layout](#51-aadhaar-card-spatial-layout)
+   - [5.2 Driving Licence Layout & State Smart-Card Parsing](#52-driving-licence-layout--state-smart-card-parsing)
+   - [5.3 PAN Card Layout & Field Disambiguation](#53-pan-card-layout--field-disambiguation)
+   - [5.4 Vehicle RC Extraction & OEM Database](#54-vehicle-rc-extraction--oem-database)
+   - [5.5 Identity Cross-Validation & Decision Engine](#55-identity-cross-validation--decision-engine)
+6. [API Reference & OpenAPI Swagger Specifications](#6-api-reference--openapi-swagger-specifications)
+   - [6.1 Gateway Verification Endpoints](#61-gateway-verification-endpoints)
+   - [6.2 Historical Records Management Endpoints](#62-historical-records-management-endpoints)
+   - [6.3 Microservice Reverse Proxies](#63-microservice-reverse-proxies)
+7. [Storage Formats & Output JSON Schemas](#7-storage-formats--output-json-schemas)
+   - [7.1 Extraction JSON Schema (`result/extr_result/<driver_id>.json`)](#71-extraction-json-schema)
+   - [7.2 Validation JSON Schema (`result/vldt_result/<driver_id>.json`)](#72-validation-json-schema)
+8. [Execution, Cluster Management & Production Guide](#8-execution-cluster-management--production-guide)
+   - [8.1 Launching the Microservices Cluster (`run_services.py`)](#81-launching-the-microservices-cluster)
+   - [8.2 CLI Batch Extraction & Validation Tools](#82-cli-batch-extraction--validation-tools)
+   - [8.3 Concurrency & GPU VRAM Management](#83-concurrency--gpu-vram-management)
 
 ---
 
-## 1. System Architecture & Core Principles
+## 1. System Overview & Microservices Architecture
 
-### 1.1 Architectural Principles
+### 1.1 Architectural Evolution & Core Principles
 
-The Driver Document Verification System is an enterprise-grade automated KYC and vehicle onboarding platform engineered to process real-world identity and vehicle documents:
+The Driver Document Verification Platform has evolved from a monolithic script into an **enterprise-grade, distributed microservices suite**. Designed specifically for high-volume ride-hailing and logistics platforms (e.g. Rapido, Ola, Uber, Porter), the system automates the ingestion, computer vision enhancement, neural extraction, and fraud validation of Indian KYC and vehicle documents:
 - **Aadhaar Card** (Identity Proof & Address Verification)
-- **Driving Licence (DL)** (Driving Authorization, Expiry Dates & Vehicle Categories)
-- **Permanent Account Number (PAN)** (Financial / Tax Identity Verification)
+- **Driving Licence (DL)** (Driving Authorization, Vehicle Class Eligibility & Expiry Dates)
+- **Permanent Account Number (PAN)** (Tax Identity Verification)
 - **Registration Certificate (RC)** (Vehicle Ownership, Class & Fitness Validity)
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────────────────┐
-│                                CORE DESIGN PRINCIPLES                                    │
+│                                CORE SYSTEM PRINCIPLES                                    │
 ├──────────────────────────────────────────────────────────────────────────────────────────┤
-│ 1. Driver-by-Driver Flow  : Documents are grouped and processed sequentially per driver.│
-│ 2. Strict Hierarchy       : Aadhaar ──> Driving Licence ──> PAN Card ──> RC Book.        │
-│ 3. Side-Isolated OCR      : Front and back images are preprocessed and OCR'd separately.│
-│ 4. Spatial Reasoning      : Label-proximity bounding-box geometry over brittle regex.   │
-│ 5. Semantic Validation    : Cross-field constraints (Issue Date < Expiry, Issue >= DOB). │
-│ 6. Process-Level Isolation: Uvicorn multi-worker architecture with isolated GPU memory. │
-│ 7. Pairwise Cross-Check   : RapidFuzz Name similarity & exact DOB matching across docs. │
-│ 8. Actionable Diagnostics : Specific, human-readable explanations for any missing field.│
+│ 1. Distributed Topology   : 7 decoupled microservices with HTTP REST API contracts.      │
+│ 2. Concurrent Async I/O   : Non-blocking async file processing & concurrent microservices.│
+│ 3. Isolated Neural Worker : PP-OCRv4 runs in dedicated process to prevent GPU collision. │
+│ 4. Aspect-Ratio Rotator   : CR80 card aspect-ratio gating to protect upright landscape.  │
+│ 5. Smart-Card Fallbacks   : Proximity-based extraction for state DL smart-cards.         │
+│ 6. Cross-Document Matching: Pairwise RapidFuzz Name & exact DOB cross-validation.        │
+│ 7. Audit & Diagnostics    : Quality-aware field diagnostics and historical record APIs.  │
 └──────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-### 1.2 End-to-End Verification Lifecycle
+### 1.2 Distributed Microservices Topology & Port Layout
 
-1. **Ingestion & Discovery**:
-   - **CLI / Batch Flow**: [`DirectoryScanner`](file:///c:/Users/parik/OneDrive/Desktop/Driver_Verification/app/services/directory_scanner.py) crawls `sample_documents/`, discovers driver folders, and resolves front/back image file paths into structured `DriverFolderSpec` objects.
-   - **REST API Flow**: [`gateway_router`](file:///c:/Users/parik/OneDrive/Desktop/Driver_Verification/app/api/v1/gateway_router.py) receives multipart image uploads directly via HTTP `POST /api/v1/driver/verify`.
-2. **Sequential Orchestration**:
-   [`Pipeline.extract_driver`](file:///c:/Users/parik/OneDrive/Desktop/Driver_Verification/app/pipeline.py) processes documents in mandatory order (`AADHAAR` $\rightarrow$ `DRIVING_LICENCE` $\rightarrow$ `PAN` $\rightarrow$ `RC`).
-3. **Independent Side Preprocessing**:
-   [`ImagePreprocessor`](file:///c:/Users/parik/OneDrive/Desktop/Driver_Verification/app/ocr/preprocessor.py) loads front and back images, resolves EXIF orientation tags, executes Otsu horizontal projection variance rotation correction ($0^\circ, 90^\circ, 180^\circ, 270^\circ$), performs Hough line skew correction ($<15^\circ$), assesses image quality (blur, darkness, glare), and applies adaptive LAB CLAHE / gamma enhancement.
-4. **PP-OCRv4 Neural Inference**:
-   [`PaddleOCRService`](file:///c:/Users/parik/OneDrive/Desktop/Driver_Verification/app/ocr/paddle_ocr.py) runs high-accuracy server weights (`ch_PP-OCRv4_det_server_infer`, `en_PP-OCRv4_rec_server_infer`, `ch_ppocr_mobile_v2.0_cls_infer`) with `rec_image_shape="3,64,320"`, extracts bounding polygon points, filters confidence, and sorts text boxes spatially (top-to-bottom, left-to-right).
-5. **Domain Extraction & Spatial Layout Reasoning**:
-   The designated extractor parses field data using 2D geometric proximity, RapidFuzz label matching ($\ge 85\%$), inline prefix stripping, and structural blacklist protection.
-6. **Data Normalization & Diagnostic Generation**:
-   Raw text is standardized via [`normalizer.py`](file:///c:/Users/parik/OneDrive/Desktop/Driver_Verification/app/utils/normalizer.py) (Dates $\rightarrow$ ISO `YYYY-MM-DD`, Sarathi DL $\rightarrow$ `SS-RR-YYYY-NNNNNNN`, RC $\rightarrow$ `SS-RR-XX-NNNN`). For unextracted fields, specific image-quality and OCR diagnostics are generated.
-7. **JSON Persistence**:
-   The full driver record is serialized to `result/extr_result/<driver_id>.json`.
-8. **Identity Cross-Validation**:
-   [`IdentityCrossValidator`](file:///c:/Users/parik/OneDrive/Desktop/Driver_Verification/app/services/identity_cross_validator/cross_validator.py) compares Name (RapidFuzz token sort ratio) and DOB (exact match) across all document pairs (Aadhaar $\leftrightarrow$ PAN, Aadhaar $\leftrightarrow$ Licence, PAN $\leftrightarrow$ Licence) and writes validation results to `result/vldt_result/<driver_id>.json`.
+The platform runs as a coordinated cluster of 7 independent microservices:
+
+| Service Name | Port | Base Path | Core Responsibility |
+| :--- | :---: | :--- | :--- |
+| **API Gateway** | **`8000`** | `/api/v1/driver`, `/docs` | Master edge orchestrator, async dispatch, reverse proxy & record store |
+| **OCR Service** | **`8001`** | `/extract`, `/health` | PP-OCRv4 neural inference & OpenCV image preprocessor |
+| **Aadhaar Service**| **`8002`** | `/extract`, `/health` | UIDAI parsing, multi-line address, Hindi/English gender |
+| **DL Service** | **`8003`** | `/extract`, `/health` | Sarathi DL format, state smart-card address fallback, vehicle classes |
+| **PAN Service** | **`8004`** | `/extract`, `/health` | 10-char PAN regex, Father Name & Cardholder Name layout parsing |
+| **RC Service** | **`8005`** | `/extract`, `/health` | Vehicle registration, 100+ OEM make matching, confidence scores |
+| **Validator Service**| **`8006`**| `/cross-verify`, `/health` | Pairwise fuzzy Name similarity & exact DOB matching |
 
 ---
 
@@ -97,38 +92,25 @@ The Driver Document Verification System is an enterprise-grade automated KYC and
 
 ```mermaid
 flowchart TD
-    subgraph Ingestion ["1. Input Ingestion"]
-        A1["CLI / Directory: sample_documents/<driver_id>/"] --> B1["DirectoryScanner"]
-        A2["REST API Client: POST /api/v1/driver/verify"] --> B2["API Gateway Router"]
+    Client["Client: Swagger UI / Mobile App / Web Backend"] -->|POST /api/v1/driver/verify| Gateway["API Gateway (Port 8000)"]
+
+    subgraph Async_Dispatch ["Asynchronous Concurrent Dispatch"]
+        Gateway -->|HTTP Multipart| S_Aadhaar["Aadhaar Service (Port 8002)"]
+        Gateway -->|HTTP Multipart| S_DL["DL Service (Port 8003)"]
+        Gateway -->|HTTP Multipart| S_PAN["PAN Service (Port 8004)"]
+        Gateway -->|HTTP Multipart| S_RC["RC Service (Port 8005)"]
     end
 
-    B1 --> C["DriverFolderSpec / Image Arrays"]
-    B2 --> C
-
-    subgraph Pipeline ["2. Pipeline Orchestration (app/pipeline.py)"]
-        C --> D1["1. Aadhaar Extractor"]
-        D1 --> D2["2. Driving Licence Extractor"]
-        D2 --> D3["3. PAN Extractor"]
-        D3 --> D4["4. RC Extractor"]
+    subgraph OCR_Layer ["Dedicated OCR Microservice"]
+        S_Aadhaar & S_DL & S_PAN & S_RC -->|Internal HTTP Call| S_OCR["OCR Engine Service (Port 8001)"]
+        S_OCR --> GPU["PaddleOCR Neural Inference (det_server + rec_server)"]
     end
 
-    subgraph ProcessingLayer ["3. Computer Vision & Neural OCR"]
-        D1 & D2 & D3 & D4 --> E1["ImagePreprocessor: EXIF / Deskew / CLAHE"]
-        E1 --> E2["PaddleOCRService: PP-OCRv4 Server Inference"]
-        E2 --> E3["Domain Layout Reasoning & Regex Parsing"]
-    end
-
-    subgraph NormalizationLayer ["4. Normalization & Diagnostics"]
-        E3 --> F1["normalize_name / normalize_date / normalize_dl_number"]
-        F1 --> F2["Quality-Aware Field Diagnostics"]
-    end
-
-    subgraph StorageAndValidation ["5. Persistence & Cross-Validation"]
-        F2 --> G1["Save Extraction JSON: result/extr_result/<driver_id>.json"]
-        G1 --> G2["IdentityCrossValidator: Pairwise Name & DOB Matching"]
-        G2 --> G3["Save Validation JSON: result/vldt_result/<driver_id>.json"]
-        G3 --> G4["HTTP Response / CLI Summary Table"]
-    end
+    S_Aadhaar & S_DL & S_PAN & S_RC -->|Structured JSON| Aggregator["Gateway Aggregation Engine"]
+    Aggregator -->|Consolidated Payload| S_Val["Identity Cross-Validator (Port 8006)"]
+    
+    S_Val --> ResultStore["Disk Storage: result/extr_result/ & result/vldt_result/"]
+    ResultStore --> GatewayResponse["HTTP 200 OK Response (Extraction + Validation JSON)"]
 ```
 
 ---
@@ -138,296 +120,277 @@ flowchart TD
 ```
 Driver_Verification/
 │
-├── app/                                       # Core Application Package
+├── microservices/                            # Distributed Microservices Suite
 │   ├── __init__.py
-│   ├── dependencies.py                       # Process-isolated Singleton Dependency Factory
-│   ├── pipeline.py                           # Master Pipeline Orchestrator
-│   ├── server.py                             # FastAPI Master Server & OpenAPI Specification
-│   │
-│   ├── api/                                  # REST API Microservices Suite
+│   ├── shared/                               # Shared Models, HTTP Clients & Response Envelopes
 │   │   ├── __init__.py
-│   │   └── v1/
-│   │       ├── __init__.py
-│   │       ├── gateway_router.py             # End-to-End Verification Gateway (/api/v1/driver)
-│   │       ├── ocr_router.py                 # Standalone OCR & Image Quality Service (/api/v1/ocr)
-│   │       ├── aadhaar_router.py             # Aadhaar Extractor Endpoint (/api/v1/aadhaar)
-│   │       ├── dl_router.py                  # Driving Licence Extractor Endpoint (/api/v1/dl)
-│   │       ├── pan_router.py                 # PAN Card Extractor Endpoint (/api/v1/pan)
-│   │       ├── rc_router.py                  # RC Book Extractor Endpoint (/api/v1/rc)
-│   │       └── validator_router.py           # Identity Cross-Validation Endpoint (/api/v1/validate)
+│   │   ├── models.py
+│   │   └── responses.py
 │   │
-│   ├── config/                               # System Settings & Paths
-│   │   ├── __init__.py
-│   │   └── settings.py
+│   ├── api_gateway/                          # Master API Gateway Service (Port 8000)
+│   │   ├── main.py                           # Gateway FastAPI App & OpenAPI Spec
+│   │   ├── config.py                         # Gateway Microservice URLs Configuration
+│   │   ├── clients/service_clients.py        # Asynchronous HTTPX Client Wrapper
+│   │   ├── middleware/timing_middleware.py   # X-Process-Time Header Middleware
+│   │   └── routers/
+│   │       ├── driver_router.py              # Single/Batch Verification & Record APIs
+│   │       └── proxy_router.py               # Reverse Proxies to Domain Services
 │   │
-│   ├── models/                               # Data Models & Schemas (Pydantic / Dataclasses)
-│   │   ├── __init__.py
-│   │   ├── driver_models.py                  # Verification Results, DocumentExtractionResult
-│   │   └── ocr_models.py                     # OCRResult, OCRText, BoundingBox, Point, QualityReport
+│   ├── ocr_service/                          # OCR & Preprocessing Microservice (Port 8001)
+│   │   ├── main.py
+│   │   └── service.py
 │   │
-│   ├── ocr/                                  # Neural OCR & Computer Vision Subsystem
-│   │   ├── __init__.py
-│   │   ├── config.py                         # Preprocessor & OCR Model Configuration
-│   │   ├── paddle_ocr.py                     # PaddleOCR Wrapper (PP-OCRv4 Server Models)
-│   │   └── preprocessor.py                   # Image Loading, Deskew, Rotation, CLAHE Enhancement
+│   ├── aadhaar_service/                      # Aadhaar Card Extractor Microservice (Port 8002)
+│   │   ├── main.py
+│   │   └── service.py
 │   │
-│   ├── services/                             # Domain Extraction & Business Logic
-│   │   ├── __init__.py
-│   │   ├── base_extractor.py                 # Base Spatial Extraction Engine
-│   │   ├── directory_scanner.py              # Driver Folder Discovery & File Parsing
-│   │   ├── doc_type_detector.py              # Automatic Document Classification
-│   │   │
-│   │   ├── aadhaar_extractor/                # Aadhaar Card Extraction Subsystem
-│   │   │   ├── __init__.py
-│   │   │   ├── config.py
-│   │   │   ├── extractor.py
-│   │   │   └── models.py
-│   │   │
-│   │   ├── driving_license_extractor/        # Driving Licence Extraction Subsystem
-│   │   │   ├── __init__.py
-│   │   │   ├── config.py
-│   │   │   ├── extractor.py
-│   │   │   └── models.py
-│   │   │
-│   │   ├── pan_extractor/                    # PAN Card Extraction Subsystem
-│   │   │   ├── __init__.py
-│   │   │   ├── config.py
-│   │   │   ├── extractor.py
-│   │   │   └── models.py
-│   │   │
-│   │   ├── rc_extractor/                     # RC Book Extraction Subsystem
-│   │   │   ├── __init__.py
-│   │   │   ├── config.py
-│   │   │   ├── extractor.py
-│   │   │   ├── models.py
-│   │   │   └── manufacturers.py              # 100+ OEM Make/Manufacturer Database
-│   │   │
-│   │   └── identity_cross_validator/         # Cross-Document Identity Validation Subsystem
-│   │       ├── __init__.py
-│   │       ├── config.py
-│   │       ├── cross_validator.py
-│   │       └── models.py
+│   ├── dl_service/                           # Driving Licence Microservice (Port 8003)
+│   │   ├── main.py
+│   │   └── service.py
 │   │
-│   └── utils/                                # Utility Modules
-│       ├── __init__.py
-│       └── normalizer.py                     # Dates, Names, DL, RC Normalization Functions
+│   ├── pan_service/                          # PAN Card Extractor Microservice (Port 8004)
+│   │   ├── main.py
+│   │   └── service.py
+│   │
+│   ├── rc_service/                           # Vehicle RC Extractor Microservice (Port 8005)
+│   │   ├── main.py
+│   │   └── service.py
+│   │
+│   └── validator_service/                    # Cross-Document Identity Validator (Port 8006)
+│       ├── main.py
+│       └── service.py
 │
-├── models/                                   # PaddleOCR Neural Weights (Local Directory)
-│   ├── cls/ch_ppocr_mobile_v2.0_cls_infer/   # Angle Classification Model
-│   ├── det_server/ch_PP-OCRv4_det_server_infer/ # High-Accuracy Text Detection
-│   └── rec_server/en_PP-OCRv4_rec_server_infer/ # High-Accuracy English Recognition
+├── app/                                      # Monolithic Core Package & Base Algorithms
+│   ├── dependencies.py                       # Process Singleton Factory
+│   ├── pipeline.py                           # Master Pipeline Engine
+│   ├── server.py                             # Single-Port Server Alternative
+│   ├── config/settings.py                    # Global Settings & Thresholds
+│   ├── models/                               # Data Models (Pydantic / Dataclasses)
+│   ├── ocr/                                  # Preprocessor & PaddleOCR Implementation
+│   ├── services/                             # Domain Extraction Classes & Scanner
+│   └── utils/normalizer.py                   # Name, Date, DL, RC Normalizers
 │
-├── sample_documents/                         # Input Driver Folders (<phone_number>/<doc_subfolders>)
-├── result/                                   # Output Data & Evaluation Results
+├── models/                                   # PaddleOCR PP-OCRv4 Neural Model Weights
+├── sample_documents/                         # Driver KYC Test Directories
+├── result/                                   # Generated Extraction & Validation JSONs
 │   ├── extr_result/                          # Serialized Extracted Driver JSONs
-│   ├── vldt_result/                          # Serialized Identity Validation JSONs
-│   ├── calculate.py                          # Accuracy & Extraction Rate Benchmark Script
-│   └── accuracy_calculator.py                # Dashboard & Metric Formatter
+│   └── vldt_result/                          # Serialized Identity Validation JSONs
 │
-├── main.py                                   # Master CLI Execution Script
-├── cross_validate.py                         # Standalone Identity Cross-Validation CLI
-├── requirements.txt                          # Python Package Dependencies
-└── PROJECT_DOCUMENTATION.md                  # Complete System Architecture & Reference
+├── run_services.py                           # Master Cluster Launcher (Starts all 7 services)
+├── main.py                                   # Standalone Batch CLI Runner
+├── cross_validate.py                         # Standalone Identity Cross-Validator CLI
+├── requirements.txt                          # Package Dependencies
+├── PROJECT_DOCUMENTATION.md                  # Complete Architecture Manual
+└── report.md                                 # Production Audit & Technical Evaluation
 ```
 
 ---
 
-## 3. Deep-Dive Component Reference
+## 3. Microservices Deep-Dive Reference
 
-### 3.1 Master Pipeline Orchestrator (`app/pipeline.py`)
-
-The [`Pipeline`](file:///c:/Users/parik/OneDrive/Desktop/Driver_Verification/app/pipeline.py) class coordinates preprocessing, OCR, extraction, and diagnostics.
-
-* **Key Methods**:
-  - `extract_driver(driver_input, output_dir)`: Processes all 4 documents for a driver in strict sequence (`Aadhaar` $\rightarrow$ `DL` $\rightarrow$ `PAN` $\rightarrow$ `RC`) and saves the resulting JSON.
-  - `extract_document(doc_spec)`: Processes front and back images independently, merges multi-side OCR results, executes domain extractors, and enriches missing fields with image quality diagnostics.
-  - `extract_all_drivers(base_dir, max_workers)`: Discovers all drivers in a folder and processes them cleanly.
-
----
-
-### 3.2 Process Singleton Dependencies (`app/dependencies.py`)
-
-To prevent multiple deep-learning model instances from being loaded into GPU VRAM per worker process, [`app/dependencies.py`](file:///c:/Users/parik/OneDrive/Desktop/Driver_Verification/app/dependencies.py) implements the **Process-Level Singleton Pattern**:
-- `get_pipeline()`: Returns the worker's shared `Pipeline` instance.
-- `get_ocr_service()`: Returns the worker's shared `PaddleOCRService`.
-- `get_preprocessor()`: Returns the shared `ImagePreprocessor`.
-- `get_cross_validator()`: Returns the shared `IdentityCrossValidator`.
+### 3.1 Master API Gateway (`microservices/api_gateway/` - Port 8000)
+- **Role**: Entry point for all external client traffic.
+- **Key Features**:
+  - `asyncio.gather()` concurrent multipart upload reading and microservice dispatch.
+  - Reverse proxy routing (`/api/v1/ocr`, `/api/v1/aadhaar`, `/api/v1/dl`, `/api/v1/pan`, `/api/v1/rc`, `/api/v1/validate`).
+  - Automatic JSON persistence to `result/extr_result/` and `result/vldt_result/`.
+  - Historical records management (`GET /api/v1/driver/records`, `GET /api/v1/driver/{id}`, `DELETE /api/v1/driver/{id}`).
+  - Execution profiling via `TimingMiddleware` (`X-Process-Time` header).
 
 ---
 
-### 3.3 Image Preprocessing & OCR Engine (`app/ocr/`)
+### 3.2 OCR Engine Microservice (`microservices/ocr_service/` - Port 8001)
+- **Role**: Dedicated neural text detection, angle classification, and recognition.
+- **Key Features**:
+  - Implements `ImagePreprocessor` (EXIF correction, aspect-ratio rotation, Hough deskew, LAB CLAHE).
+  - Implements `PaddleOCRService` using local PP-OCRv4 server weights.
+  - Returns bounding polygon coordinates, confidence scores, and image quality metrics (blur, brightness, glare).
 
-#### Preprocessing Pipeline (`preprocessor.py`):
-1. **EXIF Orientation Correction**: Rotates mobile phone camera uploads according to orientation metadata tags.
-2. **Document Rotation Detection ($0^\circ, 90^\circ, 180^\circ, 270^\circ$)**: Calculates horizontal projection profile variance on Otsu-binarized edges. The orientation with maximum variance corresponds to horizontal text lines.
-3. **Hough Line Deskew ($<15^\circ$)**: Detects text line angles and deskews the document.
-4. **Quality Assessment**:
-   - Blur detection via Laplacian variance (threshold: `< 100.0`).
-   - Brightness assessment in HSV space (dark: `< 60.0`, bright: `> 200.0`).
-   - Glare detection (% of saturated pixels `> 240`).
-5. **Adaptive Image Enhancement**: Applies adaptive LAB CLAHE (Contrast Limited Adaptive Histogram Equalization) and gamma correction.
+---
 
-#### Neural OCR Inference (`paddle_ocr.py`):
-- Powered by **PP-OCRv4 Server Models** with GPU acceleration.
-- Confidence threshold filtering (`min_confidence = 0.70`).
+### 3.3 Aadhaar Extractor Microservice (`microservices/aadhaar_service/` - Port 8002)
+- **Role**: Aadhaar card domain extraction.
+- **Key Features**:
+  - Verhoeff-compliant 12-digit UID regex (`\b\d{4}\s\d{4}\s\d{4}\b`).
+  - Front-side spatial parsing for Cardholder Name, DOB, and Gender (`MALE`, `FEMALE`, `TRANSGENDER`, `पुरुष`, `महिला`).
+  - Back-side multi-line address builder terminating at 6-digit PIN code.
+
+---
+
+### 3.4 Driving Licence Extractor Microservice (`microservices/dl_service/` - Port 8003)
+- **Role**: Driving Licence parsing and vehicle category classification.
+- **Key Features**:
+  - All-India Sarathi DL format normalization (`SS-RR-YYYY-NNNNNNN`).
+  - Strict DOB label fuzzy matching with negative guards (`"Date of First Issue"` and validity protection).
+  - **State Smart-Card Layout Fallback**: Automatically captures Cardholder Name from text lines immediately preceding `ADDRESS:` / `ADORESS:` when explicit `Name:` labels are omitted.
+  - Multi-category vehicle class token splitting (`MCWG`, `LMV`, `3W-CAB`, `3W-NT`, `TRANS`, `HMV`, `LMV-NT`).
+
+---
+
+### 3.5 PAN Card Extractor Microservice (`microservices/pan_service/` - Port 8004)
+- **Role**: Income Tax PAN card extraction.
+- **Key Features**:
+  - Strict 10-character alphanumeric regex (`[A-Z]{5}[0-9]{4}[A-Z]`).
+  - Position-based disambiguation between Cardholder Name (line 1 below header) and Father's Name (line 2 above DOB).
+  - Glued date token resolution.
+
+---
+
+### 3.6 Vehicle RC Extractor Microservice (`microservices/rc_service/` - Port 8005)
+- **Role**: Vehicle Registration Certificate parsing.
+- **Key Features**:
+  - Registration number format standardization (`SS-RR-XX-NNNN`).
+  - 100+ OEM vehicle make & manufacturer matching repository.
+  - Registration date and fitness validity expiry resolution.
+  - Field-level confidence score calculation.
+
+---
+
+### 3.7 Identity Cross-Validator Microservice (`microservices/validator_service/` - Port 8006)
+- **Role**: Cross-document identity matching and fraud detection.
+- **Key Features**:
+  - 3-way pairwise cross-comparison (Aadhaar $\leftrightarrow$ PAN, Aadhaar $\leftrightarrow$ Licence, PAN $\leftrightarrow$ Licence).
+  - RapidFuzz Token Sort Ratio for Name similarity ($\ge 75\%$ = `MATCH`, $50\%-74\%$ = `REVIEW`, $<50\%$ = `MISMATCH`).
+  - Exact ISO date matching for DOB.
+  - Overall status decision engine (`overall_name_status`, `overall_dob_status`, `overall_status`).
+
+---
+
+## 4. Computer Vision & Neural OCR Engine (`app/ocr/`)
+
+### 4.1 Image Preprocessing & Aspect-Ratio Rotation
+
+[`app/ocr/preprocessor.py`](file:///c:/Users/parik/OneDrive/Desktop/Driver_Verification/app/ocr/preprocessor.py) prepares unconstrained smartphone uploads for neural OCR:
+
+```
+Raw Image Upload
+  │
+  ├── 1. Downscale if oversized (> 2500px)
+  ├── 2. Resolve EXIF orientation metadata (tag 274)
+  ├── 3. Aspect-Ratio Gated Rotation:
+  │      - If W >= H (Landscape): Card is already horizontal -> 0° rotation
+  │      - If H > W  (Portrait) : Rotate 90° / 270° to landscape
+  ├── 4. Hough Line Skew Correction (< 15°)
+  ├── 5. Image Quality Scoring (Laplacian Blur, HSV Brightness, Glare %)
+  └── 6. Adaptive LAB CLAHE & Gamma Enhancement
+```
+
+---
+
+### 4.2 Neural Text Detection & Recognition (PP-OCRv4)
+
+[`app/ocr/paddle_ocr.py`](file:///c:/Users/parik/OneDrive/Desktop/Driver_Verification/app/ocr/paddle_ocr.py) uses local PP-OCRv4 server weights:
+- **Detection Model**: `models/det_server/ch_PP-OCRv4_det_server_infer`
+- **Recognition Model**: `models/rec_server/en_PP-OCRv4_rec_server_infer`
+- **Classifier Model**: `models/cls/ch_ppocr_mobile_v2.0_cls_infer`
 - Text boxes are spatially indexed and sorted top-to-bottom and left-to-right.
 
 ---
 
-### 3.4 Shared Normalization Utilities (`app/utils/normalizer.py`)
+### 4.3 Image Quality Assessment & Real-Time Diagnostics
 
-- **`normalize_name(text)`**: Converts Indian names to Title Case, collapses redundant spaces, and strips special characters while preserving single letters and initials.
-- **`normalize_date(text)` / `normalize_dob(text)`**: Parses Indian and international date formats (`DD-MM-YYYY`, `DD/MM/YYYY`, `YYYY-MM-DD`, `DD Mon YYYY`, and compact glued dates) into standard ISO `YYYY-MM-DD`.
-- **`normalize_dl_number(text)`**: Standardizes All-India Sarathi driving licence numbers into `SS-RR-YYYY-NNNNNNN`.
-- **`normalize_rc_number(text)`**: Standardizes Indian vehicle registration numbers into `SS-RR-XX-NNNN`.
-
----
-
-### 3.5 Document-Specific Domain Extractors (`app/services/`)
-
-#### Base Extractor (`base_extractor.py`)
-Provides geometric bounding box spatial reasoning algorithms:
-- `find_value_near_label(texts, keywords, max_distance)`: Finds the text value closest to a given label box (preferring right-adjacent or immediately below).
-- `_clean_field_value(text)`: Strips punctuation, colons, and structural prefixes.
-
-#### Aadhaar Extractor (`aadhaar_extractor/`)
-- **Aadhaar Number**: Matches 12-digit Verhoeff-compliant format (`\b\d{4}\s\d{4}\s\d{4}\b`).
-- **Full Name**: Spatial reasoning extracting name lines immediately preceding Father/Care-of or DOB markers.
-- **DOB & Gender**: Matches `DOB`, `Date of Birth`, `जन्म तिथि` labels; standardizes `MALE` / `FEMALE`.
-- **Address**: Extracted from back-side OCR text following `Address:` or `To:` markers.
-
-#### Driving Licence Extractor (`driving_license_extractor/`)
-- **Licence Number**: Strict regex matching standard Sarathi formats (`SS-RR-YYYY-NNNNNNN` or `SSRR-YYYYNNNNNNN`).
-- **Date of Birth**: Fuzzy label matching (`DATE OF BIRTH`, `0T BRTH`, `DOB`) with negative guards protecting against `"Date of First Issue"` or validity dates.
-- **Issue & Expiry Dates**: Spatial and table-aware date resolution matching validity labels (`VALID UPTO`, `VALID TILL`, `ISSUE DATE`).
-- **Vehicle Classes**: Multi-side union identifying all authorized categories (`MCWG`, `LMV`, `TRANS`, `3W-CAB`, `HMV`, `HPMV`, `LMV-NT`).
-
-#### PAN Card Extractor (`pan_extractor/`)
-- **PAN Number**: Strict 10-character alphanumeric regex (`[A-Z]{5}[0-9]{4}[A-Z]`).
-- **Full Name & Father's Name**: Extracted using positional lines above DOB and below Government of India headers.
-- **Date of Birth**: Glued-token and label-proximity date extraction.
-
-#### RC Extractor (`rc_extractor/`)
-- **Registration Number**: Standard Indian vehicle registration formats.
-- **Owner Name**: Extracted from owner label proximity.
-- **Vehicle Class & Model**: Matched against a repository of 100+ OEM vehicle manufacturers.
-- **Registration & Validity Dates**: Registration date and fitness validity expiry.
-- **Confidence Scoring**: Field-level confidence calculation.
+Every processed image receives an [`ImageQualityReport`](file:///c:/Users/parik/OneDrive/Desktop/Driver_Verification/app/models/ocr_models.py):
+- **Blur**: Laplacian variance threshold (`< 100.0` = blurry).
+- **Brightness**: Mean V-channel intensity (`< 60.0` = dark, `> 200.0` = overexposed).
+- **Glare**: Percentage of saturated pixels with $V > 240$ and low saturation.
+- If an extractor fails to find a field, it queries the quality report and generates a diagnostic explanation (e.g. *"Front image has glare (73.5%); No vehicle class codes found in OCR text"*).
 
 ---
 
-### 3.6 Identity Cross-Validator (`app/services/identity_cross_validator/`)
+## 5. Domain Extraction Algorithms & Spatial Layout Reasoning
 
-Performs pairwise identity cross-verification across all three identity documents:
-1. **Aadhaar $\leftrightarrow$ PAN**
-2. **Aadhaar $\leftrightarrow$ Driving Licence**
-3. **PAN $\leftrightarrow$ Driving Licence**
+### 5.1 Aadhaar Card Spatial Layout
+- **Aadhaar UID**: Matches `\b\d{4}\s\d{4}\s\d{4}\b`.
+- **Full Name**: Position-based extraction of text lines immediately preceding DOB or Father/Care-of markers.
+- **DOB**: Matches `DOB`, `Date of Birth`, `जन्म तिथि` labels.
 
-#### Matching Rules:
-- **Name Verification**: RapidFuzz Token Sort Ratio ($\ge 75\%$ = `MATCH`, $50\%-74\%$ = `REVIEW`, $<50\%$ = `MISMATCH`).
-- **DOB Verification**: Exact ISO date comparison (`MATCH` / `MISMATCH` / `MISSING`).
-- **Overall Decision**: Consolidates pairwise results into `overall_name_status`, `overall_dob_status`, and `overall_status` (`MATCHED`, `REVIEW`, `MISMATCH`).
+### 5.2 Driving Licence Layout & State Smart-Card Parsing
+- **Licence Number**: Regex matching Sarathi format `[A-Z]{2}[-\s]?[0-9]{2}[-\s]?[0-9]{4}[-\s]?[0-9]{7}`.
+- **DOB**: Fuzzy matching `DATE OF BIRTH` / `DOB` with negative guards to prevent capturing issue or validity dates.
+- **Smart-Card Name Fallback**: Searches the geometric region immediately above `ADDRESS:` / `ADORESS:` to reliably extract names on Gujarat and regional smart-cards.
+- **Vehicle Classes**: Extracts all MoRTH vehicle codes (`MCWG`, `LMV`, `3W-CAB`, `3W-NT`, `TRANS`, `HMV`).
 
----
+### 5.3 PAN Card Layout & Field Disambiguation
+- **PAN Number**: Regex `[A-Z]{5}[0-9]{4}[A-Z]`.
+- **Cardholder vs Father Name**: When images are upright, Cardholder Name is line 1 under header, Father Name is line 2 above DOB.
 
-## 4. FastAPI Microservices Suite & REST API Reference
+### 5.4 Vehicle RC Extraction & OEM Database
+- **Registration Number**: Standard Indian format `SS-RR-XX-NNNN`.
+- **Vehicle Make**: Matches manufacturer against a database of 100+ OEMs (Hero, Honda, Bajaj, TVS, Maruti, Hyundai, Tata, etc.).
+- **Dates**: Registration date and fitness validity.
 
-The platform provides a complete REST API suite running on FastAPI with interactive OpenAPI documentation.
+### 5.5 Identity Cross-Validation & Decision Engine
 
-### 4.1 API Architecture & Router Layout
-
-```
-FastAPI Server (app/server.py :8000)
- │
- ├── /api/v1/driver/verify          (Master Gateway Service)
- ├── /api/v1/ocr/extract            (OCR & Image Quality Microservice)
- ├── /api/v1/aadhaar/extract        (Aadhaar Card Microservice)
- ├── /api/v1/dl/extract             (Driving Licence Microservice)
- ├── /api/v1/pan/extract            (PAN Card Microservice)
- ├── /api/v1/rc/extract             (RC Book Microservice)
- ├── /api/v1/validate/cross-verify  (Identity Cross-Validation Microservice)
- ├── /health                        (System Health Check)
- └── /docs                          (Interactive Swagger UI)
-```
+Calculates pairwise similarity across all 3 documents:
+- **`overall_name_status`**:
+  - `MATCHED`: All pairs $\ge 75\%$ similarity.
+  - `REVIEW`: Any pair between $50\%-74\%$.
+  - `MISMATCH`: Any pair $< 50\%$.
+- **`overall_dob_status`**: `MATCHED` if all extracted DOBs are identical ISO strings; otherwise `MISMATCH`.
+- **`overall_status`**: `MATCHED` only when both Name and DOB are `MATCHED`.
 
 ---
 
-### 4.2 Endpoint Specifications
+## 6. API Reference & OpenAPI Swagger Specifications
 
-#### 1. Master Gateway Verification
-* **Endpoint**: `POST /api/v1/driver/verify`
-* **Content-Type**: `multipart/form-data`
-* **Parameters**:
-  - `driver_id` *(string, required)*: Unique identifier (e.g. phone number).
-  - `aadhaar_front` *(file, optional)*: Aadhaar front image.
-  - `aadhaar_back` *(file, optional)*: Aadhaar back image.
-  - `licence_front` *(file, optional)*: DL front image.
-  - `licence_back` *(file, optional)*: DL back image.
-  - `pan_front` *(file, optional)*: PAN front image.
-  - `pan_back` *(file, optional)*: PAN back image.
-  - `rc_front` *(file, optional)*: RC front image.
-  - `rc_back` *(file, optional)*: RC back image.
-* **Response**: Returns full extraction data for all 4 documents and identity cross-validation result.
+Interactive Swagger UI documentation is available at **`http://127.0.0.1:8000/docs`**.
 
-#### 2. Standalone OCR Engine Service
-* **Endpoint**: `POST /api/v1/ocr/extract`
-* **Content-Type**: `multipart/form-data`
-* **Parameters**: `file` *(file, required)*, `min_confidence` *(float, optional)*, `fix_orientation` *(bool)*, `enhance` *(bool)*.
-* **Response**: Extracted text lines, polygon coordinates, confidence scores, and image quality metrics (blur, brightness, glare).
+### 6.1 Gateway Verification Endpoints
 
-#### 3. Aadhaar Extractor Service
-* **Endpoint**: `POST /api/v1/aadhaar/extract`
-* **Parameters**: `front_image` *(file, required)*, `back_image` *(file, optional)*.
-* **Response**: Aadhaar number, cardholder name, DOB, gender, and address.
-
-#### 4. Driving Licence Service
-* **Endpoint**: `POST /api/v1/dl/extract`
-* **Parameters**: `front_image` *(file, required)*, `back_image` *(file, optional)*.
-* **Response**: DL number, name, DOB, issue date, expiry date, and vehicle classes.
-
-#### 5. PAN Card Service
-* **Endpoint**: `POST /api/v1/pan/extract`
-* **Parameters**: `front_image` *(file, required)*, `back_image` *(file, optional)*.
-* **Response**: PAN number, name, father's name, and DOB.
-
-#### 6. RC Service
-* **Endpoint**: `POST /api/v1/rc/extract`
-* **Parameters**: `front_image` *(file, required)*, `back_image` *(file, optional)*.
-* **Response**: Registration number, owner name, vehicle class, registration date, validity, and confidence metrics.
-
-#### 7. Identity Cross-Validator Service
-* **Endpoint**: `POST /api/v1/validate/cross-verify`
-* **Content-Type**: `application/json`
-* **Body**: Extraction JSON data.
-* **Response**: Pairwise Name/DOB similarity breakdown and overall decision.
-
-#### 8. Health Check
-* **Endpoint**: `GET /health`
-* **Response**: System operational status, GPU availability, and model configurations.
+#### `POST /api/v1/driver/verify`
+- **Description**: Master verification endpoint orchestrating full multi-document extraction and cross-validation.
+- **Content-Type**: `multipart/form-data`
+- **Parameters**:
+  - `driver_id` *(string, required)*
+  - `aadhaar_front`, `aadhaar_back` *(files, optional)*
+  - `licence_front`, `licence_back` *(files, optional)*
+  - `pan_front`, `pan_back` *(files, optional)*
+  - `rc_front`, `rc_back` *(files, optional)*
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "status": "SUCCESS",
+    "data": {
+      "driver_id": "6355528465",
+      "extraction": { ... },
+      "cross_validation": { ... }
+    }
+  }
+  ```
 
 ---
 
-### 4.3 Interactive Swagger UI & OpenAPI Specification
+### 6.2 Historical Records Management Endpoints
 
-When the server is running, navigate to **`http://127.0.0.1:8000/docs`** to test all microservices interactively via Swagger UI:
-
-```
-http://127.0.0.1:8000/docs   ──> Swagger UI (Interactive API Testing)
-http://127.0.0.1:8000/redoc  ──> ReDoc (API Specification Documentation)
-```
+- **`GET /api/v1/driver/records`**: List all verified driver records with pagination (`limit`, `offset`) and status filtering (`status_filter=MATCHED`).
+- **`GET /api/v1/driver/{driver_id}`**: Fetch complete extraction and validation JSON report for a specific driver ID.
+- **`DELETE /api/v1/driver/{driver_id}`**: Delete stored records for a specific driver ID.
 
 ---
 
-## 5. Storage Formats & Output JSON Schemas
+### 6.3 Microservice Reverse Proxies
 
-### 5.1 Extraction JSON Schema (`result/extr_result/<driver_id>.json`)
+The API Gateway provides direct reverse proxies to all 6 specialized microservices:
+- `POST /api/v1/ocr/extract` $\rightarrow$ Proxies to OCR Service (`:8001`)
+- `POST /api/v1/aadhaar/extract` $\rightarrow$ Proxies to Aadhaar Service (`:8002`)
+- `POST /api/v1/dl/extract` $\rightarrow$ Proxies to DL Service (`:8003`)
+- `POST /api/v1/pan/extract` $\rightarrow$ Proxies to PAN Service (`:8004`)
+- `POST /api/v1/rc/extract` $\rightarrow$ Proxies to RC Service (`:8005`)
+- `POST /api/v1/validate/cross-verify` $\rightarrow$ Proxies to Validator Service (`:8006`)
+
+---
+
+## 7. Storage Formats & Output JSON Schemas
+
+### 7.1 Extraction JSON Schema (`result/extr_result/<driver_id>.json`)
 
 ```json
 {
   "driver_id": "6355528465",
   "documents": {
     "aadhaar": {
-      "document_type": "AADHAAR",
+      "document_type": "aadhaar",
       "status": "EXTRACTED",
       "warning": null,
       "data": {
@@ -439,7 +402,7 @@ http://127.0.0.1:8000/redoc  ──> ReDoc (API Specification Documentation)
       }
     },
     "licence": {
-      "document_type": "DRIVING_LICENCE",
+      "document_type": "driving_licence",
       "status": "EXTRACTED",
       "warning": null,
       "data": {
@@ -453,31 +416,29 @@ http://127.0.0.1:8000/redoc  ──> ReDoc (API Specification Documentation)
       }
     },
     "pan": {
-      "document_type": "PAN",
+      "document_type": "pan",
       "status": "PARTIAL",
       "warning": "Partial document (missing front or back image)",
       "data": {
         "pan_number": "CJZPG1395J",
-        "full_name": "Gohil Karan Vallabhbhai",
+        "full_name": "Gohil Karan Vallabheha",
         "father_name": "Vallabhbhai Mohanbhai Gohil",
         "date_of_birth": "1999-06-24",
         "field_diagnostics": {}
       }
     },
     "rc": {
-      "document_type": "RC",
+      "document_type": "rc",
       "status": "EXTRACTED",
       "warning": null,
       "data": {
         "registration_number": "GJ-05-MC-5568",
         "owner_name": "MANUBHAI",
-        "vehicle_type": "SOLO+PILL.RIDER",
         "date_of_registration": "2015-03-23",
         "registration_validity": "2030-03-22",
         "confidence_scores": {
           "registration_number": 0.98,
           "owner_name": 0.99,
-          "vehicle_type": 0.96,
           "date_of_registration": 0.96,
           "registration_validity": 0.96
         },
@@ -491,160 +452,103 @@ http://127.0.0.1:8000/redoc  ──> ReDoc (API Specification Documentation)
 
 ---
 
-### 5.2 Validation JSON Schema (`result/vldt_result/<driver_id>.json`)
+### 7.2 Validation JSON Schema (`result/vldt_result/<driver_id>.json`)
 
 ```json
 {
   "driver_id": "6355528465",
-  "validation": {
-    "aadhaar_vs_pan": {
-      "name": {
-        "aadhaar": "Gohil Karan Vallabhbhai",
-        "pan": "Gohil Karan Vallabhbhai",
-        "similarity": 100.0,
-        "status": "MATCH"
-      },
-      "date_of_birth": {
-        "aadhaar": "1999-06-24",
-        "pan": "1999-06-24",
-        "status": "MATCH"
-      },
+  "aadhaar_vs_pan": {
+    "name": {
+      "aadhaar": "Gohil Karan Vallabhbhai",
+      "pan": "Gohil Karan Vallabheha",
+      "similarity": 93.33,
       "status": "MATCH"
     },
-    "aadhaar_vs_licence": {
-      "name": {
-        "aadhaar": "Gohil Karan Vallabhbhai",
-        "licence": "Gohil Karan Vallabhbhai",
-        "similarity": 100.0,
-        "status": "MATCH"
-      },
-      "date_of_birth": {
-        "aadhaar": "1999-06-24",
-        "licence": "1999-06-24",
-        "status": "MATCH"
-      },
+    "date_of_birth": {
+      "aadhaar": "1999-06-24",
+      "pan": "1999-06-24",
       "status": "MATCH"
     },
-    "pan_vs_licence": {
-      "name": {
-        "pan": "Gohil Karan Vallabhbhai",
-        "licence": "Gohil Karan Vallabhbhai",
-        "similarity": 100.0,
-        "status": "MATCH"
-      },
-      "date_of_birth": {
-        "pan": "1999-06-24",
-        "licence": "1999-06-24",
-        "status": "MATCH"
-      },
+    "status": "MATCH"
+  },
+  "aadhaar_vs_licence": {
+    "name": {
+      "aadhaar": "Gohil Karan Vallabhbhai",
+      "licence": "Gohil Karan Vallabhbhai",
+      "similarity": 100.0,
       "status": "MATCH"
     },
-    "overall_name_status": "MATCHED",
-    "overall_dob_status": "MATCHED",
-    "overall_status": "MATCHED"
-  }
+    "date_of_birth": {
+      "aadhaar": "1999-06-24",
+      "licence": "1999-06-24",
+      "status": "MATCH"
+    },
+    "status": "MATCH"
+  },
+  "pan_vs_licence": {
+    "name": {
+      "pan": "Gohil Karan Vallabheha",
+      "licence": "Gohil Karan Vallabhbhai",
+      "similarity": 93.33,
+      "status": "MATCH"
+    },
+    "date_of_birth": {
+      "pan": "1999-06-24",
+      "licence": "1999-06-24",
+      "status": "MATCH"
+    },
+    "status": "MATCH"
+  },
+  "overall_name_status": "MATCHED",
+  "overall_dob_status": "MATCHED",
+  "overall_status": "MATCHED"
 }
 ```
 
 ---
 
-## 6. Production Deployment & Concurrency Architecture
+## 8. Execution, Cluster Management & Production Guide
 
-### 6.1 Uvicorn Multi-Worker Process Isolation
+### 8.1 Launching the Microservices Cluster (`run_services.py`)
 
-In production, deep learning models (such as PaddleOCR's C++ detection and recognition predictors) must be isolated at the **process level** to prevent GPU memory race conditions and tensor corruption.
+To launch all 7 microservices concurrently with automatic process management and console status logs:
 
-```
-                  ┌─────────────────────────────────────────┐
-                  │          Uvicorn Master Process         │
-                  │              (Port 8000)                │
-                  └────────────────────┬────────────────────┘
-                                       │
-            ┌──────────────────────────┴──────────────────────────┐
-            ▼                                                     ▼
-┌───────────────────────┐                             ┌───────────────────────┐
-│   Worker Process 1    │                             │   Worker Process 2    │
-│  ┌─────────────────┐  │                             │  ┌─────────────────┐  │
-│  │ 1x Pipeline     │  │                             │  │ 1x Pipeline     │  │
-│  │ 1x PaddleOCR    │  │                             │  │ 1x PaddleOCR    │  │
-│  └─────────────────┘  │                             │  └─────────────────┘  │
-│  (Isolated GPU Memory)│                             │  (Isolated GPU Memory)│
-└───────────────────────┘                             └───────────────────────┘
-```
-
-- Each worker process initializes **exactly one** model instance via [`app/dependencies.py`](file:///c:/Users/parik/OneDrive/Desktop/Driver_Verification/app/dependencies.py).
-- Requests are handled in parallel without GPU race conditions or memory collision.
-
----
-
-### 6.2 GPU VRAM Memory Optimization
-
-- **Single Model Footprint**: ~1.2 GB – 1.5 GB VRAM.
-- **2 Workers**: ~2.5 GB – 3.0 GB VRAM (Recommended for local GPUs / 4GB-8GB VRAM).
-- **4 Workers**: ~5.0 GB – 6.0 GB VRAM (Recommended for cloud GPU instances / 16GB+ VRAM).
-
----
-
-## 7. Usage & Execution Guide
-
-### 7.1 CLI Commands
-
-#### 1. Batch Driver Extraction
-Extracts all drivers in `sample_documents/` and outputs JSONs to `result/extr_result/`:
-```bash
-python main.py
-```
-
-#### 2. Single Driver Extraction
-```bash
-python main.py sample_documents/6355528465
-```
-
-#### 3. Identity Cross-Validation
-Cross-validates all extracted JSON records and outputs results to `result/vldt_result/`:
-```bash
-python cross_validate.py
-```
-
-#### 4. Accuracy Benchmark Dashboard
-```bash
-python result/calculate.py
-```
-
----
-
-### 7.2 Server Startup Commands
-
-#### Development Mode:
 ```powershell
-uvicorn app.server:app --workers 2 --host 127.0.0.1 --port 8000
+python run_services.py
 ```
 
-#### Production Server Mode:
-```powershell
-uvicorn app.server:app --workers 4 --host 0.0.0.0 --port 8000 --timeout-keep-alive 75
-```
+* **Launch specific services only**:
+  ```powershell
+  python run_services.py --only gateway ocr dl
+  ```
+* **Bind to all network interfaces (for Docker / Cloud)**:
+  ```powershell
+  python run_services.py --host 0.0.0.0
+  ```
 
 ---
 
-### 7.3 Programmatic Python API
+### 8.2 CLI Batch Extraction & Validation Tools
 
-```python
-from app.pipeline import Pipeline
-from app.services.identity_cross_validator.cross_validator import IdentityCrossValidator
+- **Run extraction across all driver folders in `sample_documents/`**:
+  ```powershell
+  python main.py
+  ```
+- **Run identity cross-validation across all extracted records**:
+  ```powershell
+  python cross_validate.py
+  ```
+- **Cross-validate a single driver by ID**:
+  ```powershell
+  python cross_validate.py 6355528465
+  ```
 
-# 1. Initialize Pipeline
-pipeline = Pipeline()
+---
 
-# 2. Extract Driver
-driver_result = pipeline.extract_driver("sample_documents/6355528465")
-print(driver_result.display(detailed=True))
+### 8.3 Concurrency & GPU VRAM Management
 
-# 3. Cross-Validate Identity
-validator = IdentityCrossValidator()
-cross_val = validator.validate_driver_json(driver_result.to_dict())
-
-print(f"Overall Identity Decision: {cross_val.overall_status}")
-print(f"Name Match Status        : {cross_val.overall_name_status}")
-print(f"DOB Match Status         : {cross_val.overall_dob_status}")
-```
+- **Process-Level Isolation**:
+  Running microservices across dedicated processes ensures that the C++ PaddlePaddle predictor buffers never collide or throw `Tensor holds no memory` exceptions.
+- **VRAM Requirements**:
+  - Monolithic single-port mode (`app.server` with 2 workers): ~2.5 GB VRAM.
+  - Microservices cluster mode (`run_services.py` with dedicated OCR service): ~1.5 GB VRAM total (all extraction services share the single OCR service over HTTP).
