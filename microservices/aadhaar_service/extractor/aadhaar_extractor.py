@@ -108,7 +108,7 @@ class AadhaarExtractor:
             r"(\d{4}[/\-\.]\d{1,2}[/\-\.]\d{1,2})",
             r"(\d{1,2}\s+[A-Za-z]{3,9}\s+\d{4})",
         ]
-        dob_keywords = ["DOB", "D.O.B", "D0B", "DATE OF BIRTH", "BIRTH", "YOB", "YEAR OF BIRTH"]
+        dob_keywords = ["DOB","DB", "D.O.B", "D0B", "DATE OF BIRTH", "BIRTH", "YOB", "YEAR OF BIRTH"]
 
         # 1. DOB + date in the same OCR box
         for item in texts:

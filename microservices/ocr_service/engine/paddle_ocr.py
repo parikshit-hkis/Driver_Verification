@@ -34,6 +34,18 @@ class PaddleOCRService:
     def extract(self, image_input: np.ndarray, min_confidence: Optional[float] = None) -> OCRResult:
         threshold = min_confidence if min_confidence is not None else self.min_confidence
         raw_result = self.ocr.ocr(image_input, cls=True)
+        
+        # for i in raw_result:
+        #     print(i)
+        # if raw_result and raw_result[0]:
+        #     print("\n" + "=" * 55, flush=True)
+        #     print("  --- OCR RAW EXTRACTED TEXT ---", flush=True)
+        #     print("=" * 55, flush=True)
+        #     for line in raw_result[0]:
+        #         box, (text, conf) = line
+        #         print(f"  * {text:<32} (conf: {conf:.2f})", flush=True)
+        #     print("=" * 55 + "\n", flush=True)
+
         return self._convert_result(raw_result, threshold)
 
     def _convert_result(self, raw_result, threshold: float) -> OCRResult:
