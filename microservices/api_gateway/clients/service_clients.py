@@ -83,6 +83,21 @@ class ServiceClients:
             logger.error(f"Cross-validation error: {e}")
             return {"status": "FAILED", "error": str(e)}
 
+    async def batch_cross_verify(self, driver_extractions_list: list, timeout: float = 60.0) -> Dict[str, Any]:
+        """Send batch of driver extraction JSONs to the Validator Microservice in one single call."""
+        try:
+            async with httpx.AsyncClient(timeout=timeout) as client:
+                res = await client.post(
+                    f"{self.validator_url}/batch-cross-verify",
+                    json={"drivers": driver_extractions_list},
+                )
+                res.raise_for_status()
+                res_json = res.json()
+                return (res_json.get("data") or {}).get("results", {})
+        except Exception as e:
+            logger.error(f"Batch cross-validation error: {e}")
+            return {}
+
     async def check_all_services_health(self) -> Dict[str, Any]:
         """Query health endpoints of all downstream services."""
         services = {

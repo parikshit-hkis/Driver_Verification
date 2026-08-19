@@ -15,7 +15,7 @@ from microservices.shared.utils import (
     normalize_dl_number,
     normalize_name,
 )
-from microservices.shared.utils.normalizer import _DATE_PATTERNS
+from microservices.shared.utils.normalizer import _DATE_PATTERNS, parse_all_dates
 from microservices.dl_service.config import dl_config
 
 _DL_REGEX = dl_config.DL_REGEX
@@ -23,6 +23,8 @@ _VEHICLE_CLASSES = dl_config.VEHICLE_CLASSES
 _ISSUE_KEYWORDS = dl_config.ISSUE_KEYWORDS
 _EXPIRY_KEYWORDS = dl_config.EXPIRY_KEYWORDS
 _DOB_KEYWORDS = dl_config.DOB_KEYWORDS
+_NAME_KEYWORDS = dl_config.NAME_KEYWORDS
+_RELATION_KEYWORDS = dl_config.RELATION_KEYWORDS
 _NAME_BLACKLIST = dl_config.NAME_BLACKLIST
 
 
@@ -97,25 +99,14 @@ class DrivingLicenceExtractor(BaseExtractor):
         by = (box_b.min_y + box_b.max_y) / 2
         return ((ax - bx) ** 2 + (ay - by) ** 2) ** 0.5
 
-    def _collect_date_candidates(self, texts: List[OCRText]) -> List[DateCandidate]:
+    def _collect_date_candidates(self, texts: List[OCRText]) -> List[Tuple[str, OCRText]]:
         candidates = []
         for item in texts:
             if item.bounding_box.min_x > 2550:
                 continue
-            for pattern, fmt in _DATE_PATTERNS:
-                for m in re.finditer(pattern, item.text, re.IGNORECASE):
-                    matched_text = m.group(0)
-                    parsed = normalize_date(matched_text)
-                    if parsed and parsed != "0000-00-00":
-                        candidates.append(
-                            DateCandidate(
-                                date=parsed,
-                                text=matched_text,
-                                box=item,
-                                confidence=item.confidence,
-                                context=item.text,
-                            )
-                        )
+            dates = parse_all_dates(item.text)
+            for d in dates:
+                candidates.append((d, item))
         return candidates
 
     def _find_labels(self, texts: List[OCRText], keywords: List[str]) -> List[OCRText]:
@@ -129,34 +120,62 @@ class DrivingLicenceExtractor(BaseExtractor):
                 labels.append(t)
         return labels
 
-    def _closest_candidate(self, labels: List[OCRText], candidates: List[DateCandidate]) -> Optional[DateCandidate]:
-        best_cand, best_dist = None, float("inf")
-        for label in labels:
-            for cand in candidates:
-                dist = self._distance(cand.box.bounding_box, label.bounding_box)
-                if dist < best_dist:
-                    best_dist, best_cand = dist, cand
-        return best_cand
-
     def _resolve_issue_and_expiry_dates(self, texts: List[OCRText], data: DrivingLicenceData) -> None:
         candidates = self._collect_date_candidates(texts)
         excluded_dates = {data.date_of_birth} if data.date_of_birth else set()
-        available = [c for c in candidates if c.date not in excluded_dates]
-
-        issue_label = self._find_labels(texts, _ISSUE_KEYWORDS)
-        issue_candidate = self._closest_candidate(issue_label, available)
-
-        expiry_pool = [c for c in available if c is not issue_candidate]
-        expiry_label = self._find_labels(texts, _EXPIRY_KEYWORDS)
-        expiry_candidate = self._closest_candidate(expiry_label, expiry_pool)
-
-        resolved_issue = issue_candidate.date if issue_candidate else None
-        resolved_expiry = expiry_candidate.date if expiry_candidate else None
+        available = [c for c in candidates if c[0] not in excluded_dates]
         current_date = datetime.now().strftime("%Y-%m-%d")
 
+        issue_labels = self._find_labels(texts, _ISSUE_KEYWORDS)
+        expiry_labels = self._find_labels(texts, _EXPIRY_KEYWORDS)
+
+        resolved_issue = None
+        resolved_expiry = None
+
+        # Resolve issue date near issue label
+        if issue_labels and available:
+            best_dist, best_d = float("inf"), None
+            for lbl in issue_labels:
+                for d, box in available:
+                    if d <= current_date:
+                        dist = self._distance(lbl.bounding_box, box.bounding_box)
+                        if dist < best_dist:
+                            best_dist, best_d = dist, d
+            if best_dist < 600.0:
+                resolved_issue = best_d
+
+        # Resolve expiry date near expiry label
+        expiry_pool = [c for c in available if c[0] != resolved_issue]
+        if resolved_issue:
+            valid_expiry_cands = [c for c in expiry_pool if c[0] > resolved_issue]
+        else:
+            valid_expiry_cands = expiry_pool
+
+        if expiry_labels and valid_expiry_cands:
+            best_dist, best_d = float("inf"), None
+            for lbl in expiry_labels:
+                for d, box in valid_expiry_cands:
+                    dist = self._distance(lbl.bounding_box, box.bounding_box)
+                    if dist < best_dist:
+                        best_dist, best_d = dist, d
+            if best_dist < 600.0:
+                resolved_expiry = best_d
+
+        # Fallback for expiry date if not found: look for future dates
+        if not resolved_expiry and valid_expiry_cands:
+            future_cands = [c[0] for c in valid_expiry_cands if c[0] >= current_date]
+            if future_cands:
+                future_cands.sort(reverse=True)
+                resolved_expiry = future_cands[0]
+
+        # Fallback for issue date if not found: look for past dates
+        if not resolved_issue and expiry_pool:
+            past_cands = [c[0] for c in expiry_pool if c[0] <= current_date and c[0] != resolved_expiry]
+            if past_cands:
+                past_cands.sort()
+                resolved_issue = past_cands[0]
+
         if resolved_issue and data.date_of_birth and resolved_issue < data.date_of_birth:
-            resolved_issue = None
-        if resolved_issue and resolved_issue > current_date:
             resolved_issue = None
         if resolved_expiry and data.date_of_birth and resolved_expiry < data.date_of_birth:
             resolved_expiry = None
@@ -170,7 +189,7 @@ class DrivingLicenceExtractor(BaseExtractor):
         label_keywords = [
             "Licence No", "License No", "DL No", "D/L No",
             "DL Number", "Licence Number", "License Number",
-            "Driving Licence No", "DLNO", "DL NO", "DLNo",
+            "Driving Licence No", "DLNO", "DL NO", "DLNo", "LN0",
         ]
         raw = self.find_value_near_label(texts, label_keywords, max_distance=600.0, same_row_tolerance=40.0)
         if raw:
@@ -179,45 +198,69 @@ class DrivingLicenceExtractor(BaseExtractor):
                 return norm
 
         for item in texts:
-            m = _DL_REGEX.search(item.text)
-            if m:
-                norm = normalize_dl_number(m.group(1))
-                if norm:
-                    return norm
-
-        full = " ".join(t.text for t in texts)
-        m = _DL_REGEX.search(full)
-        if m:
-            norm = normalize_dl_number(m.group(1))
+            norm = normalize_dl_number(item.text)
             if norm:
                 return norm
+
+        full = " ".join(t.text for t in texts)
+        norm = normalize_dl_number(full)
+        if norm:
+            return norm
+
         return None
 
     def extract_dob(self, texts: List[OCRText]) -> Optional[str]:
         current_year = datetime.now().year
-        candidates = self._collect_date_candidates(texts)
-        labels = self._find_labels(texts, _DOB_KEYWORDS)
-        dob_candidate = self._closest_candidate(labels, candidates)
 
-        if dob_candidate:
-            yr = int(dob_candidate.date.split("-")[0])
-            if yr <= current_year - 16:
-                return dob_candidate.date
+        # 1. Inline regex search
+        dob_inline_pattern = re.compile(
+            r"(?:date\s*(?:of|0f|ot|o|or|birth|d\.?o\.?b\.?|dateb)?|dateof|date0f|dateot|dateor|dote\s*(?:of|0f)?|doteof|birth\s*date|d\.?o\.?b\.?|dob|dateb|000)\s*(?:birth|birt|bitth|b)?\s*[:\-\s]*([0-9SOIlZB]{1,2}[-/\.][0-9SOIlZB]{1,2}[-/\.][0-9SOIlZB]{2,4}|\d{4}[/\-]\d{4})",
+            re.IGNORECASE,
+        )
+        for t in texts:
+            m = dob_inline_pattern.search(t.text)
+            if m:
+                dates = parse_all_dates(m.group(0))
+                for d in dates:
+                    yr = int(d.split("-")[0])
+                    if yr <= current_year - dl_config.MIN_DRIVER_AGE:
+                        return d
+
+        # 2. DOB Labels search
+        labels = self._find_labels(texts, _DOB_KEYWORDS)
+        candidates = self._collect_date_candidates(texts)
+        if labels and candidates:
+            best_dist, best_d = float("inf"), None
+            for lbl in labels:
+                for d, box in candidates:
+                    yr = int(d.split("-")[0])
+                    if yr <= current_year - dl_config.MIN_DRIVER_AGE:
+                        dist = self._distance(lbl.bounding_box, box.bounding_box)
+                        if dist < best_dist:
+                            best_dist, best_d = dist, d
+            if best_dist < 600.0:
+                return best_d
+
         return None
 
     def extract_name_raw(self, texts: List[OCRText]) -> Optional[str]:
+        # 1. Inline pattern
+        inline_pattern = re.compile(
+            r"^(?:4/)?\s*(?:name|namie|mame|applicant\s*name|holder\s*name)\b[\s:\-/]*([A-Za-z\.\s']{3,})",
+            re.IGNORECASE,
+        )
         for item in texts:
-            up = item.text.upper().strip()
-            m = re.match(r"^(?:NAME|HOLDER|APPLICANT|MAME)[\s:\-/]*([A-Z\.\s']{3,})", up)
+            m = inline_pattern.match(item.text.strip())
             if m:
                 val = self._strip_name_prefix(m.group(1).strip())
                 if self._is_plausible_name(val):
                     return val
 
+        # 2. Name label box
         name_label = None
         for t in texts:
             clean = t.text.upper().strip().rstrip(":").strip()
-            if clean in ["NAME", "MAME", "APPLICANT NAME", "HOLDER NAME", "DL NUMBER HOLDER NAME"]:
+            if re.match(r"^(?:4/)?\s*(?:NAME|NAMIE|MAME|APPLICANT\s*NAME|(?:DL\s*(?:NUMBER\s*)?)?HOLDER\s*NAME|NAM)$", clean):
                 name_label = t
                 break
 
@@ -231,7 +274,7 @@ class DrivingLicenceExtractor(BaseExtractor):
                     continue
                 icy = t.bounding_box.center_y
                 ix1 = t.bounding_box.min_x
-                if abs(icy - l_cy) <= 45.0 and ix1 >= l_x2 - 20:
+                if abs(icy - l_cy) <= 50.0 and ix1 >= l_x2 - 30:
                     cleaned = self._strip_name_prefix(t.text)
                     if self._is_plausible_name(cleaned):
                         cands.append((max(0.0, ix1 - l_x2), cleaned))
@@ -241,7 +284,7 @@ class DrivingLicenceExtractor(BaseExtractor):
                 for t in texts:
                     if t is name_label or t.bounding_box.min_x > 2500:
                         continue
-                    if l_y2 - 5 <= t.bounding_box.min_y <= l_y2 + 120:
+                    if l_y2 - 10 <= t.bounding_box.min_y <= l_y2 + 140:
                         cleaned = self._strip_name_prefix(t.text)
                         if self._is_plausible_name(cleaned):
                             below_cands.append((t.bounding_box.min_y - l_y2, cleaned))
@@ -253,113 +296,190 @@ class DrivingLicenceExtractor(BaseExtractor):
                 cands.sort(key=lambda c: c[0])
                 return cands[0][1]
 
-        rel_label = self._find_label_box(texts, ["S/O", "D/O", "W/O", "S/W/D", "Son/Daughter"])
+        # 3. Relationship label proximity (Above Son/Daughter/Wife of)
+        rel_label = None
+        for t in texts:
+            up = t.text.upper().strip()
+            if any(kw in up for kw in ["S/O", "D/O", "W/O", "S/W/D", "SON/DAUGHTER", "O/DAUGHTER", "AUGHTER", "WIFE OF", "S/DM", "SOW PURA"]):
+                rel_label = t
+                break
+
         if rel_label:
             rel_y = rel_label.bounding_box.min_y
-            above_candidates = [t for t in texts if rel_y - 150 < t.bounding_box.max_y < rel_y + 20]
+            above_candidates = [
+                t for t in texts
+                if rel_y - 180 <= t.bounding_box.min_y < rel_y + 15
+                and t is not rel_label
+                and t.bounding_box.min_x <= 2500
+            ]
+            above_candidates.sort(key=lambda t: abs(rel_y - t.bounding_box.max_y))
             for t in above_candidates:
                 cleaned = self._strip_name_prefix(t.text)
                 if self._is_plausible_name(cleaned):
                     return cleaned
 
-        sorted_texts = sorted(texts, key=lambda t: t.confidence, reverse=True)
-        for item in sorted_texts:
-            cleaned = self._strip_name_prefix(item.text)
-            if self._is_plausible_name(cleaned) and item.confidence >= 0.85:
-                words = cleaned.split()
-                if len(words) >= 2 and len(cleaned) >= 6:
+        # 4. Proximity between DL Number and DOB / Blood Group
+        for t in texts:
+            up = t.text.upper().strip()
+            if "NAM" in up and len(up) >= 6:
+                cleaned = self._strip_name_prefix(t.text)
+                if self._is_plausible_name(cleaned):
                     return cleaned
+
+        # 5. Position above Address (for cards without Name label, e.g. Gujarat DL format)
+        address_label = None
+        for t in texts:
+            up = t.text.upper().strip()
+            if "ADDRESS" in up or "ADORESS" in up or "PERMANENT" in up:
+                address_label = t
+                break
+        if address_label:
+            addr_y = address_label.bounding_box.min_y
+            above_addr = [
+                t for t in texts
+                if addr_y - 200 <= t.bounding_box.min_y < addr_y - 10
+                and t.bounding_box.min_x <= 2500
+            ]
+            above_addr.sort(key=lambda t: t.bounding_box.min_y)
+            for t in above_addr:
+                cleaned = self._strip_name_prefix(t.text)
+                if self._is_plausible_name(cleaned):
+                    return cleaned
+
         return None
 
     @staticmethod
     def _strip_name_prefix(text: str) -> str:
-        return re.sub(r'^(?:name|holder|applicant|mame)[\s:\-/]*', '', text, flags=re.IGNORECASE).strip()
+        return re.sub(r'^(?:4/)?\s*(?:name|namie|mame|applicant\s*name|holder\s*name|applicant|holder|namc|nam)[\s:\-/]*', '', text, flags=re.IGNORECASE).strip()
 
     def _is_plausible_name(self, text: str) -> bool:
         if not text:
             return False
         clean = text.upper().strip()
-        if clean in _NAME_BLACKLIST:
+        if len(clean) < 3 or len(clean) > 45:
             return False
 
-        structural_terms = [
-            "FIRST ISSUE", "DATE OF ISSUE", "DATE OF FIRST ISSUE", "ISSUE DATE",
-            "VALIDITY", "VALID TILL", "VALID UPTO", "EXPIRY", "EXPIRY DATE",
-            "DATE OF BIRTH", "REGISTERING", "AUTHORITY", "AHMEDABAD", "GUJARAT",
-            "MAHARASHTRA", "RAJASTHAN", "STATE", "TRANSPORT", "GOVERNMENT",
-            "SIGNATURE", "HOLDER", "LICENCE", "LICENSE", "UNION", "INDIAN", "RTO",
+        boilerplate_phrases = [
+            "BLOOD GROUP", "EMERGENCY CONTACT", "HOLDER SIGNATURE", "HOLDER'S SIGNATURE",
+            "HOKER'S SIGNATURE", "HOLDER SIGHATURE", "'S SIGNATURE", "'S SIGHATURE",
+            "SIGNATURE OF HOLDER", "DRIVING LICENCE", "DRIVING LICENSE",
+            "UNION OF INDIA", "GOVERNMENT OF", "STATE TRANSPORT", "FORM 7", "RULE 16",
+            "DATE OF BIRTH", "DATE OF ISSUE", "VALID TILL", "VALID UPTO", "ORGAN DONOR",
+            "INDIAN UNION", "AUTHORISATION TO DRIVE", "FOLLOWING CLASS", "ISSUED BY",
+            "PERMANENT ADDRESS", "MOBILE NUMBER", "LICENCING AUTHORITY", "LICENSING AUTHORITY",
+            "PORT AND TRANSPORT", "CHOKSI", "PORTS AND TRANSPORT", "AHMEDABAD", "SURAT",
+            "VADODARA", "MAHARASHTRA", "GUJARAT", "RAJASTHAN", "MADHYA PRADESH",
         ]
-        if any(term in clean for term in structural_terms):
-            return False
+        for phrase in boilerplate_phrases:
+            if phrase in clean:
+                return False
 
-        words = clean.split()
+        words = [w.strip(".,'-") for w in clean.split() if w.strip(".,'-")]
         if len(words) < 1 or len(words) > 5:
             return False
+
         for w in words:
-            if not w.replace(".", "").replace("'", "").replace("-", "").isalpha():
+            if w in _NAME_BLACKLIST:
                 return False
+            if not w.isalpha():
+                return False
+
+        if len(words) == 1 and len(words[0]) < 3:
+            return False
+
         return True
 
     def extract_vehicle_classes(self, texts: List[OCRText], side: str = "unknown") -> List[str]:
         found = set()
-        date_boxes = [t for t in texts if normalize_date(t.text)]
+        date_boxes = [t for t in texts if parse_all_dates(t.text)]
+        has_legend = any("LEGEND FOR" in t.text.upper() or "LEGEND" in t.text.upper() for t in texts)
 
         for item in texts:
-            text = item.text.upper().strip()
+            text_up = item.text.upper().strip()
+
             for vc in _VEHICLE_CLASSES:
-                if not re.search(rf"(?<![A-Z0-9]){re.escape(vc)}(?![A-Z0-9])", text):
+                if not re.search(rf"(?<![A-Z0-9]){re.escape(vc)}(?![A-Z0-9])", text_up):
                     continue
 
-                if normalize_date(item.text):
-                    found.add(self._normalize_vehicle_class(vc))
+                norm_vc = self._normalize_vehicle_class(vc)
+
+                # Pattern A: Inline date
+                if parse_all_dates(item.text):
+                    found.add(norm_vc)
                     continue
 
+                class_cx = item.bounding_box.center_x
                 class_cy = item.bounding_box.center_y
                 class_x2 = item.bounding_box.max_x
+                matched = False
 
                 for date_box in date_boxes:
-                    if date_box is item:
-                        continue
+                    if date_box is item: continue
+                    date_cx = date_box.bounding_box.center_x
                     date_cy = date_box.bounding_box.center_y
                     date_x1 = date_box.bounding_box.min_x
-                    if abs(class_cy - date_cy) <= 45.0 and -50.0 <= (date_x1 - class_x2) <= 500.0:
-                        found.add(self._normalize_vehicle_class(vc))
+
+                    # Horizontal proximity
+                    if abs(class_cy - date_cy) <= 50.0 and -50.0 <= (date_x1 - class_x2) <= 600.0:
+                        found.add(norm_vc)
+                        matched = True
                         break
 
-        vehicle_class_labels = [t for t in texts if "VEHICLE CLASS" in t.text.upper()]
-        for item in texts:
-            text = item.text.upper().strip()
-            for vc in _VEHICLE_CLASSES:
-                if vc not in text:
+                    # Vertical proximity
+                    if 0.0 <= (date_cy - class_cy) <= 180.0 and abs(class_cx - date_cx) <= 180.0:
+                        found.add(norm_vc)
+                        matched = True
+                        break
+
+                if matched:
                     continue
-                class_cy = item.bounding_box.center_y
-                class_x1 = item.bounding_box.min_x
 
-                for label in vehicle_class_labels:
-                    label_cy = label.bounding_box.center_y
-                    label_x2 = label.bounding_box.max_x
-                    if abs(class_cy - label_cy) <= 45.0 and class_x1 >= label_x2 - 20.0:
-                        found.add(self._normalize_vehicle_class(vc))
-                        break
+                # Pattern D: Under header (if not legend)
+                if not has_legend:
+                    header_labels = [
+                        t for t in texts
+                        if any(h in t.text.upper() for h in ["COV", "CLASS OF", "VEHICLE CATEGORY", "VEHICLE CLASS", "CODE", "AUTHORISATION"])
+                    ]
+                    for header in header_labels:
+                        h_cx = header.bounding_box.center_x
+                        h_y2 = header.bounding_box.max_y
+                        if abs(class_cx - h_cx) <= 120.0 and 0.0 <= (item.bounding_box.min_y - h_y2) <= 350.0:
+                            found.add(norm_vc)
+                            matched = True
+                            break
+
+                if matched:
+                    continue
+
+                # Pattern E: Standalone box matching vehicle class exactly (if not in a 20-row legend)
+                if not has_legend:
+                    cleaned_token = re.sub(r"[^A-Z0-9\-]", "", text_up)
+                    if cleaned_token in _VEHICLE_CLASSES:
+                        found.add(norm_vc)
+                        continue
+
+                # Pattern F: Box contains Authorization / COV / Class label alongside class
+                if any(p in text_up for p in ["AUTHORIZATION", "AUTHORISATION", "AUTH", "COV", "CLASS", "CATEGORY"]):
+                    found.add(norm_vc)
+                    continue
 
         return self._sort_vehicle_classes(list(found))
 
     def _normalize_vehicle_class(self, value: str) -> str:
         return {
-            "LMVCAB": "LMV-CAB",
-            "LMY": "LMV",
-            "3WNT": "3W-NT",
-            "3WTR": "3W-TR",
-            "3WCAB": "3W-CAB",
-            "TRANSPORT": "TRANS",
-            "PSVBUS": "PSV-BUS",
-            "TRCTOR": "TRACTOR",
-            "MCWO": "MCWOG",
+            "SCWG": "MCWG", "MOWG": "MCWG", "HCWG": "MCWG", "MCWO": "MCWOG", "HCWOG": "MCWOG",
+            "LMY": "LMV", "LBY": "LMV", "LN": "LMV",
+            "LMVCAB": "LMV-CAB", "3WNT": "3W-NT", "3WTR": "3W-TR", "3WCAB": "3W-CAB",
+            "TRANSPORT": "TRANS", "TRN": "TRANS", "TRV": "TRANS", "PSVBUS": "PSV-BUS",
+            "TRCTOR": "TRACTOR", "TRCT0H": "TRACTOR", "INVCRG": "INVCR",
         }.get(value, value)
 
     @staticmethod
     def _sort_vehicle_classes(classes: List[str]) -> List[str]:
-        order = ["MCWG", "MCWOG", "LMV", "LMV-NT", "LMV-TR", "LMV-CAB", "HMV", "HPMV", "HTV", "TRANS", "3W-NT", "3W-TR", "3W-CAB", "TRACTOR"]
+        order = [
+            "MCWG", "MCWOG", "LMV", "LMV-NT", "LMV-TR", "LMV-CAB", "HMV",
+            "HPMV", "HTV", "TRANS", "3W-NT", "3W-TR", "3W-CAB", "TRACTOR", "AGRTLR"
+        ]
         return sorted(list(set(classes)), key=lambda c: order.index(c) if c in order else 99)
 
     def _combine_vehicle_classes(self, vc_front: Optional[List[str]], vc_back: Optional[List[str]]) -> List[str]:

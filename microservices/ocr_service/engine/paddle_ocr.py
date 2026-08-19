@@ -37,6 +37,8 @@ class PaddleOCRService:
         
         # for i in raw_result:
         #     print(i)
+        #     print("-----------------------------------------------------------------------------------------------------")
+        # print("x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x")
         # if raw_result and raw_result[0]:
         #     print("\n" + "=" * 55, flush=True)
         #     print("  --- OCR RAW EXTRACTED TEXT ---", flush=True)

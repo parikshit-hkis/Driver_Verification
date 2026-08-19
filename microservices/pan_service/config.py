@@ -29,8 +29,9 @@ class PanConfig:
 
     NAME_BLACKLIST: Set[str] = {
         "income", "tax", "department", "government", "india", "permanent",
-        "account", "number", "pan", "name", "father", "birth", "date",
-        "signature",
+        "account", "number", "pan", "father", "birth", "date", "name",
+        "signature", "gender", "male", "female", "transgender",
+        "digilocker", "powered", "tap", "zoom", "card", "pan card",
     }
 
 

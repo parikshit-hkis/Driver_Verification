@@ -5,7 +5,7 @@ Identity Cross-Validator Service Logic
 import re
 import json
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List, Set, Tuple
 from rapidfuzz import fuzz
 
 from microservices.shared.models import (
@@ -18,7 +18,14 @@ from microservices.validator_service.config import validator_config
 
 
 class IdentityCrossValidator:
-    """Validates extracted identity details across Aadhaar, PAN, and Driving Licence."""
+    """
+    Validates extracted identity details across Aadhaar, PAN, and Driving Licence.
+    Uses a multi-tier Indian name matching algorithm:
+    - Order-invariant token matching (handles First+Middle+Last vs Surname+First)
+    - Initial & abbreviation alignment (e.g. 'TRIVENI S JAYSWAL' vs 'TRIVENI SOHANLAL JAYSWAL')
+    - Token subset matching (handles missing middle/father names)
+    - Typo tolerance & phonetic fuzzy ratios
+    """
 
     def __init__(
         self,
@@ -45,15 +52,93 @@ class IdentityCrossValidator:
         clean = re.sub(r"\s+", " ", clean).strip()
         return clean
 
+    @staticmethod
+    def _initial_aware_similarity(n1: str, n2: str) -> float:
+        """
+        Matches names where one document uses initials/abbreviations while another uses full names.
+        Example: 'TRIVENI S JAYSWAL' vs 'TRIVENI SOHANLAL JAYSWAL' -> 98.3%
+        """
+        t1 = n1.split()
+        t2 = n2.split()
+        if not t1 or not t2:
+            return 0.0
+
+        # Ensure t1 is the shorter or equal token list
+        if len(t1) > len(t2):
+            t1, t2 = t2, t1
+
+        matched_t2: Set[int] = set()
+        matched_score = 0.0
+        total = len(t1)
+
+        for word1 in t1:
+            best_idx = None
+            best_type = 0  # 2: full/fuzzy match, 1: initial match
+
+            for idx, word2 in enumerate(t2):
+                if idx in matched_t2:
+                    continue
+
+                # 1. Exact or close fuzzy match on word
+                if word1 == word2 or fuzz.ratio(word1, word2) >= 85.0:
+                    best_idx = idx
+                    best_type = 2
+                    break
+
+                # 2. Initial match (single letter matching start of full word)
+                if (len(word1) == 1 and word2.startswith(word1)) or (
+                    len(word2) == 1 and word1.startswith(word2)
+                ):
+                    if best_type < 1:
+                        best_idx = idx
+                        best_type = 1
+
+            if best_idx is not None:
+                matched_t2.add(best_idx)
+                if best_type == 2:
+                    matched_score += 1.0
+                elif best_type == 1:
+                    matched_score += 0.95
+
+        coverage = matched_score / total
+        # Apply slight penalty if lengths differ significantly (e.g. 1 word vs 4 words)
+        len_diff = abs(len(t2) - len(t1))
+        penalty = max(0.0, (len_diff - 1) * 0.05) if len_diff > 1 else 0.0
+        final_score = max(0.0, (coverage - penalty) * 100.0)
+        return final_score
+
     def calculate_name_similarity(self, name1: str, name2: str) -> float:
+        """
+        Computes composite name similarity using an ensemble of:
+        1. Token Sort Ratio (word-order invariant)
+        2. Token Set Ratio (handles missing middle/father name)
+        3. Initial-Aware Alignment (handles single-letter abbreviations)
+        4. Partial Ratio (substring matching for composite names)
+        """
         norm1 = self.normalize_name(name1)
         norm2 = self.normalize_name(name2)
         if not norm1 or not norm2:
             return 0.0
         if norm1 == norm2:
             return 100.0
-        similarity = float(fuzz.token_sort_ratio(norm1, norm2))
-        return round(similarity, 2)
+
+        # 1. Token Sort Ratio (e.g. 'SHAIKH SADIK' vs 'SADIK SHAIKH')
+        ts_ratio = float(fuzz.token_sort_ratio(norm1, norm2))
+
+        # 2. Token Set Ratio (e.g. 'HARSHIT TRIPATHI' vs 'HARSHIT RAMESH TRIPATHI')
+        tset_ratio = float(fuzz.token_set_ratio(norm1, norm2))
+        len_diff = abs(len(norm1.split()) - len(norm2.split()))
+        tset_weighted = tset_ratio * (0.95 if len_diff <= 1 else 0.85)
+
+        # 3. Initial & Abbreviation Aware Alignment (e.g. 'TRIVENI S' vs 'TRIVENI SOHANLAL')
+        initial_score = self._initial_aware_similarity(norm1, norm2)
+
+        # 4. Standard Ratio for minor spelling typos (e.g. 'PRAMODBHAI' vs 'PRAMOD')
+        base_ratio = float(fuzz.ratio(norm1, norm2))
+
+        # Choose the strongest matching strategy
+        best_score = max(ts_ratio, tset_weighted, initial_score, base_ratio)
+        return round(min(100.0, best_score), 2)
 
     def validate_name_pair(
         self, doc1_key: str, doc2_key: str, name1: Optional[str], name2: Optional[str]
@@ -62,14 +147,13 @@ class IdentityCrossValidator:
         norm2 = self.normalize_name(name2)
 
         if not norm1 or not norm2:
-            status = "MISSING" if (not norm1 and not norm2) else "MISMATCH"
             return NameMatchResult(
                 doc1_key=doc1_key,
                 doc2_key=doc2_key,
                 doc1_name=norm1,
                 doc2_name=norm2,
                 similarity=0.0,
-                status=status,
+                status="MISSING",
             )
 
         similarity = self.calculate_name_similarity(norm1, norm2)
@@ -96,16 +180,24 @@ class IdentityCrossValidator:
         d2 = dob2.strip() if dob2 else ""
 
         if not d1 or not d2:
-            status = "MISSING" if (not d1 and not d2) else "MISMATCH"
             return DOBMatchResult(
                 doc1_key=doc1_key,
                 doc2_key=doc2_key,
                 doc1_dob=d1,
                 doc2_dob=d2,
-                status=status,
+                status="MISSING",
             )
 
-        status = "MATCH" if d1 == d2 else "MISMATCH"
+        # If both are full ISO dates (e.g. "YYYY-MM-DD" and "YYYY-MM-DD")
+        if len(d1) >= 10 and len(d2) >= 10:
+            status = "MATCH" if d1 == d2 else "MISMATCH"
+        else:
+            # If at least one document only provides Year of Birth (e.g. "1992" vs "1992-05-14")
+            # Compare the 4-digit birth years
+            y1 = d1[:4]
+            y2 = d2[:4]
+            status = "MATCH" if (y1.isdigit() and y2.isdigit() and y1 == y2) else "MISMATCH"
+
         return DOBMatchResult(
             doc1_key=doc1_key,
             doc2_key=doc2_key,
@@ -165,19 +257,25 @@ class IdentityCrossValidator:
         pan_vs_licence = self.validate_pair("pan", "licence", p_name, p_dob, l_name, l_dob)
 
         pairs = [aadhaar_vs_pan, aadhaar_vs_licence, pan_vs_licence]
+        active_name_pairs = [p.name for p in pairs if p.name.status != "MISSING"]
+        active_dob_pairs = [p.date_of_birth for p in pairs if p.date_of_birth.status != "MISSING"]
 
-        if any(p.name.status in ("MISMATCH", "MISSING") for p in pairs):
+        if not active_name_pairs:
+            overall_name_status = "MISSING"
+        elif any(p.status == "MISMATCH" for p in active_name_pairs):
             overall_name_status = "MISMATCH"
-        elif any(p.name.status == "REVIEW" for p in pairs):
+        elif any(p.status == "REVIEW" for p in active_name_pairs):
             overall_name_status = "REVIEW"
-        elif all(p.name.status == "MATCH" for p in pairs):
+        elif all(p.status == "MATCH" for p in active_name_pairs):
             overall_name_status = "MATCHED"
         else:
             overall_name_status = "MISMATCH"
 
-        if any(p.date_of_birth.status in ("MISMATCH", "MISSING") for p in pairs):
+        if not active_dob_pairs:
+            overall_dob_status = "MISSING"
+        elif any(p.status == "MISMATCH" for p in active_dob_pairs):
             overall_dob_status = "MISMATCH"
-        elif all(p.date_of_birth.status == "MATCH" for p in pairs):
+        elif all(p.status == "MATCH" for p in active_dob_pairs):
             overall_dob_status = "MATCHED"
         else:
             overall_dob_status = "MISMATCH"
@@ -186,8 +284,10 @@ class IdentityCrossValidator:
             overall_status = "MISMATCH"
         elif overall_name_status == "REVIEW":
             overall_status = "REVIEW"
-        elif overall_name_status == "MATCHED" and overall_dob_status == "MATCHED":
+        elif overall_name_status == "MATCHED" and (overall_dob_status in ("MATCHED", "MISSING")):
             overall_status = "MATCHED"
+        elif overall_name_status == "MISSING" and overall_dob_status == "MISSING":
+            overall_status = "UNKNOWN"
         else:
             overall_status = "MISMATCH"
 

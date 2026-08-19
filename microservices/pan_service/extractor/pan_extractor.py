@@ -184,6 +184,13 @@ class PanExtractor(BaseExtractor):
         label_keywords = ["Name", "NAME"]
         name_box = self._find_label_box(texts, label_keywords)
 
+        # 1. Right-side column extraction (for e-PAN & DigiLocker PAN where label & value share a row)
+        if name_box:
+            cand_right = self.find_value_near_label(texts, label_keywords, direction="right", max_distance=650.0, same_row_tolerance=45.0)
+            if cand_right and self._is_plausible_name(cand_right):
+                return cand_right
+
+        # 2. Above label extraction (for traditional inverted PAN layouts)
         if name_box:
             l_y1 = name_box.bounding_box.min_y
             above_cands = [
@@ -196,6 +203,7 @@ class PanExtractor(BaseExtractor):
                 if self._is_plausible_name(t.text):
                     return t.text
 
+        # 3. Below label extraction (for standard top-down forms)
         candidate = self.find_value_near_label(texts, label_keywords, direction="below", max_distance=200.0)
         if candidate and self._is_plausible_name(candidate):
             return candidate
@@ -223,6 +231,7 @@ class PanExtractor(BaseExtractor):
                 return False
             return True
 
+        # 1. Check physical upright layout (INCOME TAX DEPARTMENT -> Person Name -> Father's Name)
         if not father_box:
             income_tax_box = self._find_label_box(texts, ["INCOME TAX", "INCOMETAX"])
             if income_tax_box:
@@ -241,10 +250,15 @@ class PanExtractor(BaseExtractor):
                     if person_name and txt.strip().lower() == person_name.strip().lower():
                         seen_person_name = True
                         continue
-                    if seen_person_name or not person_name:
+                    if seen_person_name:
                         return txt
 
+        # 2. Right-side column extraction for father name
         if father_box:
+            cand_right = self.find_value_near_label(texts, label_keywords, direction="right", max_distance=650.0, same_row_tolerance=45.0)
+            if cand_right and is_valid_father(cand_right):
+                return cand_right
+
             l_y1 = father_box.bounding_box.min_y
             above_cands = [
                 t for t in texts
@@ -256,17 +270,14 @@ class PanExtractor(BaseExtractor):
                 if is_valid_father(t.text):
                     return t.text
 
-        candidate = self.find_value_near_label(texts, label_keywords, direction="below", max_distance=200.0)
-        if candidate and is_valid_father(candidate):
-            return candidate
+            candidate = self.find_value_near_label(texts, label_keywords, direction="below", max_distance=200.0)
+            if candidate and is_valid_father(candidate):
+                return candidate
 
-        candidate = self.find_value_near_label(texts, label_keywords, direction="auto", max_distance=400.0)
-        if candidate and is_valid_father(candidate):
-            return candidate
+            candidate = self.find_value_near_label(texts, label_keywords, direction="auto", max_distance=400.0)
+            if candidate and is_valid_father(candidate):
+                return candidate
 
-        for item in sorted(texts, key=lambda x: x.confidence, reverse=True):
-            if is_valid_father(item.text) and item.confidence >= 0.70:
-                return item.text
         return None
 
     def _is_plausible_name(self, text: str) -> bool:

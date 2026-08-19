@@ -1,13 +1,12 @@
-"""
-Aadhaar Card Domain Extractor
-"""
-
 import re
+import logging
 from typing import List, Optional
 
 from microservices.shared.models import OCRResult, OCRText, AadhaarData
 from microservices.shared.utils import normalize_dob, normalize_aadhaar_number, normalize_name
 from microservices.aadhaar_service.config import aadhaar_config
+
+logger = logging.getLogger(__name__)
 
 
 class AadhaarExtractor:
@@ -45,7 +44,19 @@ class AadhaarExtractor:
         data = AadhaarData()
 
         data.aadhaar_number = self.extract_aadhaar_number(texts)
-        data.date_of_birth = self.extract_dob(texts)
+        
+        dob = self.extract_dob(texts)
+        if dob:
+            data.date_of_birth = dob
+            logger.debug(f"Full DOB found: {data.date_of_birth}")
+        else:
+            yob = self.extract_yob(texts)
+            if yob:
+                data.date_of_birth = yob
+                logger.debug(f"Only Year of Birth (YOB) found, set date_of_birth: {data.date_of_birth}")
+            else:
+                logger.debug("Neither full DOB nor YOB found in Aadhaar document")
+
         data.gender = self.extract_gender(texts)
         data.address = self.extract_address(texts)
 
@@ -78,7 +89,7 @@ class AadhaarExtractor:
             data.field_diagnostics["full_name"] = low_quality_msg or "No valid name candidate found in OCR text"
 
         if not data.date_of_birth:
-            data.field_diagnostics["date_of_birth"] = low_quality_msg or "No valid DOB date pattern found in OCR text"
+            data.field_diagnostics["date_of_birth"] = low_quality_msg or "No valid DOB date pattern or YOB found in OCR text"
 
         if not data.gender:
             data.field_diagnostics["gender"] = low_quality_msg or "No gender keyword (MALE/FEMALE) found in OCR text"
@@ -107,6 +118,7 @@ class AadhaarExtractor:
             r"(\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4})",
             r"(\d{4}[/\-\.]\d{1,2}[/\-\.]\d{1,2})",
             r"(\d{1,2}\s+[A-Za-z]{3,9}\s+\d{4})",
+            r"([0-9SOIlZB]{1,2}[/\-\.][0-9SOIlZB]{1,2}[/\-\.][0-9SOIlZB]{2,4})",
         ]
         dob_keywords = ["DOB","DB", "D.O.B", "D0B", "DATE OF BIRTH", "BIRTH", "YOB", "YEAR OF BIRTH"]
 
@@ -114,6 +126,11 @@ class AadhaarExtractor:
         for item in texts:
             text_up = item.text.upper()
             if any(kw in text_up for kw in dob_keywords):
+                # Try direct full box normalization first
+                parsed_direct = normalize_dob(item.text)
+                if parsed_direct and self._is_plausible_dob_year(parsed_direct):
+                    return parsed_direct
+
                 for pattern in date_patterns:
                     match = re.search(pattern, item.text)
                     if match:
@@ -127,6 +144,11 @@ class AadhaarExtractor:
         # 3. Find all valid date candidates
         date_candidates = []
         for item in texts:
+            parsed_direct = normalize_dob(item.text)
+            if parsed_direct and self._is_plausible_dob_year(parsed_direct):
+                date_candidates.append((item, parsed_direct))
+                continue
+
             for pattern in date_patterns:
                 match = re.search(pattern, item.text)
                 if match:
@@ -156,6 +178,62 @@ class AadhaarExtractor:
             return date_candidates[0][1]
         return None
 
+    def extract_yob(self, texts: List[OCRText]) -> Optional[str]:
+        """
+        Extracts 4-digit Year of Birth (YOB) when only year is present on Aadhaar card.
+        Supports: 'Year of Birth1992', 'Year of Birth: 1992', 'YOB 1992', 'Y.O.B: 1992', 'YEAROFBIRTH:1992', etc.
+        """
+        yob_regex = re.compile(
+            r"(?:year\s*of\s*birth|yearofbirth|y\.?o\.?b\.?)\s*[:\-\s/]*([12]\d{3})\b",
+            re.IGNORECASE,
+        )
+
+        # 1. Search within the same OCR text box
+        for item in texts:
+            m = yob_regex.search(item.text)
+            if m:
+                yr = m.group(1)
+                if self._is_plausible_yob(yr):
+                    return yr
+
+        # 2. Search for 4-digit year near YOB label boxes
+        yob_keywords = ["YEAR OF BIRTH", "YEAROFBIRTH", "YOB", "Y.O.B", "YEAR OF BIRT", "Y.O.B."]
+        yob_labels = [item for item in texts if any(kw in item.text.upper() for kw in yob_keywords)]
+        if yob_labels:
+            candidates = []
+            for item in texts:
+                for m in re.finditer(r"\b([12]\d{3})\b", item.text):
+                    yr = m.group(1)
+                    if self._is_plausible_yob(yr):
+                        candidates.append((item, yr))
+
+            best_yr = None
+            best_dist = float("inf")
+            for label in yob_labels:
+                for yr_box, yr_val in candidates:
+                    if yr_box is label:
+                        continue
+                    dx = abs(yr_box.bounding_box.center_x - label.bounding_box.center_x)
+                    dy = abs(yr_box.bounding_box.center_y - label.bounding_box.center_y)
+                    if dy <= 35 and dx <= 350:
+                        dist = dx + dy
+                        if dist < best_dist:
+                            best_dist = dist
+                            best_yr = yr_val
+
+            if best_yr:
+                return best_yr
+
+        return None
+
+    @staticmethod
+    def _is_plausible_yob(year_str: str) -> bool:
+        try:
+            year = int(year_str)
+            return aadhaar_config.MIN_DOB_YEAR <= year <= aadhaar_config.MAX_DOB_YEAR
+        except Exception:
+            return False
+
     @staticmethod
     def _is_plausible_dob_year(iso_date: str) -> bool:
         try:
@@ -174,7 +252,10 @@ class AadhaarExtractor:
         return None
 
     def extract_name_raw(self, texts: List[OCRText]) -> Optional[str]:
-        dob_keywords = ["DOB", "DATE OF BIRTH", "BIRTH", "MALE", "FEMALE"]
+        dob_keywords = [
+            "DOB", "DATE OF BIRTH", "BIRTH", "MALE", "FEMALE",
+            "YEAR OF BIRTH", "YOB", "YEAROFBIRTH", "Y.O.B",
+        ]
         dob_anchor = None
         for item in texts:
             if any(kw in item.text.upper() for kw in dob_keywords):

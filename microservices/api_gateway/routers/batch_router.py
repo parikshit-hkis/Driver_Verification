@@ -85,8 +85,8 @@ def _scan_driver_folder_images(folder: Path) -> Dict[str, Dict[str, Optional[byt
     return docs
 
 
-async def _process_single_driver_spec(driver_id: str, docs: Dict[str, Dict[str, Optional[bytes]]]) -> Dict[str, Any]:
-    """Process all documents for a driver and cross-validate."""
+async def _extract_single_driver_spec(driver_id: str, docs: Dict[str, Dict[str, Optional[bytes]]]) -> Dict[str, Any]:
+    """Process and extract all documents for a single driver in parallel, then save to result/extraction/."""
     aadhaar_task = _clients.extract_aadhaar(docs["aadhaar"]["front"], docs["aadhaar"]["back"])
     dl_task = _clients.extract_dl(docs["licence"]["front"], docs["licence"]["back"])
     pan_task = _clients.extract_pan(docs["pan"]["front"], docs["pan"]["back"])
@@ -126,37 +126,14 @@ async def _process_single_driver_spec(driver_id: str, docs: Dict[str, Dict[str, 
         },
     }
 
-    # Save extraction JSON
+    # Save extraction JSON to disk
     extr_dir = gateway_config.EXTRACTION_OUTPUT_DIR
     extr_dir.mkdir(parents=True, exist_ok=True)
     extr_file = extr_dir / f"{driver_id}.json"
     with open(extr_file, "w", encoding="utf-8") as f:
         json.dump(extraction_payload, f, indent=2, ensure_ascii=False)
 
-    # Cross-validation
-    val_res = await _clients.cross_verify(extraction_payload)
-
-    # Save validation JSON
-    val_dir = gateway_config.VALIDATION_OUTPUT_DIR
-    val_dir.mkdir(parents=True, exist_ok=True)
-    val_file = val_dir / f"{driver_id}.json"
-    with open(val_file, "w", encoding="utf-8") as f:
-        json.dump(val_res, f, indent=2, ensure_ascii=False)
-
-    return {
-        "driver_id": driver_id,
-        "overall_status": val_res.get("overall_status", "UNKNOWN"),
-        "overall_name_status": val_res.get("overall_name_status", "UNKNOWN"),
-        "overall_dob_status": val_res.get("overall_dob_status", "UNKNOWN"),
-        "extracted_name": (
-            (aadhaar_res.get("data") or {}).get("full_name")
-            or (dl_res.get("data") or {}).get("full_name")
-            or (pan_res.get("data") or {}).get("full_name")
-        ),
-        "licence_number": (dl_res.get("data") or {}).get("licence_number"),
-        "vehicle_classes": (dl_res.get("data") or {}).get("vehicle_classes", []),
-        "rc_number": (rc_res.get("data") or {}).get("registration_number"),
-    }
+    return extraction_payload
 
 
 @router.post("/verify-folder", summary="Trigger bulk driver document verification from a local directory")
@@ -165,12 +142,12 @@ async def verify_folder_batch(
     concurrency: int = Form(1, ge=1, le=4, description="Concurrent driver processing batch size"),
 ):
     """
-    Master Bulk Batch Verification API:
-    1. Scans base folder (e.g. 'sample_documents') for all driver subdirectories.
-    2. Pairs Aadhaar, DL, PAN, and RC images for each driver.
-    3. Asynchronously verifies each driver across the microservices suite.
-    4. Automatically generates and persists extraction and validation JSONs.
-    5. Returns unified batch summary and analytics in a single API call.
+    Master Bulk Batch Verification API (2-Stage Optimized Pipeline):
+    1. STAGE 1 (Extraction): Scans driver directories and runs OCR/domain extraction concurrently.
+       Saves all raw extraction JSONs to result/extraction/{driver_id}.json.
+    2. STAGE 2 (Bulk Validation): Sends all extracted payloads to Validator Microservice in ONE single
+       HTTP batch call (/batch-cross-verify), executing rapid in-memory fuzzy matching and DOB validation.
+    3. STAGE 3 (Persistence & Analytics): Saves result/validation/{driver_id}.json and returns unified analytics.
     """
     target_path = Path(folder_path)
     if not target_path.is_absolute():
@@ -193,39 +170,95 @@ async def verify_folder_batch(
             },
         )
 
-    logger.info(f"Starting batch verification on {len(driver_folders)} drivers in {target_path} (concurrency={concurrency})")
+    logger.info(f"Starting 2-Stage Batch Verification on {len(driver_folders)} drivers in {target_path} (concurrency={concurrency})")
 
-    results = []
+    # ── STAGE 1: Parallel Extraction & Persistence ────────────────────────────
     sem = asyncio.Semaphore(concurrency)
 
-    async def _worker(d_folder: Path):
+    async def _extraction_worker(d_folder: Path) -> Dict[str, Any]:
         driver_id = d_folder.name
         async with sem:
             try:
                 docs = _scan_driver_folder_images(d_folder)
-                res = await _process_single_driver_spec(driver_id, docs)
-                return res
+                extr_payload = await _extract_single_driver_spec(driver_id, docs)
+                return extr_payload
             except Exception as e:
-                logger.error(f"Error processing driver {driver_id}: {e}", exc_info=True)
+                logger.error(f"Error extracting driver {driver_id}: {e}", exc_info=True)
                 return {
                     "driver_id": driver_id,
-                    "overall_status": "FAILED",
-                    "overall_name_status": "FAILED",
-                    "overall_dob_status": "FAILED",
                     "error": str(e),
+                    "documents": {},
                 }
 
-    tasks = [_worker(df) for df in driver_folders]
-    results = await asyncio.gather(*tasks)
+    extraction_tasks = [_extraction_worker(df) for df in driver_folders]
+    all_extractions = await asyncio.gather(*extraction_tasks)
 
-    # Compute batch statistics
+    # ── STAGE 2: Bulk Cross-Validation (1 Single HTTP Call) ───────────────────
+    valid_extractions = [ex for ex in all_extractions if "error" not in ex]
+    logger.info(f"Sending {len(valid_extractions)} extracted drivers to Validator in a single batch call...")
+    
+    validation_map = {}
+    if valid_extractions:
+        validation_map = await _clients.batch_cross_verify(valid_extractions)
+
+    # ── STAGE 3: Persist Validation JSON & Build Unified Driver Summaries ─────
+    val_dir = gateway_config.VALIDATION_OUTPUT_DIR
+    val_dir.mkdir(parents=True, exist_ok=True)
+
+    results = []
     stats = {"MATCHED": 0, "REVIEW": 0, "MISMATCH": 0, "FAILED": 0}
-    for r in results:
-        st = r.get("overall_status", "UNKNOWN").upper()
+
+    for extraction in all_extractions:
+        driver_id = extraction.get("driver_id", "UNKNOWN")
+        if "error" in extraction:
+            stats["FAILED"] += 1
+            results.append({
+                "driver_id": driver_id,
+                "overall_status": "FAILED",
+                "overall_name_status": "FAILED",
+                "overall_dob_status": "FAILED",
+                "error": extraction.get("error"),
+            })
+            continue
+
+        val_res = validation_map.get(driver_id, {
+            "driver_id": driver_id,
+            "overall_status": "UNKNOWN",
+            "overall_name_status": "UNKNOWN",
+            "overall_dob_status": "UNKNOWN",
+        })
+
+        # Save individual validation JSON
+        val_file = val_dir / f"{driver_id}.json"
+        with open(val_file, "w", encoding="utf-8") as f:
+            json.dump(val_res, f, indent=2, ensure_ascii=False)
+
+        docs = extraction.get("documents", {})
+        aadhaar_data = (docs.get("aadhaar") or {}).get("data") or {}
+        dl_data = (docs.get("licence") or {}).get("data") or {}
+        pan_data = (docs.get("pan") or {}).get("data") or {}
+        rc_data = (docs.get("rc") or {}).get("data") or {}
+
+        st = val_res.get("overall_status", "UNKNOWN").upper()
         if st in stats:
             stats[st] += 1
         else:
             stats["FAILED"] += 1
+
+        results.append({
+            "driver_id": driver_id,
+            "overall_status": val_res.get("overall_status", "UNKNOWN"),
+            "overall_name_status": val_res.get("overall_name_status", "UNKNOWN"),
+            "overall_dob_status": val_res.get("overall_dob_status", "UNKNOWN"),
+            "extracted_name": (
+                aadhaar_data.get("full_name")
+                or dl_data.get("full_name")
+                or pan_data.get("full_name")
+            ),
+            "licence_number": dl_data.get("licence_number"),
+            "vehicle_classes": dl_data.get("vehicle_classes", []),
+            "rc_number": rc_data.get("registration_number"),
+        })
 
     return ApiResponse(
         success=True,

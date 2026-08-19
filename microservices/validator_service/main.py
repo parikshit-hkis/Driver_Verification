@@ -87,5 +87,52 @@ async def cross_verify(
         raise HTTPException(status_code=500, detail=f"Cross-validation failed: {str(e)}")
 
 
+@app.post("/batch-cross-verify", summary="Bulk cross-verify identity across multiple driver extraction payloads")
+async def batch_cross_verify(
+    payload: Dict[str, Any] = Body(
+        ...,
+        description="Batch payload containing a list of driver extraction objects under 'drivers'",
+        example={
+            "drivers": [
+                {
+                    "driver_id": "DRIVER_001",
+                    "documents": {
+                        "aadhaar": {"data": {"full_name": "PATEL JAY DHANSUKHBHAI", "date_of_birth": "1995-11-20"}},
+                        "licence": {"data": {"full_name": "PATEL JAY DHANSUKHBHAI", "date_of_birth": "1995-11-20"}},
+                    }
+                }
+            ]
+        }
+    )
+):
+    try:
+        drivers_list = payload.get("drivers", [])
+        results = {}
+        for driver_payload in drivers_list:
+            driver_id = driver_payload.get("driver_id", "UNKNOWN")
+            try:
+                val_res = _validator.validate_driver_json(driver_payload)
+                results[driver_id] = val_res.to_dict()
+            except Exception as item_err:
+                logger.error(f"Error validating driver {driver_id}: {item_err}")
+                results[driver_id] = {
+                    "driver_id": driver_id,
+                    "overall_status": "FAILED",
+                    "error": str(item_err)
+                }
+
+        return ApiResponse(
+            success=True,
+            status="SUCCESS",
+            data={
+                "total": len(drivers_list),
+                "results": results
+            },
+        )
+    except Exception as e:
+        logger.error(f"Batch cross-verification error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Batch cross-validation failed: {str(e)}")
+
+
 if __name__ == "__main__":
     uvicorn.run("microservices.validator_service.main:app", host=validator_config.HOST, port=validator_config.PORT, reload=True)
