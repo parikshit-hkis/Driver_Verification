@@ -37,7 +37,6 @@ export interface RCData {
   date_of_registration?: string;
   registration_validity?: string;
   vehicle_class?: string;
-  maker_model?: string;
   overall_confidence?: number;
   confidence_scores?: Record<string, number>;
   field_diagnostics?: DocumentFieldDiagnostics;

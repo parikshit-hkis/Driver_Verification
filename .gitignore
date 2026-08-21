@@ -19,6 +19,8 @@ bulk_documents/
 project_review.md
 report.md
 ocr_dump.txt
+implementation_plan.md
+plan.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -40,3 +42,5 @@ inference/
 .env.*
 
 
+vision_ai_service/
+document-extr-c67b9bdfdf11.json

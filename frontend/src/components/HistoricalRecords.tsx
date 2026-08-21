@@ -72,6 +72,48 @@ export const HistoricalRecords: React.FC = () => {
 
   const filtered = records.filter((r) => r.driver_id.toLowerCase().includes(search.toLowerCase()));
 
+  // Compute summary stats from ALL loaded records (not filtered by search)
+  const totalVerified = records.length;
+  const matchedCount = records.filter((r) => ["MATCH", "MATCHED"].includes(r.overall_status.toUpperCase())).length;
+  const reviewCount = records.filter((r) => r.overall_status.toUpperCase() === "REVIEW").length;
+  const mismatchCount = records.filter((r) => r.overall_status.toUpperCase() === "MISMATCH").length;
+  const passRate = totalVerified > 0 ? ((matchedCount / totalVerified) * 100).toFixed(1) : "0.0";
+
+  const statCards = [
+    {
+      label: "TOTAL VERIFIED",
+      value: totalVerified,
+      color: "var(--accent-primary)",
+      bg: "rgba(99, 102, 241, 0.08)",
+      borderColor: "rgba(99, 102, 241, 0.5)",
+      sub: null,
+    },
+    {
+      label: "MATCHED (PASS)",
+      value: matchedCount,
+      color: "var(--status-matched)",
+      bg: "var(--status-matched-bg)",
+      borderColor: "var(--status-matched-border)",
+      sub: `${passRate}% pass rate`,
+    },
+    {
+      label: "MANUAL REVIEW",
+      value: reviewCount,
+      color: "var(--status-review)",
+      bg: "var(--status-review-bg)",
+      borderColor: "var(--status-review-border)",
+      sub: null,
+    },
+    {
+      label: "MISMATCH / FLAGGED",
+      value: mismatchCount,
+      color: "var(--status-mismatch)",
+      bg: "var(--status-mismatch-bg)",
+      borderColor: "var(--status-mismatch-border)",
+      sub: null,
+    },
+  ];
+
   return (
     <div style={{ maxWidth: "1300px", margin: "0 auto" }}>
       {/* Records Header Card */}
@@ -92,9 +134,72 @@ export const HistoricalRecords: React.FC = () => {
             Refresh
           </button>
         </div>
+      </div>
 
-        {/* Filter Bar */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", marginTop: "1.25rem", borderTop: "1px solid var(--border-subtle)", paddingTop: "1.25rem" }}>
+      {/* ── Summary Stats Cards ── */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+        gap: "1rem",
+        marginBottom: "1.75rem",
+      }}>
+        {statCards.map((card) => (
+          <div
+            key={card.label}
+            style={{
+              background: card.bg,
+              borderLeft: `4px solid ${card.borderColor}`,
+              borderRadius: "var(--radius-md)",
+              padding: "1.25rem 1.5rem",
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.35rem",
+              transition: "transform 0.2s ease, box-shadow 0.2s ease",
+              cursor: "default",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)";
+              (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px -4px ${card.borderColor}`;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+              (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+            }}
+          >
+            <span style={{
+              fontSize: "0.68rem",
+              fontWeight: 700,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              color: "var(--text-secondary)",
+            }}>
+              {card.label}
+            </span>
+            <span style={{
+              fontSize: "2rem",
+              fontWeight: 800,
+              lineHeight: 1.1,
+              color: card.color,
+            }}>
+              {card.value}
+            </span>
+            {card.sub && (
+              <span style={{
+                fontSize: "0.73rem",
+                fontWeight: 500,
+                color: "var(--text-muted)",
+                marginTop: "2px",
+              }}>
+                {card.sub}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Filter Bar */}
+      <div className="glass-panel" style={{ padding: "1.25rem 1.75rem", marginBottom: "1.75rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
           <div style={{ position: "relative", minWidth: "300px" }}>
             <Search size={16} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
             <input

@@ -240,7 +240,7 @@ Driver_Verification/
 - **Role**: Vehicle Registration Certificate parsing.
 - **Key Features**:
   - Registration number format standardization (`SS-RR-XX-NNNN`).
-  - 100+ OEM vehicle make & manufacturer matching repository.
+  - Vehicle class and maker/model extraction.
   - Registration date and fitness validity expiry resolution.
   - Field-level confidence score calculation.
 
@@ -314,9 +314,9 @@ Every processed image receives an [`ImageQualityReport`](file:///c:/Users/parik/
 - **PAN Number**: Regex `[A-Z]{5}[0-9]{4}[A-Z]`.
 - **Cardholder vs Father Name**: When images are upright, Cardholder Name is line 1 under header, Father Name is line 2 above DOB.
 
-### 5.4 Vehicle RC Extraction & OEM Database
+### 5.4 Vehicle RC Extraction
 - **Registration Number**: Standard Indian format `SS-RR-XX-NNNN`.
-- **Vehicle Make**: Matches manufacturer against a database of 100+ OEMs (Hero, Honda, Bajaj, TVS, Maruti, Hyundai, Tata, etc.).
+- **Maker / Model**: Vehicle class, maker, and model extraction.
 - **Dates**: Registration date and fitness validity.
 
 ### 5.5 Identity Cross-Validation & Decision Engine

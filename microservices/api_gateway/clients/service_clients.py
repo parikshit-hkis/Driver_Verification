@@ -21,14 +21,7 @@ class ServiceClients:
         self.rc_url = gateway_config.RC_SERVICE_URL.rstrip("/")
         self.validator_url = gateway_config.VALIDATOR_SERVICE_URL.rstrip("/")
 
-    async def _post_multipart_doc(
-        self,
-        service_url: str,
-        front_bytes: Optional[bytes],
-        back_bytes: Optional[bytes],
-        doc_prefix: str,
-        timeout: float = 60.0,
-    ) -> Dict[str, Any]:
+    async def _post_multipart_doc(self,service_url: str,front_bytes: Optional[bytes],back_bytes: Optional[bytes],doc_prefix: str,timeout: float = 60.0,) -> Dict[str, Any]:
         """Generic helper to upload front and optional back images to a domain extractor microservice."""
         if not front_bytes and not back_bytes:
             return {"status": "MISSING", "warning": f"No {doc_prefix} images provided", "data": None}
@@ -112,7 +105,7 @@ class ServiceClients:
         health_results = {}
         all_healthy = True
 
-        async with httpx.AsyncClient(timeout=4.0) as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
             for name, url in services.items():
                 try:
                     res = await client.get(url)

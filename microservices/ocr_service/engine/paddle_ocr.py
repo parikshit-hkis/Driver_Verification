@@ -17,18 +17,56 @@ class PaddleOCRService:
     """Singleton-ready PaddleOCR wrapper."""
 
     def __init__(self):
-        logger.info(f"Initializing PaddleOCR (GPU={ocr_config.USE_GPU})...")
+        use_gpu = ocr_config.USE_GPU
+
+        # 1. Proactively check if CUDA runtime and GPU hardware are available
+        try:
+            import paddle
+            if use_gpu:
+                if not paddle.is_compiled_with_cuda() or paddle.device.cuda.device_count() == 0:
+                    logger.warning(
+                        "GPU requested in OCR configuration (OCR_USE_GPU=true), but no compatible "
+                        "CUDA-enabled GPU was detected on this system. Automatically falling back to CPU mode."
+                    )
+                    use_gpu = False
+        except Exception as e:
+            logger.warning(f"Could not verify CUDA availability ({e}). Falling back to CPU mode.")
+            use_gpu = False
+
+        logger.info(f"Initializing PaddleOCR PP-OCRv4 Engine (GPU Mode: {use_gpu})...")
         self.min_confidence = ocr_config.MIN_CONFIDENCE
-        self.ocr = PaddleOCR(
-            use_angle_cls=ocr_config.USE_ANGLE_CLS,
-            lang=ocr_config.LANG,
-            show_log=ocr_config.SHOW_LOG,
-            use_gpu=ocr_config.USE_GPU,
-            det_model_dir=ocr_config.DET_MODEL_DIR,
-            rec_model_dir=ocr_config.REC_MODEL_DIR,
-            cls_model_dir=ocr_config.CLS_MODEL_DIR,
-            rec_image_shape=ocr_config.REC_IMAGE_SHAPE,
-        )
+
+        # 2. Initialize with graceful fallback try/except
+        try:
+            self.ocr = PaddleOCR(
+                use_angle_cls=ocr_config.USE_ANGLE_CLS,
+                lang=ocr_config.LANG,
+                show_log=ocr_config.SHOW_LOG,
+                use_gpu=use_gpu,
+                det_model_dir=ocr_config.DET_MODEL_DIR,
+                rec_model_dir=ocr_config.REC_MODEL_DIR,
+                cls_model_dir=ocr_config.CLS_MODEL_DIR,
+                rec_image_shape=ocr_config.REC_IMAGE_SHAPE,
+            )
+        except Exception as err:
+            if use_gpu:
+                logger.error(
+                    f"PaddleOCR failed to initialize with GPU ({err}). "
+                    f"Retrying initialization in CPU mode..."
+                )
+                self.ocr = PaddleOCR(
+                    use_angle_cls=ocr_config.USE_ANGLE_CLS,
+                    lang=ocr_config.LANG,
+                    show_log=ocr_config.SHOW_LOG,
+                    use_gpu=False,
+                    det_model_dir=ocr_config.DET_MODEL_DIR,
+                    rec_model_dir=ocr_config.REC_MODEL_DIR,
+                    cls_model_dir=ocr_config.CLS_MODEL_DIR,
+                    rec_image_shape=ocr_config.REC_IMAGE_SHAPE,
+                )
+            else:
+                raise err
+
         logger.info("PaddleOCR engine initialized successfully.")
 
     def extract(self, image_input: np.ndarray, min_confidence: Optional[float] = None) -> OCRResult:

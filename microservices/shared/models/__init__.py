@@ -143,10 +143,6 @@ class RCData(BaseModel):
     registration_number: Optional[str] = None
     owner_name: Optional[str] = None
     vehicle_class: Optional[str] = None
-    fuel_type: Optional[str] = None
-    maker_model: Optional[str] = None
-    engine_number: Optional[str] = None
-    chassis_number: Optional[str] = None
     registration_date: Optional[str] = None
     fitness_expiry: Optional[str] = None
     confidence_scores: Dict[str, float] = Field(default_factory=dict)
