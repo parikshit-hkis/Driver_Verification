@@ -41,7 +41,22 @@ export async function verifyFolderBatch(folderPath: string = "sample_documents",
   return json.data;
 }
 
-export async function fetchHistoricalRecords(limit: number = 50, offset: number = 0, statusFilter?: string): Promise<{ total: number; drivers: HistoricalRecordItem[] }> {
+export async function fetchHistoricalRecords(
+  limit: number = 50,
+  offset: number = 0,
+  statusFilter?: string
+): Promise<{
+  total: number;
+  total_unfiltered?: number;
+  summary?: {
+    total: number;
+    approved: number;
+    review: number;
+    rejected: number;
+    pass_rate: number;
+  };
+  drivers: HistoricalRecordItem[];
+}> {
   let url = `${API_BASE}/api/v1/driver/records?limit=${limit}&offset=${offset}`;
   if (statusFilter && statusFilter !== "ALL") {
     url += `&status_filter=${encodeURIComponent(statusFilter)}`;

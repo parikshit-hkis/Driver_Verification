@@ -9,9 +9,9 @@ venv.bak/
 gvenv/
 result/
 dump/
-old_documents/
 sample_documents
 bulk_documents/
+scratch/
 
 
 

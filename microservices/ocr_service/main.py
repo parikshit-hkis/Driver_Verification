@@ -84,6 +84,28 @@ async def health_check():
     }
 
 
+import asyncio
+import threading
+
+_ocr_lock = threading.Lock()
+
+def _process_ocr_in_thread(
+    img: np.ndarray,
+    fix_orientation: bool,
+    enhance: bool,
+    min_confidence: Optional[float],
+):
+    """Synchronous CPU/GPU worker function executed in background thread pool with thread-safe model lock."""
+    preprocessed_img, quality_report = _preprocessor.preprocess(
+        img,
+        fix_orientation=fix_orientation,
+        enhance=enhance,
+    )
+    with _ocr_lock:
+        ocr_result = _ocr_service.extract(preprocessed_img, min_confidence=min_confidence)
+    return ocr_result, quality_report
+
+
 @app.post("/extract", summary="Run OCR and image quality diagnostics on document image")
 async def extract_ocr(
     file: UploadFile = File(..., description="Document image file (JPG, PNG, WebP, etc.)"),
@@ -101,13 +123,14 @@ async def extract_ocr(
         if img is None:
             raise HTTPException(status_code=400, detail="Could not decode image format")
 
-        preprocessed_img, quality_report = _preprocessor.preprocess(
+        # Offload heavy OpenCV preprocessing and PaddleOCR neural inference to worker thread
+        ocr_result, quality_report = await asyncio.to_thread(
+            _process_ocr_in_thread,
             img,
-            fix_orientation=fix_orientation,
-            enhance=enhance,
+            fix_orientation,
+            enhance,
+            min_confidence,
         )
-
-        ocr_result = _ocr_service.extract(preprocessed_img, min_confidence=min_confidence)
 
         return ApiResponse(
             success=True,

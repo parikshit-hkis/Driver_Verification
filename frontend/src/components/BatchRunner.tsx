@@ -29,17 +29,15 @@ export const BatchRunner: React.FC = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    switch (status.toUpperCase()) {
-      case "MATCH":
-      case "MATCHED":
-        return <span className="badge badge-matched"><CheckCircle2 size={12} /> MATCHED</span>;
-      case "REVIEW":
-        return <span className="badge badge-review"><AlertTriangle size={12} /> REVIEW</span>;
-      case "MISMATCH":
-        return <span className="badge badge-mismatch"><XCircle size={12} /> MISMATCH</span>;
-      default:
-        return <span className="badge badge-neutral">{status}</span>;
+    const s = (status || "").toUpperCase();
+    if (s === "MATCH" || s === "MATCHED" || s === "APPROVED") {
+      return <span className="badge badge-matched"><CheckCircle2 size={12} /> APPROVED</span>;
+    } else if (s === "REVIEW") {
+      return <span className="badge badge-review"><AlertTriangle size={12} /> REVIEW</span>;
+    } else if (s === "MISMATCH" || s === "MISMATCHED" || s === "REJECTED" || s === "FAILED") {
+      return <span className="badge badge-mismatch"><XCircle size={12} /> REJECTED</span>;
     }
+    return <span className="badge badge-neutral">{status}</span>;
   };
 
   const filteredDrivers = (batchResult?.drivers || []).filter((d) => {
@@ -48,7 +46,13 @@ export const BatchRunner: React.FC = () => {
       (d.extracted_name && d.extracted_name.toLowerCase().includes(searchFilter.toLowerCase())) ||
       (d.licence_number && d.licence_number.toLowerCase().includes(searchFilter.toLowerCase()));
 
-    const matchesStatus = statusFilter === "ALL" || d.overall_status.toUpperCase() === statusFilter;
+    const s = d.overall_status.toUpperCase();
+    let matchesStatus = statusFilter === "ALL";
+    if (statusFilter === "APPROVED") matchesStatus = s === "APPROVED" || s === "MATCHED" || s === "MATCH";
+    else if (statusFilter === "REVIEW") matchesStatus = s === "REVIEW";
+    else if (statusFilter === "REJECTED") matchesStatus = s === "REJECTED" || s === "MISMATCH" || s === "MISMATCHED" || s === "FAILED";
+    else if (statusFilter !== "ALL") matchesStatus = s === statusFilter;
+
     return matchesSearch && matchesStatus;
   });
 
@@ -167,7 +171,7 @@ export const BatchRunner: React.FC = () => {
             </div>
 
             <div className="glass-panel" style={{ padding: "1.25rem", borderLeft: "4px solid var(--status-matched)" }}>
-              <div style={{ fontSize: "0.75rem", color: "var(--status-matched)", textTransform: "uppercase", fontWeight: 700 }}>Matched (Pass)</div>
+              <div style={{ fontSize: "0.75rem", color: "var(--status-matched)", textTransform: "uppercase", fontWeight: 700 }}>Approved (Pass)</div>
               <div style={{ fontSize: "1.75rem", fontWeight: 800, color: "var(--status-matched)", marginTop: "4px" }}>
                 {batchResult.statistics.MATCHED}
               </div>
@@ -181,7 +185,7 @@ export const BatchRunner: React.FC = () => {
             </div>
 
             <div className="glass-panel" style={{ padding: "1.25rem", borderLeft: "4px solid var(--status-mismatch)" }}>
-              <div style={{ fontSize: "0.75rem", color: "var(--status-mismatch)", textTransform: "uppercase", fontWeight: 700 }}>Mismatch / Flagged</div>
+              <div style={{ fontSize: "0.75rem", color: "var(--status-mismatch)", textTransform: "uppercase", fontWeight: 700 }}>Rejected / Flagged</div>
               <div style={{ fontSize: "1.75rem", fontWeight: 800, color: "var(--status-mismatch)", marginTop: "4px" }}>
                 {batchResult.statistics.MISMATCH}
               </div>
@@ -218,10 +222,15 @@ export const BatchRunner: React.FC = () => {
             </div>
 
             <div style={{ display: "flex", gap: "0.5rem" }}>
-              {["ALL", "MATCHED", "REVIEW", "MISMATCH"].map((tab) => (
+              {[
+                { key: "ALL", label: "ALL" },
+                { key: "APPROVED", label: "APPROVED" },
+                { key: "REVIEW", label: "REVIEW" },
+                { key: "REJECTED", label: "REJECTED" },
+              ].map((tab) => (
                 <button
-                  key={tab}
-                  onClick={() => setStatusFilter(tab)}
+                  key={tab.key}
+                  onClick={() => setStatusFilter(tab.key)}
                   style={{
                     padding: "0.45rem 0.9rem",
                     borderRadius: "var(--radius-full)",
@@ -230,12 +239,12 @@ export const BatchRunner: React.FC = () => {
                     border: "1px solid",
                     cursor: "pointer",
                     transition: "all 0.2s ease",
-                    borderColor: statusFilter === tab ? "var(--accent-primary)" : "var(--border-subtle)",
-                    background: statusFilter === tab ? "var(--accent-primary)" : "var(--bg-secondary)",
-                    color: statusFilter === tab ? "#ffffff" : "var(--text-secondary)",
+                    borderColor: statusFilter === tab.key ? "var(--accent-primary)" : "var(--border-subtle)",
+                    background: statusFilter === tab.key ? "var(--accent-primary)" : "var(--bg-secondary)",
+                    color: statusFilter === tab.key ? "#ffffff" : "var(--text-secondary)",
                   }}
                 >
-                  {tab}
+                  {tab.label}
                 </button>
               ))}
             </div>

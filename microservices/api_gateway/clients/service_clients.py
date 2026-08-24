@@ -76,6 +76,9 @@ class ServiceClients:
             logger.error(f"Cross-validation error: {e}")
             return {"status": "FAILED", "error": str(e)}
 
+    # Backward-compatible alias
+    cross_validate = cross_verify
+
     async def batch_cross_verify(self, driver_extractions_list: list, timeout: float = 60.0) -> Dict[str, Any]:
         """Send batch of driver extraction JSONs to the Validator Microservice in one single call."""
         try:

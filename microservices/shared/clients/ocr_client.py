@@ -2,9 +2,13 @@
 Shared OCR HTTP Client for Downstream Extractor Microservices
 """
 
+import asyncio
+import logging
 import httpx
 from typing import Optional, Tuple
-from microservices.shared.models import OCRResult, ImageQualityReport, OCRText, BoundingBox, Point
+from microservices.shared.models import OCRResult, ImageQualityReport
+
+logger = logging.getLogger("ocr_client")
 
 
 class OCRClient:
@@ -20,7 +24,7 @@ class OCRClient:
         min_confidence: Optional[float] = None,
         fix_orientation: bool = True,
         enhance: bool = True,
-        timeout: float = 60.0,
+        timeout: float = 90.0,
     ) -> Tuple[OCRResult, ImageQualityReport]:
         """Send image bytes to the OCR Microservice and receive parsed OCRResult & ImageQualityReport."""
         params = {
@@ -34,23 +38,48 @@ class OCRClient:
             "file": (filename, image_bytes, "image/jpeg")
         }
 
-        async with httpx.AsyncClient(timeout=timeout) as client:
-            response = await client.post(
-                f"{self.ocr_service_url}/extract",
-                params=params,
-                files=files,
-            )
-            response.raise_for_status()
-            res_json = response.json()
+        # Granular HTTP timeouts preventing socket write or pool lockups under batch load
+        client_timeout = httpx.Timeout(
+            connect=15.0,
+            read=timeout,
+            write=60.0,
+            pool=30.0,
+        )
 
-            data = res_json.get("data", {})
-            ocr_dict = data.get("ocr_result", {})
-            quality_dict = data.get("quality_report", {})
+        max_retries = 2
+        last_exception = None
 
-            ocr_result = OCRResult(**ocr_dict)
-            quality_report = ImageQualityReport(**quality_dict)
+        for attempt in range(max_retries):
+            try:
+                async with httpx.AsyncClient(timeout=client_timeout) as client:
+                    response = await client.post(
+                        f"{self.ocr_service_url}/extract",
+                        params=params,
+                        files=files,
+                    )
+                    response.raise_for_status()
+                    res_json = response.json()
 
-            return ocr_result, quality_report
+                    data = res_json.get("data", {})
+                    ocr_dict = data.get("ocr_result", {})
+                    quality_dict = data.get("quality_report", {})
+
+                    ocr_result = OCRResult(**ocr_dict)
+                    quality_report = ImageQualityReport(**quality_dict)
+
+                    return ocr_result, quality_report
+            except (httpx.WriteTimeout, httpx.ConnectTimeout, httpx.NetworkError) as e:
+                last_exception = e
+                logger.warning(
+                    f"Transient network issue contacting OCR service ({type(e).__name__}) on attempt {attempt + 1}/{max_retries}. Retrying in 0.5s..."
+                )
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(0.5)
+            except Exception:
+                raise
+
+        if last_exception:
+            raise last_exception
 
     async def is_healthy(self) -> bool:
         """Check if the OCR service is reachable and healthy."""

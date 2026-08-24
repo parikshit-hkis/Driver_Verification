@@ -119,10 +119,13 @@ export interface BatchVerificationResponse {
 
 export interface HistoricalRecordItem {
   driver_id: string;
+  driver_name?: string;
+  name?: string;
   overall_status: string;
   name_status: string;
   dob_status: string;
-  extraction_file: string;
+  validation?: CrossValidationReport | Record<string, any>;
+  extraction_file?: string;
 }
 
 export interface ClusterHealthResponse {

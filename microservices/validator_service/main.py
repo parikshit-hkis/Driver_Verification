@@ -65,14 +65,6 @@ async def cross_verify(
     payload: Dict[str, Any] = Body(
         ...,
         description="Driver extraction JSON payload containing documents map",
-        example={
-            "driver_id": "DRIVER_001",
-            "documents": {
-                "aadhaar": {"data": {"full_name": "PATEL JAY DHANSUKHBHAI", "date_of_birth": "1995-11-20"}},
-                "licence": {"data": {"full_name": "PATEL JAY DHANSUKHBHAI", "date_of_birth": "1995-11-20"}},
-                "pan": {"data": {"full_name": "PATEL JAY DHANSUKHBHAI", "date_of_birth": "1995-11-20"}}
-            }
-        }
     )
 ):
     try:
@@ -92,17 +84,6 @@ async def batch_cross_verify(
     payload: Dict[str, Any] = Body(
         ...,
         description="Batch payload containing a list of driver extraction objects under 'drivers'",
-        example={
-            "drivers": [
-                {
-                    "driver_id": "DRIVER_001",
-                    "documents": {
-                        "aadhaar": {"data": {"full_name": "PATEL JAY DHANSUKHBHAI", "date_of_birth": "1995-11-20"}},
-                        "licence": {"data": {"full_name": "PATEL JAY DHANSUKHBHAI", "date_of_birth": "1995-11-20"}},
-                    }
-                }
-            ]
-        }
     )
 ):
     try:

@@ -10,32 +10,30 @@ interface Props {
 
 export const CrossMatchMatrix: React.FC<Props> = ({ report }) => {
   const getStatusBadge = (status?: string) => {
-    switch (status) {
-      case "MATCH":
-      case "MATCHED":
-        return (
-          <span className="badge badge-matched">
-            <CheckCircle2 size={13} />
-            MATCH
-          </span>
-        );
-      case "REVIEW":
-        return (
-          <span className="badge badge-review">
-            <AlertTriangle size={13} />
-            REVIEW
-          </span>
-        );
-      case "MISMATCH":
-        return (
-          <span className="badge badge-mismatch">
-            <XCircle size={13} />
-            MISMATCH
-          </span>
-        );
-      default:
-        return <span className="badge badge-neutral">MISSING</span>;
+    const s = (status || "").toUpperCase();
+    if (s === "MATCH" || s === "MATCHED" || s === "APPROVED") {
+      return (
+        <span className="badge badge-matched" style={{ fontWeight: 700 }}>
+          <CheckCircle2 size={13} />
+          APPROVED
+        </span>
+      );
+    } else if (s === "REVIEW") {
+      return (
+        <span className="badge badge-review" style={{ fontWeight: 700 }}>
+          <AlertTriangle size={13} />
+          REVIEW
+        </span>
+      );
+    } else if (s === "MISMATCH" || s === "MISMATCHED" || s === "REJECTED" || s === "FAILED") {
+      return (
+        <span className="badge badge-mismatch" style={{ fontWeight: 700 }}>
+          <XCircle size={13} />
+          REJECTED
+        </span>
+      );
     }
+    return <span className="badge badge-neutral">{status || "MISSING"}</span>;
   };
 
   return (
