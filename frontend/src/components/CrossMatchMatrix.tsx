@@ -95,14 +95,14 @@ export const CrossMatchMatrix: React.FC<Props> = ({ report }) => {
           <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", padding: "0.4rem 0.6rem", borderRadius: "6px" }}>
               <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}><User size={13} /> Name Similarity:</span>
-              <span style={{ fontWeight: 700, color: (report.aadhaar_vs_pan?.name.similarity || 0) >= 75 ? "var(--status-matched)" : "var(--status-mismatch)" }}>
-                {report.aadhaar_vs_pan?.name.similarity ? `${report.aadhaar_vs_pan.name.similarity.toFixed(1)}%` : "—"}
+              <span style={{ fontWeight: 700, color: (report.aadhaar_vs_pan?.name?.similarity || 0) >= 75 ? "var(--status-matched)" : "var(--status-mismatch)" }}>
+                {report.aadhaar_vs_pan?.name?.similarity !== undefined ? `${report.aadhaar_vs_pan.name.similarity.toFixed(1)}%` : "—"}
               </span>
             </div>
 
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", padding: "0.4rem 0.6rem", borderRadius: "6px" }}>
               <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}><Calendar size={13} /> DOB Match:</span>
-              {getStatusBadge(report.aadhaar_vs_pan?.date_of_birth.status)}
+              {getStatusBadge(report.aadhaar_vs_pan?.date_of_birth?.status)}
             </div>
           </div>
         </div>
@@ -122,14 +122,14 @@ export const CrossMatchMatrix: React.FC<Props> = ({ report }) => {
           <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", padding: "0.4rem 0.6rem", borderRadius: "6px" }}>
               <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}><User size={13} /> Name Similarity:</span>
-              <span style={{ fontWeight: 700, color: (report.aadhaar_vs_licence?.name.similarity || 0) >= 75 ? "var(--status-matched)" : "var(--status-mismatch)" }}>
-                {report.aadhaar_vs_licence?.name.similarity ? `${report.aadhaar_vs_licence.name.similarity.toFixed(1)}%` : "—"}
+              <span style={{ fontWeight: 700, color: (report.aadhaar_vs_licence?.name?.similarity || 0) >= 75 ? "var(--status-matched)" : "var(--status-mismatch)" }}>
+                {report.aadhaar_vs_licence?.name?.similarity !== undefined ? `${report.aadhaar_vs_licence.name.similarity.toFixed(1)}%` : "—"}
               </span>
             </div>
 
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", padding: "0.4rem 0.6rem", borderRadius: "6px" }}>
               <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}><Calendar size={13} /> DOB Match:</span>
-              {getStatusBadge(report.aadhaar_vs_licence?.date_of_birth.status)}
+              {getStatusBadge(report.aadhaar_vs_licence?.date_of_birth?.status)}
             </div>
           </div>
         </div>
@@ -149,17 +149,45 @@ export const CrossMatchMatrix: React.FC<Props> = ({ report }) => {
           <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", padding: "0.4rem 0.6rem", borderRadius: "6px" }}>
               <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}><User size={13} /> Name Similarity:</span>
-              <span style={{ fontWeight: 700, color: (report.pan_vs_licence?.name.similarity || 0) >= 75 ? "var(--status-matched)" : "var(--status-mismatch)" }}>
-                {report.pan_vs_licence?.name.similarity ? `${report.pan_vs_licence.name.similarity.toFixed(1)}%` : "—"}
+              <span style={{ fontWeight: 700, color: (report.pan_vs_licence?.name?.similarity || 0) >= 75 ? "var(--status-matched)" : "var(--status-mismatch)" }}>
+                {report.pan_vs_licence?.name?.similarity !== undefined ? `${report.pan_vs_licence.name.similarity.toFixed(1)}%` : "—"}
               </span>
             </div>
 
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", padding: "0.4rem 0.6rem", borderRadius: "6px" }}>
               <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}><Calendar size={13} /> DOB Match:</span>
-              {getStatusBadge(report.pan_vs_licence?.date_of_birth.status)}
+              {getStatusBadge(report.pan_vs_licence?.date_of_birth?.status)}
             </div>
           </div>
         </div>
+
+        {/* Vehicle Class Verification */}
+        {report.vehicle_class && (
+          <div style={{
+            background: "var(--bg-secondary)",
+            border: "1px solid var(--border-subtle)",
+            borderRadius: "var(--radius-md)",
+            padding: "1.1rem",
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+              <span style={{ fontWeight: 700, fontSize: "0.88rem", color: "#ec4899" }}>Vehicle Class Match</span>
+              {getStatusBadge(report.vehicle_class.status)}
+            </div>
+
+            <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", padding: "0.4rem 0.6rem", borderRadius: "6px" }}>
+                <span>Expected Category:</span>
+                <strong style={{ color: "var(--text-primary)" }}>{report.vehicle_class.expected_category || "None"}</strong>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", padding: "0.4rem 0.6rem", borderRadius: "6px" }}>
+                <span>RC Extracted Class:</span>
+                <strong style={{ color: report.vehicle_class.status === "MATCH" ? "var(--status-matched)" : "var(--status-mismatch)" }}>
+                  {report.vehicle_class.extracted_rc_class || "—"}
+                </strong>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

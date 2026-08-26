@@ -76,13 +76,22 @@ export interface PairwiseComparison {
   status: "MATCH" | "REVIEW" | "MISMATCH";
 }
 
+export interface VehicleClassMatchResult {
+  expected_category?: string;
+  extracted_rc_class?: string;
+  matched_category?: string;
+  status: "MATCH" | "MISMATCH" | "MISSING" | "SKIPPED" | string;
+}
+
 export interface CrossValidationReport {
   driver_id: string;
   aadhaar_vs_pan?: PairwiseComparison;
   aadhaar_vs_licence?: PairwiseComparison;
   pan_vs_licence?: PairwiseComparison;
+  vehicle_class?: VehicleClassMatchResult;
   overall_name_status: "MATCHED" | "REVIEW" | "MISMATCH";
   overall_dob_status: "MATCHED" | "MISMATCH";
+  overall_vehicle_class_status?: "MATCHED" | "MISMATCH" | "SKIPPED" | string;
   overall_status: "MATCHED" | "REVIEW" | "MISMATCH";
   execution_time_ms?: number;
 }

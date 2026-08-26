@@ -178,13 +178,22 @@ class PairwiseValidationResult(BaseModel):
     status: str  # "MATCH", "REVIEW", "MISMATCH"
 
 
+class VehicleClassMatchResult(BaseModel):
+    expected_category: Optional[str] = None
+    extracted_rc_class: Optional[str] = None
+    matched_category: Optional[str] = None
+    status: str = "SKIPPED"  # "MATCH", "MISMATCH", "MISSING", "SKIPPED"
+
+
 class CrossValidationResult(BaseModel):
     driver_id: str
     aadhaar_vs_pan: PairwiseValidationResult
     aadhaar_vs_licence: PairwiseValidationResult
     pan_vs_licence: PairwiseValidationResult
+    vehicle_class: Optional[VehicleClassMatchResult] = None
     overall_name_status: str  # "MATCHED", "REVIEW", "MISMATCH"
     overall_dob_status: str   # "MATCHED", "MISMATCH"
+    overall_vehicle_class_status: Optional[str] = None  # "MATCHED", "MISMATCH", "SKIPPED"
     overall_status: str       # "MATCHED", "REVIEW", "MISMATCH"
 
     def to_dict(self) -> Dict[str, Any]:

@@ -27,6 +27,9 @@ _active_batches: Dict[str, Dict[str, Any]] = {}
 
 class DriverUrlItem(BaseModel):
     driver_id: str = Field(..., description="Unique driver ID (phone number or UUID)")
+    mobile_number: Optional[str] = Field(None, description="Driver mobile number (used as password for protected zip archives)")
+    password: Optional[str] = Field(None, description="Alias for mobile_number password")
+    vehicle_class: Optional[str] = Field(None, description="Expected vehicle class: '2 wheeler', '3 wheeler', 'car', 'truck'")
     aadhaar_url: Optional[str] = Field(None, description="Aadhaar Zip or Direct Image URL")
     aadhaar_zip_url: Optional[str] = Field(None, description="Alias for aadhaar_url")
     aadhaar_front_url: Optional[str] = Field(None, description="Direct Aadhaar Front Image URL")
@@ -349,6 +352,11 @@ async def get_batch_summary():
 async def _process_single_url_driver(http_client: httpx.AsyncClient, item: DriverUrlItem) -> Dict[str, Any]:
     """Processes a single driver item from S3/remote URLs in memory and saves audit files."""
     driver_id = item.driver_id.strip()
+    zip_pwd = (
+        (item.mobile_number and item.mobile_number.strip())
+        or (item.password and item.password.strip())
+        or (driver_id if driver_id.isdigit() else None)
+    )
     
     # 1. Download & Unzip all documents in parallel
     (
@@ -363,6 +371,7 @@ async def _process_single_url_driver(http_client: httpx.AsyncClient, item: Drive
             item.aadhaar_zip_url,
             item.aadhaar_front_url,
             item.aadhaar_back_url,
+            password=zip_pwd,
         ),
         _resolve_doc_images(
             http_client,
@@ -370,6 +379,7 @@ async def _process_single_url_driver(http_client: httpx.AsyncClient, item: Drive
             item.licence_zip_url,
             item.licence_front_url,
             item.licence_back_url,
+            password=zip_pwd,
         ),
         _resolve_doc_images(
             http_client,
@@ -377,6 +387,7 @@ async def _process_single_url_driver(http_client: httpx.AsyncClient, item: Drive
             item.pan_zip_url,
             item.pan_front_url,
             item.pan_back_url,
+            password=zip_pwd,
         ),
         _resolve_doc_images(
             http_client,
@@ -384,6 +395,7 @@ async def _process_single_url_driver(http_client: httpx.AsyncClient, item: Drive
             item.rc_zip_url,
             item.rc_front_url,
             item.rc_back_url,
+            password=zip_pwd,
         ),
     )
 

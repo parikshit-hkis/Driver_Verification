@@ -23,6 +23,10 @@ class OCRConfig:
     CLS_MODEL_DIR: str = os.getenv(
         "OCR_CLS_MODEL_DIR", str(ROOT_DIR / "models/cls/ch_ppocr_mobile_v2.0_cls_infer")
     )
+    DET_MODEL_DIR: str = os.getenv("OCR_DET_MODEL_DIR") or None
+    REC_MODEL_DIR: str = os.getenv("OCR_REC_MODEL_DIR") or None
+    CLS_MODEL_DIR: str = os.getenv("OCR_CLS_MODEL_DIR") or None
+
     MIN_CONFIDENCE: float = float(os.getenv("OCR_MIN_CONFIDENCE", "0.70"))
     REC_IMAGE_SHAPE: str = os.getenv("OCR_REC_IMAGE_SHAPE", "3,64,320")
     USE_GPU: bool = os.getenv("OCR_USE_GPU", "true").lower() in ("true", "1", "yes")

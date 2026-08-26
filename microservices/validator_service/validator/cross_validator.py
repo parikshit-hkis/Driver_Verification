@@ -12,6 +12,7 @@ from microservices.shared.models import (
     NameMatchResult,
     DOBMatchResult,
     PairwiseValidationResult,
+    VehicleClassMatchResult,
     CrossValidationResult,
 )
 from microservices.validator_service.config import validator_config
@@ -233,6 +234,75 @@ class IdentityCrossValidator:
             status=pair_status,
         )
 
+    @staticmethod
+    def normalize_vehicle_category(category: Optional[str]) -> Optional[str]:
+        """Normalizes user-requested vehicle class string into one of the standard categories using configured aliases."""
+        if not category or not str(category).strip():
+            return None
+        c = str(category).strip().lower().replace("_", " ").replace("-", " ")
+        c = re.sub(r"\s+", " ", c)
+
+        # Check configured category aliases
+        for canonical_cat, aliases in validator_config.VEHICLE_CATEGORY_ALIASES.items():
+            if c in aliases or c == canonical_cat:
+                return canonical_cat
+        return c
+
+    @classmethod
+    def map_extracted_class_to_category(cls, extracted_class: Optional[str]) -> Optional[str]:
+        """Maps an RC extracted vehicle class string to one of the canonical categories using validator_config."""
+        if not extracted_class or not str(extracted_class).strip():
+            return None
+        raw_up = str(extracted_class).strip().upper()
+        norm_up = re.sub(r"[^\w\(\)\+\s]", "", raw_up).strip()
+
+        # 1. Match against configured canonical classes
+        for cat, class_set in validator_config.CANONICAL_VEHICLE_CLASSES.items():
+            if raw_up in class_set or norm_up in class_set:
+                return cat
+
+        # 2. Heuristic keyword matching from config
+        for cat, keywords in validator_config.VEHICLE_HEURISTIC_KEYWORDS.items():
+            if any(k in raw_up for k in keywords):
+                return cat
+
+        return None
+
+    def validate_vehicle_class(
+        self, expected_category: Optional[str], extracted_rc_class: Optional[str]
+    ) -> VehicleClassMatchResult:
+        """Validates expected vehicle category against RC extracted vehicle class."""
+        norm_expected = self.normalize_vehicle_category(expected_category)
+        matched_cat = self.map_extracted_class_to_category(extracted_rc_class)
+
+        if not norm_expected:
+            return VehicleClassMatchResult(
+                expected_category=None,
+                extracted_rc_class=extracted_rc_class,
+                matched_category=matched_cat,
+                status="MISSING",
+            )
+
+        if not extracted_rc_class or not str(extracted_rc_class).strip():
+            return VehicleClassMatchResult(
+                expected_category=norm_expected,
+                extracted_rc_class=None,
+                matched_category=None,
+                status="MISSING",
+            )
+
+        if matched_cat and matched_cat == norm_expected:
+            status = "MATCH"
+        else:
+            status = "MISMATCH"
+
+        return VehicleClassMatchResult(
+            expected_category=norm_expected,
+            extracted_rc_class=extracted_rc_class,
+            matched_category=matched_cat,
+            status=status,
+        )
+
     def validate_driver_json(self, json_dict: Dict[str, Any]) -> CrossValidationResult:
         driver_id = str(json_dict.get("driver_id", "UNKNOWN"))
         docs = json_dict.get("documents", {})
@@ -280,11 +350,22 @@ class IdentityCrossValidator:
         else:
             overall_dob_status = "MISMATCH"
 
-        if overall_name_status == "MISMATCH" or overall_dob_status == "MISMATCH":
+        # Vehicle Class Cross-Validation (mandatory for overall approval)
+        expected_vc = json_dict.get("vehicle_class") or json_dict.get("expected_vehicle_class")
+        rc_vc = get_field("rc", "vehicle_class")
+        vc_res = self.validate_vehicle_class(expected_vc, rc_vc)
+
+        if vc_res.status == "MATCH":
+            overall_vc_status = "MATCHED"
+        else:
+            overall_vc_status = "MISMATCH"
+
+        # Composite Overall Status Decision: Name, DOB, and Vehicle Class MUST match
+        if overall_name_status == "MISMATCH" or overall_dob_status == "MISMATCH" or overall_vc_status == "MISMATCH":
             overall_status = "MISMATCH"
         elif overall_name_status == "REVIEW":
             overall_status = "REVIEW"
-        elif overall_name_status == "MATCHED" and (overall_dob_status in ("MATCHED", "MISSING")):
+        elif overall_name_status == "MATCHED" and (overall_dob_status in ("MATCHED", "MISSING")) and overall_vc_status == "MATCHED":
             overall_status = "MATCHED"
         elif overall_name_status == "MISSING" and overall_dob_status == "MISSING":
             overall_status = "UNKNOWN"
@@ -296,7 +377,9 @@ class IdentityCrossValidator:
             aadhaar_vs_pan=aadhaar_vs_pan,
             aadhaar_vs_licence=aadhaar_vs_licence,
             pan_vs_licence=pan_vs_licence,
+            vehicle_class=vc_res,
             overall_name_status=overall_name_status,
             overall_dob_status=overall_dob_status,
+            overall_vehicle_class_status=overall_vc_status,
             overall_status=overall_status,
         )

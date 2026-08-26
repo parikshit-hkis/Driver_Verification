@@ -31,7 +31,7 @@ logger = logging.getLogger("rc_service.extractor")
 _EXPECTED_FIELD_SIDE = {
     "registration_number": "front",
     "owner_name": "front",
-    "vehicle_class": "back",
+    "vehicle_class": "both",
     "registration_date": "front",
     "fitness_expiry": "front",
 }
@@ -91,7 +91,7 @@ class RCExtractor(BaseExtractor):
             "fitness_expiry"
         ]
 
-        # Merge front and back with side preference and conflict detection
+        # Merge front and back with side preference, vocabulary verification, and conflict detection
         for field_name in all_fields:
             pref_side = _EXPECTED_FIELD_SIDE.get(field_name, "front")
             val_front = getattr(data_front, field_name, None)
@@ -100,7 +100,6 @@ class RCExtractor(BaseExtractor):
             conf_front = data_front.confidence_scores.get(field_name, 0.0)
             conf_back = data_back.confidence_scores.get(field_name, 0.0)
 
-            # Detect conflict between front and back
             if val_front and val_back and val_front.strip().upper() != val_back.strip().upper():
                 conflict_msg = (
                     f"Front/Back conflict detected for {field_name}: "
@@ -109,15 +108,28 @@ class RCExtractor(BaseExtractor):
                 logger.warning(conflict_msg)
                 merged.field_diagnostics[f"{field_name}_conflict"] = conflict_msg
 
-                # Choose preferred side or higher confidence
-                if pref_side == "front":
+                if field_name == "vehicle_class":
+                    f_in_vocab = val_front in self.config.vehicle_classes or self._normalize_vehicle_class(val_front) in self.config.vehicle_classes
+                    b_in_vocab = val_back in self.config.vehicle_classes or self._normalize_vehicle_class(val_back) in self.config.vehicle_classes
+                    if f_in_vocab and not b_in_vocab:
+                        val, conf = val_front, conf_front
+                    elif b_in_vocab and not f_in_vocab:
+                        val, conf = val_back, conf_back
+                    elif conf_front >= conf_back:
+                        val, conf = val_front, conf_front
+                    else:
+                        val, conf = val_back, conf_back
+                elif pref_side == "front":
                     val = val_front
                     conf = max(0.40, conf_front - 0.10)
                 else:
                     val = val_back
                     conf = max(0.40, conf_back - 0.10)
             else:
-                if pref_side == "front":
+                if field_name == "vehicle_class":
+                    val = val_front if val_front is not None else val_back
+                    conf = conf_front if val_front is not None else conf_back
+                elif pref_side == "front":
                     val = val_front if val_front is not None else val_back
                     conf = conf_front if val_front is not None else conf_back
                 else:
@@ -200,7 +212,7 @@ class RCExtractor(BaseExtractor):
         if not keywords:
             return None, 0.0
 
-        allow_multiline = field_name in ("owner_name", "vehicle_class")
+        allow_multiline = field_name == "owner_name"
 
         cand = self._get_best_candidate_for_keywords(
             texts=texts,
@@ -227,6 +239,11 @@ class RCExtractor(BaseExtractor):
                 return relation_value.upper(), rel_conf
 
         if not cand:
+            # Fallback: scan OCR text for known vehicle class patterns
+            if field_name == "vehicle_class":
+                fb_val, fb_conf = self._fallback_vehicle_class_scan(texts)
+                if fb_val:
+                    return fb_val, fb_conf
             return None, 0.0
 
         val = cand.text.strip()
@@ -270,11 +287,22 @@ class RCExtractor(BaseExtractor):
             return None, 0.0
 
         elif field_name == "vehicle_class":
-            clean_class = val.upper().strip()
-            # Boost confidence if exact match in known dictionary
-            if clean_class in self.config.vehicle_classes:
-                field_conf = min(0.98, field_conf + 0.05)
-            return clean_class, field_conf
+            cand_norm = self._normalize_vehicle_class(val)
+            cand_is_valid = (
+                cand_norm in self.config.vehicle_classes
+                or val.upper().strip() in self.config.vehicle_classes
+            ) and not self._is_body_type_value(cand_norm)
+
+            fb_val, fb_conf = self._fallback_vehicle_class_scan(texts)
+
+            if cand_is_valid:
+                return cand_norm, max(field_conf, 0.92)
+            elif fb_val:
+                return fb_val, fb_conf
+            elif not self._is_body_type_value(cand_norm) and not self._is_structural_label(cand_norm):
+                if len(cand_norm) <= 35 and not re.search(r"\d{3,}", cand_norm) and not any(w in cand_norm for w in ["NAME", "CHASSIS", "ENGINE", "REGN", "DATE", "CARD", "ADDRESS"]):
+                    return cand_norm, min(field_conf, 0.70)
+            return None, 0.0
 
         return val.upper(), field_conf
 
@@ -300,7 +328,7 @@ class RCExtractor(BaseExtractor):
                 fmt_score, v_bonus = self._evaluate_candidate_format(inline_val, field_type)
                 if fmt_score >= 0:
                     pref_side = _EXPECTED_FIELD_SIDE.get(field_type, "front")
-                    side_score = scoring.get("side_match_bonus", 30.0) if (side == pref_side or side == "unknown") else 0.0
+                    side_score = scoring.get("side_match_bonus", 30.0) if (pref_side == "both" or side == pref_side or side == "unknown") else 0.0
                     inline_base = scoring.get("spatial_inline_base", 80.0)
                     ocr_scale = scoring.get("ocr_conf_scale", 10.0)
                     tot_score = inline_base + fmt_score + v_bonus + side_score + (ocr_scale * label_box.confidence)
@@ -403,6 +431,8 @@ class RCExtractor(BaseExtractor):
             icy = item.bounding_box.center_y
             ix1 = item.bounding_box.min_x
             iy1 = item.bounding_box.min_y
+            ix2 = item.bounding_box.max_x
+            iy2 = item.bounding_box.max_y
 
             right_of_label = ix1 >= lx2 - right_offset_min
             x_alignment = abs(icx - label_center_x)
@@ -413,11 +443,17 @@ class RCExtractor(BaseExtractor):
                 and (iy1 - ly2) <= below_vertical_max
                 and x_alignment <= below_x_tolerance
             )
+            is_above = (
+                field_type == "vehicle_class"
+                and ly1 >= iy2 - 5.0
+                and (ly1 - iy2) <= below_vertical_max
+                and x_alignment <= below_x_tolerance
+            )
 
-            if not on_same_row and not is_below:
+            if not on_same_row and not is_below and not is_above:
                 continue
 
-            relationship = "right" if on_same_row else "below"
+            relationship = "right" if on_same_row else ("below" if is_below else "above")
             merged_text = text_clean
             if allow_multiline:
                 merged_text = self._merge_continuation_boxes(texts, item, relationship, field_type)
@@ -426,17 +462,24 @@ class RCExtractor(BaseExtractor):
                 dist = max(0.0, ix1 - lx2)
                 base_right = scoring.get("spatial_right_base", 65.0)
                 spatial_score = max(0.0, base_right - (dist / 3.5))
-            else:
+            elif relationship == "below":
                 dist = max(0.0, iy1 - ly2)
                 base_below = scoring.get("spatial_below_base", 55.0)
                 max_align = scoring.get("spatial_col_align_max", 30.0)
                 spatial_score = max(0.0, base_below - (dist / 3.0))
                 col_align_bonus = max(0.0, max_align - (x_alignment / 3.0))
                 spatial_score += col_align_bonus
+            else:  # above
+                dist = max(0.0, ly1 - iy2)
+                base_above = scoring.get("spatial_below_base", 50.0)
+                max_align = scoring.get("spatial_col_align_max", 30.0)
+                spatial_score = max(0.0, base_above - (dist / 3.0))
+                col_align_bonus = max(0.0, max_align - (x_alignment / 3.0))
+                spatial_score += col_align_bonus
 
             pref_side = _EXPECTED_FIELD_SIDE.get(field_type, "front")
             side_bonus = scoring.get("side_match_bonus", 30.0)
-            side_score = side_bonus if (side == pref_side or side == "unknown") else 0.0
+            side_score = side_bonus if (pref_side == "both" or side == pref_side or side == "unknown") else 0.0
 
             fmt_score, v_bonus = self._evaluate_candidate_format(merged_text, field_type)
             if fmt_score < 0:
@@ -656,10 +699,25 @@ class RCExtractor(BaseExtractor):
             return (-100.0, 0.0)
 
         elif field_type == "vehicle_class":
-            if len(clean_up) <= 35 and not self._is_structural_label(clean_up):
-                if not any(w in clean_up for w in ["VALIDITY", "CYLINDER", "REGISTRATION", "CERTIFICATE", "GOVERNMENT", "DEPARTMENT", "NAME"]):
-                    vocab_bonus = 20.0 if clean_up in self.config.vehicle_classes else 0.0
-                    return (40.0, vocab_bonus)
+            if self._is_body_type_value(clean_up):
+                return (-100.0, 0.0)
+            if normalize_date(text):
+                return (-100.0, 0.0)
+            if re.search(r"\d{4,}", clean_up):
+                return (-100.0, 0.0)
+            if self._is_structural_label(clean_up):
+                return (-100.0, 0.0)
+            if any(w in clean_up for w in [
+                "VALIDITY", "CYLINDER", "REGISTRATION", "CERTIFICATE", "GOVERNMENT",
+                "DEPARTMENT", "NAME", "AUTHORITY", "CARD", "ISSUE", "SERIAL",
+                "WEIGHT", "CAPACITY", "WHEELBASE", "FINANCIER", "SIGN", "SON",
+                "DAUGHTER", "WIFE", "ADDRESS", "STAGE", "FUEL", "PETROL", "DIESEL", "CNG"
+            ]):
+                return (-100.0, 0.0)
+            if len(clean_up) <= 50:
+                norm_vc = self._normalize_vehicle_class(clean_up)
+                vocab_bonus = 40.0 if (clean_up in self.config.vehicle_classes or norm_vc in self.config.vehicle_classes) else 0.0
+                return (50.0, vocab_bonus)
             return (-100.0, 0.0)
 
         elif field_type in ("registration_date", "fitness_expiry"):
@@ -746,10 +804,11 @@ class RCExtractor(BaseExtractor):
                 "Name of Regd Owner", "Owner", "Name",
             ],
             "vehicle_class": [
-                "Type of Body", "Body Type", "Description of Vehicle", "Vehicle Class",
-                "Class of Vehicle", "Veh Class", "Vehicle Type", "Type of Vehicle",
-                "Type of Veh", "Veh Type", "Class", "Veh. Class", "Veh.Class",
-                "Vehicle Category", "Veh Catg", "Class/Type",
+                "Vehicle Class", "Class of Vehicle", "Veh Class", "Vehicle Type",
+                "Type of Vehicle", "Type of Veh", "Veh Type", "Class",
+                "Veh. Class", "Veh.Class", "Vehicle Category", "Veh Catg",
+                "Class/Type", "Description of Vehicle", "Vehicle CIass", "Veh CIass",
+                "Vehide Class", "VencdeClass", "Venide Cass", "Vencde Class"
             ],
             "registration_date": [
                 "Registration Date", "Date of Registration", "Date of Reg.", "Reg Date",
@@ -776,6 +835,138 @@ class RCExtractor(BaseExtractor):
             truncated = self._truncate_relation_marker(cand.text)
             if self._is_plausible_owner_name(truncated):
                 return truncated, 0.85
+        return None, 0.0
+
+    # ── Body-Type Rejection & Vehicle-Class Fallback ──────────────────────────
+
+    _BODY_TYPE_VALUES = {
+        "BOLTED ON FRAME", "WELDED", "MONOCOQUE", "OPEN BODY", "CLOSED BODY",
+        "CONVERTIBLE", "RIGID", "ARTICULATED", "TANKER", "TIPPER",
+        "PANEL VAN", "TRUCK", "HALF BODY", "FULL BODY", "PICK UP",
+        "PLATFORM", "FLAT BED", "CHASSIS ONLY", "CABIN CHASSIS",
+        "SOLO", "SOLO+PILL.RIDER", "SOLO WITH PILLION", "SOLOWITHPILLION",
+    }
+
+    _BODY_TYPE_FRAGMENTS = [
+        "BOLTED", "WELDED", "MONOCOQUE", "ON FRAME",
+    ]
+
+    def _is_body_type_value(self, text: str) -> bool:
+        """Check if the value looks like a body-type description rather than a vehicle class."""
+        clean = text.strip().lstrip("/").strip().upper()
+        if clean in self._BODY_TYPE_VALUES:
+            return True
+        for frag in self._BODY_TYPE_FRAGMENTS:
+            if frag in clean:
+                return True
+        return False
+
+    # Regex to match inline "Vehicle Class: <VALUE>" in OCR text
+    _VEHICLE_CLASS_INLINE_RE = re.compile(
+        r"(?:VEHICLE\s*C[LI1]ASS|CLASS\s*OF\s*VEHICLE|VEH[A-Z0-9\.\s]*C[LI1]ASS|VENCDE\s*CLASS|VEHIDE\s*CLASS|VEH[A-Z0-9\.\s]*CARR[A-Z]*)\s*[:;.\-]?\s*(.+)",
+        re.IGNORECASE,
+    )
+
+    def _normalize_vehicle_class(self, text: str) -> str:
+        """Clean and normalize vehicle class strings and fix common OCR anomalies."""
+        cleaned = text.strip().lstrip("/").rstrip(":").strip().upper()
+        # Fix missing closing parenthesis e.g. (3WT -> (3WT)
+        if cleaned.count("(") > cleaned.count(")"):
+            cleaned += ")" * (cleaned.count("(") - cleaned.count(")"))
+        elif cleaned.count(")") > cleaned.count("("):
+            # Fix missing opening parenthesis e.g. THREE WHEELER PASSENGER)(3WT)
+            cleaned = re.sub(r"\bPASSENGER\)\(", "(PASSENGER) (", cleaned)
+
+        # Standardize 3-wheeler variants
+        if cleaned.startswith("HREEWHEELER") or cleaned.startswith("HREE WHEELER"):
+            cleaned = "T" + cleaned
+        elif cleaned.startswith("THREEWHEELER"):
+            cleaned = "THREE WHEELER" + cleaned[12:]
+        elif cleaned.startswith("3WHEELER"):
+            cleaned = "3 WHEELER" + cleaned[8:]
+
+        # Standardize 2-wheeler typos
+        if "M-.YDE" in cleaned or "H-CYCLE" in cleaned:
+            cleaned = cleaned.replace("M-.YDE", "M-CYCLE").replace("H-CYCLE", "M-CYCLE")
+        if cleaned.startswith("JOTOR") or cleaned.startswith("NOTOR"):
+            cleaned = "M" + cleaned[1:]
+        if cleaned == "NOTORCYCLE":
+            cleaned = "MOTORCYCLE"
+        if cleaned == "SOLOPILL.RIDER":
+            cleaned = "SOLO+PILL.RIDER"
+
+        # Standardize carrier typos
+        if "CARRER" in cleaned:
+            cleaned = cleaned.replace("CARRER", "CARRIER")
+
+        return cleaned
+
+    def _fallback_vehicle_class_scan(self, texts: List[OCRText]) -> Tuple[Optional[str], float]:
+        """
+        Fallback scanner for vehicle class when label-based extraction fails.
+        Strategy:
+          1. Look for inline pattern 'Vehicle Class: <value>' in any OCR box.
+          2. Scan all OCR text for known vehicle class vocabulary matches with strict word boundary validation.
+        """
+        # Strategy 1: Inline regex on individual OCR boxes
+        stop_words = [
+            "Maker", "Model", "Colour", "Color", "Regn", "Seating", "Form", "Unladen",
+            "Fuel", "Owner", "Son", "Address", "Date", "Chassis", "Engine", "Emission",
+            "Certificate", "Government", "Bharat", "Stage", "Norms", "Validity"
+        ]
+
+        for item in texts:
+            m = self._VEHICLE_CLASS_INLINE_RE.search(item.text)
+            if m:
+                raw = m.group(1).strip().rstrip(":").strip()
+                for stop in stop_words:
+                    idx = raw.upper().find(stop.upper())
+                    if idx > 0:
+                        raw = raw[:idx].strip().rstrip(",").rstrip(":").strip()
+                        break
+                if raw and len(raw) <= 45 and not self._is_body_type_value(raw) and not self._is_structural_label(raw):
+                    clean = self._normalize_vehicle_class(raw)
+                    conf = 0.95 if clean in self.config.vehicle_classes else 0.88
+                    return clean, conf
+
+        # Strategy 2: Concatenated text regex
+        full = " ".join(t.text for t in texts)
+        m = self._VEHICLE_CLASS_INLINE_RE.search(full)
+        if m:
+            raw = m.group(1).strip()
+            for stop in stop_words:
+                idx = raw.upper().find(stop.upper())
+                if idx > 0:
+                    raw = raw[:idx].strip().rstrip(",").rstrip(":").strip()
+                    break
+            if raw and len(raw) <= 45 and not self._is_body_type_value(raw) and not self._is_structural_label(raw):
+                clean = self._normalize_vehicle_class(raw)
+                if clean in self.config.vehicle_classes:
+                    return clean, 0.92
+
+        # Strategy 3: Direct vocabulary scan with strict word boundaries and blacklist
+        blacklist_headers = [
+            "CARD", "CERTIFICATE", "DEPARTMENT", "GOVERNMENT", "AUTHORITY",
+            "REGISTRATION", "NAME OF", "DATE OF", "SIGNATURE", "CHASSIS",
+            "ENGINE", "EMISSION", "ADDRESS", "OWNER", "SON/", "WIFE/", "DAUGHTER/",
+            "FUEL", "PETROL", "DIESEL", "CNG"
+        ]
+
+        for item in texts:
+            text_up = item.text.strip().upper()
+            if any(h in text_up for h in blacklist_headers) or re.search(r"\d{4,}", text_up):
+                continue
+            norm_item = self._normalize_vehicle_class(text_up)
+
+            if norm_item in self.config.vehicle_classes:
+                return norm_item, 0.90
+
+            # Match compound vehicle classes with word boundary
+            for vc in sorted(self.config.vehicle_classes, key=len, reverse=True):
+                if len(vc) >= 4 and not self._is_body_type_value(text_up):
+                    if re.search(r"(?<![A-Z0-9])" + re.escape(vc) + r"(?![A-Z0-9])", norm_item):
+                        return vc, 0.88
+
         return None, 0.0
 
     def _apply_form23_validity_spans(self, data: RCData, texts: List[OCRText]) -> None:

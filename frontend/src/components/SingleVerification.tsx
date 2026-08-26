@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Upload, FileText, CheckCircle, AlertCircle, RefreshCw, Car, CreditCard, Shield, IdCard } from "lucide-react";
-import { verifySingleDriver } from "../lib/api";
+import { verifySingleDriver, fetchDriverRecordDetail } from "../lib/api";
 import { VerificationResult } from "../lib/types";
 import { CrossMatchMatrix } from "./CrossMatchMatrix";
 
@@ -13,6 +13,7 @@ interface DocFileState {
 
 export const SingleVerification: React.FC = () => {
   const [driverId, setDriverId] = useState("");
+  const [vehicleClass, setVehicleClass] = useState("");
   const [aadhaar, setAadhaar] = useState<DocFileState>({ front: null, back: null });
   const [licence, setLicence] = useState<DocFileState>({ front: null, back: null });
   const [pan, setPan] = useState<DocFileState>({ front: null, back: null });
@@ -21,6 +22,7 @@ export const SingleVerification: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<VerificationResult | null>(null);
+  const [overallStatus, setOverallStatus] = useState<boolean | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,9 +34,11 @@ export const SingleVerification: React.FC = () => {
     setLoading(true);
     setError(null);
     setResult(null);
+    setOverallStatus(null);
 
     const formData = new FormData();
     formData.append("driver_id", driverId.trim());
+    formData.append("vehicle_class", vehicleClass.trim());
 
     if (aadhaar.front) formData.append("aadhaar_front", aadhaar.front);
     if (aadhaar.back) formData.append("aadhaar_back", aadhaar.back);
@@ -46,8 +50,16 @@ export const SingleVerification: React.FC = () => {
     if (rc.back) formData.append("rc_back", rc.back);
 
     try {
-      const data = await verifySingleDriver(formData);
-      setResult(data);
+      const data: any = await verifySingleDriver(formData);
+      if (data?.over_all_status !== undefined) {
+        setOverallStatus(Boolean(data.over_all_status));
+      }
+      try {
+        const fullData = await fetchDriverRecordDetail(driverId.trim());
+        setResult(fullData);
+      } catch {
+        setResult(data);
+      }
     } catch (err: any) {
       setError(err.message || "Failed to process driver verification");
     } finally {
@@ -134,27 +146,56 @@ export const SingleVerification: React.FC = () => {
         </p>
 
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: "1.5rem" }}>
-            <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.4rem" }}>
-              Driver Identification / Mobile Number *
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. 9723404453 or DRV-2026-001"
-              value={driverId}
-              onChange={(e) => setDriverId(e.target.value)}
-              style={{
-                width: "100%",
-                maxWidth: "400px",
-                padding: "0.75rem 1rem",
-                background: "var(--bg-secondary)",
-                border: "1px solid var(--border-subtle)",
-                borderRadius: "var(--radius-md)",
-                color: "var(--text-primary)",
-                fontSize: "0.95rem",
-                outline: "none",
-              }}
-            />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.25rem", marginBottom: "1.5rem" }}>
+            <div>
+              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.4rem" }}>
+                Driver Identification / Mobile Number *
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. 7203075793 or DRV-2026-001"
+                value={driverId}
+                onChange={(e) => setDriverId(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem 1rem",
+                  background: "var(--bg-secondary)",
+                  border: "1px solid var(--border-subtle)",
+                  borderRadius: "var(--radius-md)",
+                  color: "var(--text-primary)",
+                  fontSize: "0.95rem",
+                  outline: "none",
+                }}
+              />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.4rem" }}>
+                Expected Vehicle Class (2 wheeler, 3 wheeler, car, truck)
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. 3 wheeler, 2 wheeler, car, truck"
+                value={vehicleClass}
+                onChange={(e) => setVehicleClass(e.target.value)}
+                list="vehicle-class-list"
+                style={{
+                  width: "100%",
+                  padding: "0.75rem 1rem",
+                  background: "var(--bg-secondary)",
+                  border: "1px solid var(--border-subtle)",
+                  borderRadius: "var(--radius-md)",
+                  color: "var(--text-primary)",
+                  fontSize: "0.95rem",
+                  outline: "none",
+                }}
+              />
+              <datalist id="vehicle-class-list">
+                <option value="2 wheeler" />
+                <option value="3 wheeler" />
+                <option value="car" />
+                <option value="truck" />
+              </datalist>
+            </div>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1rem", marginBottom: "1.75rem" }}>
@@ -201,6 +242,46 @@ export const SingleVerification: React.FC = () => {
       {/* Verification Results Display */}
       {result && (
         <div>
+          {/* Status Result Header Banner */}
+          {overallStatus !== null && (
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "1rem 1.5rem",
+              borderRadius: "var(--radius-md)",
+              marginBottom: "1.5rem",
+              background: overallStatus ? "rgba(16, 185, 129, 0.12)" : "rgba(239, 68, 68, 0.12)",
+              border: `1px solid ${overallStatus ? "rgba(16, 185, 129, 0.35)" : "rgba(239, 68, 68, 0.35)"}`,
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                {overallStatus ? (
+                  <CheckCircle size={24} color="var(--status-matched)" />
+                ) : (
+                  <AlertCircle size={24} color="var(--status-mismatch)" />
+                )}
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: "1.05rem", color: overallStatus ? "var(--status-matched)" : "var(--status-mismatch)" }}>
+                    Verification Status: {overallStatus ? "APPROVED (true)" : "REJECTED (false)"}
+                  </div>
+                  <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "0.15rem" }}>
+                    Driver ID: <strong>{driverId}</strong> &bull; Expected Class: <strong>{vehicleClass || "None (Mandatory)"}</strong> &bull; RC Extracted Class: <strong>{result?.extraction?.documents?.rc?.data?.vehicle_class || "None"}</strong>
+                  </div>
+                </div>
+              </div>
+              <div style={{
+                fontSize: "0.85rem",
+                fontWeight: 700,
+                padding: "0.4rem 1rem",
+                borderRadius: "var(--radius-sm)",
+                background: overallStatus ? "var(--status-matched)" : "var(--status-mismatch)",
+                color: "#fff",
+              }}>
+                over_all_status: {overallStatus ? "true" : "false"}
+              </div>
+            </div>
+          )}
+
           {/* Identity Matrix */}
           <CrossMatchMatrix report={result.cross_validation} />
 

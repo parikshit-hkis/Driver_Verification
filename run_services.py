@@ -82,8 +82,8 @@ def main():
     )
     parser.add_argument(
         "--host",
-        default="127.0.0.1",
-        help="Host interface to bind services to (default: 127.0.0.1)",
+        default="0.0.0.0",
+        help="Host interface to bind services to (default: 0.0.0.0 for LAN & localhost access)",
     )
     args = parser.parse_args()
 
