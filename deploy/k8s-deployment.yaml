@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: document-verification-service
+  labels:
+    app: document-verification-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: document-verification-service
+  template:
+    metadata:
+      labels:
+        app: document-verification-service
+    spec:
+      containers:
+      - name: verification-service
+        image: document-verification-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: APP_ENV
+          value: "production"
+        - name: DEBUG
+          value: "false"
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: "/app/credentials/google-service-account.json"
+        - name: MAX_CONCURRENT_WORKERS
+          value: "5"
+        - name: MAX_BATCH_SIZE
+          value: "50"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        volumeMounts:
+        - name: gcp-credentials
+          mountPath: /app/credentials
+          readOnly: true
+      volumes:
+      - name: gcp-credentials
+        secret:
+          secretName: google-cloud-key
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: document-verification-service
+  labels:
+    app: document-verification-service
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8000
+    targetPort: 8000
+    name: http
+  selector:
+    app: document-verification-service

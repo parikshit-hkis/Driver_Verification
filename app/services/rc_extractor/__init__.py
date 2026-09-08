@@ -1,1 +1,0 @@
-# rc_extractor package
