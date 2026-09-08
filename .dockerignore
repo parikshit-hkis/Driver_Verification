@@ -1,0 +1,12 @@
+gvenv/
+__pycache__/
+*.pyc
+.git/
+.env
+bulk_documents/
+sample_documents/
+dump/
+scratch/
+result/
+frontend/
+model/

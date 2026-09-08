@@ -1,0 +1,136 @@
+{
+  "name_match_threshold": 60.0,
+  "name_review_threshold": 50.0,
+  "vehicle_categories": {
+    "aliases": {
+      "2 wheeler": [
+        "2 wheeler", "2wheeler", "2w", "two wheeler", "twowheeler", "2 wheel", "two wheel", "bike", "motorcycle", "scooter","moped","solowithpillion","SOLO"
+      ],
+      "3 wheeler": [
+        "3 wheeler", "3wheeler", "3w", "three wheeler", "threewheeler", "3 wheel", "three wheel", "auto", "rickshaw", "auto rickshaw"
+      ],
+      "car": [
+        "car", "cars", "motor car", "lmv", "light motor vehicle", "4 wheeler", "four wheeler"
+      ],
+      "truck": [
+        "truck", "trucks", "lgv", "goods", "goods carrier", "transport", "heavy motor vehicle", "hmv"
+      ]
+    },
+    "canonical_classes": {
+      "3 wheeler": [
+        "THREE WHEELER (PASSENGER) (3WT)",
+        "3WT",
+        "THREE WHEELER (GOODS) (3WT)",
+        "THREE WHEELER (PASSENGER)",
+        "THREE WHEELER (GOODS)",
+        "THREE WHEELER PASSENGER)(3WT)",
+        "THREE WHEELER",
+        "3WHEELER",
+        "3 WHEELER",
+        "3WNT",
+        "3WTR",
+        "3W (PAS)",
+        "3W (GOODS)",
+        "3W-PAS",
+        "3W-G",
+        "3W-NT",
+        "3W-CAB",
+        "3W-TR",
+        "3WHEELER (PAS)",
+        "3 WHEELER (PAS)",
+        "3WHEELER (PASS)",
+        "3 WHEELER (PASS)",
+        "3WHEELER (PASSENGER)",
+        "3 WHEELER (PASSENGER)",
+        "3WHEELER (GOODS)",
+        "3 WHEELER (GOODS)",
+        "A.RICKSHAW (PASS)",
+        "A.RICKSHAW (GOODS)",
+        "A.RICKSHAW(PASS)",
+        "A.RICKSHAW(OBOX)",
+        "AUTO RICKSHAW",
+        "AUTORICKSHAW",
+        "AUTO RICKSHAW (PASS)",
+        "AUTORICKSHAW (PASS)",
+        "E-RICKSHAW",
+        "E RICKSHAW",
+        "E-RICKSHAW (P)",
+        "E-RICKSHAW (G)",
+        "E-CART"
+      ],
+      "2 wheeler": [
+        "M-CYCLE/SCOOTER (2WN)",
+        "M-CYCLE/SCOOTER",
+        "MOTORCYCLE",
+        "MOTOR CYCLE",
+        "M-CYCLE",
+        "SCOOTER",
+        "M-CYCLE/SCOOTER (2W)",
+        "M-CYCLE/SCOOTER (2W-NT)",
+        "MCWG",
+        "MCWOG",
+        "TWO WHEELER",
+        "TWO WHEELER (GEAR)",
+        "TWO WHEELER (NON-GEAR)",
+        "MOPED",
+        "SOLOWITHPILLION",
+        "SOLO WITH PILLION",
+        "SOLO"
+      ],
+      "truck": [
+        "(LGV)",
+        "GOODS CARRIER (LGV)",
+        "GOODS CARRIER",
+        "LGV",
+        "HMV",
+        "MGV",
+        "HGMV",
+        "TRANS",
+        "TRANSPORT",
+        "GOODS CARRIERG",
+        "GOODS VEHICLE",
+        "HEAVY MOTOR VEHICLE",
+        "TRUCK",
+        "TRAILER",
+        "TRACTOR",
+        "HTV",
+        "HPV",
+        "HPMV"
+      ],
+      "car": [
+        "MOTOR CAR",
+        "L.M.V (CAR)",
+        "LMV",
+        "L.M.V",
+        "L.M.V.",
+        "LMV (CAR)",
+        "LMV-CAR",
+        "LMV-NT",
+        "LMV-TR",
+        "LMV-GV",
+        "MOTORCAR",
+        "CAR",
+        "JEEP",
+        "LIGHT MOTOR VEHICLE",
+        "FOUR WHEELER",
+        "TAXI",
+        "MAXI CAB",
+        "MOTOR CAB"
+      ]
+    },
+    "heuristic_keywords": {
+      "3 wheeler": [
+        "3W", "3-W", "3 W", "THREE WHEEL", "3WHEEL", "3 WHEEL", "RICKSHAW", "3WT"
+      ],
+      "2 wheeler": [
+        "MCWG", "MCWOG", "SCOOTER", "CYCLE", "2W", "2-W", "2 W", "TWO WHEEL"
+      ],
+      "truck": [
+        "LGV", "GOODS", "HMV", "MGV", "HGMV", "TRUCK", "TRAILER", "TRANSPORT", "TRANS "
+      ],
+      "car": [
+        "LMV", "CAR", "JEEP", "TAXI", "CAB", "LIGHT MOTOR","MOTOR CAR"
+      ]
+    }
+  }
+}
