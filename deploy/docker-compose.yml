@@ -1,0 +1,35 @@
+services:
+  document-verification-service:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: document-verification-service
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=document-verification-service
+      - APP_ENV=production
+      - DEBUG=false
+      - PORT=8000
+      - HOST=0.0.0.0
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/google-service-account.json
+      - MAX_ZIP_SIZE=52428800
+      - MAX_EXTRACTED_SIZE=104857600
+      - MAX_FILES_PER_ZIP=50
+      - TEMP_DIR=/tmp/driver_verification
+      - DOWNLOAD_TIMEOUT=30
+      - VISION_TIMEOUT=30
+      - MAX_BATCH_SIZE=50
+      - MAX_CONCURRENT_WORKERS=5
+      - NAME_MATCH_THRESHOLD=95
+      - NAME_FUZZY_REVIEW_THRESHOLD=85
+    volumes:
+      # Mount Google Cloud service account credentials file (read-only)
+      - ../credentials:/app/credentials:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
